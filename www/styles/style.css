@@ -47,10 +47,10 @@ body{
 }
 
 .logo{
-	width:63px;
+	width:175px;
 	float:right;
 	margin-right:20px;
-	margin-top:22px;
+	margin-top:3px;
 }
 
 
@@ -87,7 +87,7 @@ body{
 	width:60px;
 	height:60px;
 	left:201px;
-	margin-top:-25px;
+	margin-top:-8px;
 }
 
 .delete-sidebar:hover{
@@ -156,9 +156,9 @@ body{
 }
 
 .sidebar-logo{
-	margin-top:25px;
-	margin-left:20px;
-	margin-bottom:-7px;
+	margin-top:7px;
+	margin-left:13px;
+	margin-bottom:-27px;
 }
 
 .sidebar-header{
