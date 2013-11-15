@@ -85,7 +85,6 @@ badger.fetch = function(cal, zip){
 	var snapper = new Snap({
 	  element: document.getElementById('content')
 	});		
-	document.ontouchmove = function(event){ event.preventDefault();}
 	snapper.close();
 	$.ajax({
 		url: "http://brassbadger.honsoworld.com/api/?cal="+cal+"&zip="+zip,
