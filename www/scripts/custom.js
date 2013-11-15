@@ -55,6 +55,21 @@ $(document).ready(function(){
 		document.ontouchmove = function(event){ event.allowDefault();}
 	});
 	
+	
+	
+	/////////////////////////////////////////////////////////////////////////////////
+	$.ajax({
+		url: "http://brassbadger.honsoworld.com/api/",
+		type: "POST",
+		success:function(result){
+			$("#apiResults").html("");
+			result = $.parseJSON(result);
+			for (var i = 0; i < result.data.length; i++) {
+				$("#apiResults").append("<div class='notification-box blue-box'><h4>"+result.data[i]['name']+"</h4><div class='clear'></div><p>"+result.data[i]['address']+"</p></div>");
+			}
+		}
+	});
+	
 });
 
 	/*
