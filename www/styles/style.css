@@ -280,12 +280,12 @@ body{
 .nav-item{
 	font-size:14px;
 	background-size:24px 24px;
-	background-position:20px 18px;
+	background-position:20px 6px;
 	background-repeat:no-repeat;
 	font-family:'Dosis', sans-serif;
 	color:#FFFFFF;
-	height:60px;
-	line-height:55px;
+	height:35px;
+	line-height:30px;
 	padding-left:60px;
 	padding-top:3px;
 	padding-bottom:5px;
@@ -312,7 +312,7 @@ body{
 .nav-page{
 	position:absolute;
 	left:220px;
-	top:20px;
+	top:6px;
 	background-image:url(../images/misc/next-shortcut.png);
 	background-repeat:no-repeat;
 	background-size:22px 22px;
@@ -323,7 +323,7 @@ body{
 .nav-link{
 	position:absolute;
 	left:220px;
-	top:20px;
+	top:6px;
 	background-image:url(../images/misc/link-shortcut.png);
 	background-repeat:no-repeat;
 	background-size:22px 22px;
@@ -334,7 +334,7 @@ body{
 .nav-onit{
 	position:absolute;
 	left:220px;
-	top:20px;
+	top:6px;
 	background-image:url(../images/misc/onit-shortcut.png);
 	background-repeat:no-repeat;
 	background-size:22px 22px;
