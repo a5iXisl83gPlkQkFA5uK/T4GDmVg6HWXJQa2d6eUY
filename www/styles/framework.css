@@ -138,8 +138,8 @@ License Restrictions: You are not allowed to remove these comments, or take cred
 /*///////////////////////////////////////////////////////////////////////////////*/
 .notification-box{	  margin-bottom:8px; padding:5px;		float:none;}
 .notification-box h4{ margin-bottom:5px;					float:left;}
-.notification-box a { margin-top:2px; 	  font-size:12px;	float:right;}
-.notification-box p	{ margin-bottom:0px;  font-size:12px; 	float:none; }
+.notification-box a { margin-top:2px; 	  font-size:13px;	float:right;}
+.notification-box p	{ margin-bottom:0px;  font-size:13px; 	float:none; }
 
 
 /*///////////////////////////////////////////////////////////////////////////////*/
