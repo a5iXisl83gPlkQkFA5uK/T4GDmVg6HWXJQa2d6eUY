@@ -82,12 +82,13 @@ $(document).ready(function(){
 
 badger = {};
 badger.fetch = function(cal, zip){
+	$("#apiResults").html("<p>Loading...</p>");
 	var snapper = new Snap({
 	  element: document.getElementById('content')
 	});		
 	snapper.close();
 	$.ajax({
-		url: "http://brassbadger.honsoworld.com/api/?cal="+cal+"&zip="+zip,
+		url: "http://brassbadger.com/api/?cal="+cal+"&zip="+zip,
 		type: "GET",
 		success:function(result){
 			$("#apiResults").html("");
