@@ -30,9 +30,7 @@
     <gap:splash gap:density="xhdpi" gap:platform="android" src="res/screen/android/screen-xhdpi-portrait.png" />
 	-->
 	<plugin name="Geolocation" value="org.apache.cordova.GeoBroker" />
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-	<uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+	<feature name="http://api.phonegap.com/1.0/geolocation"/>
 
     <access origin="*" />
 	<access origin="http://brassbadger.com" />
