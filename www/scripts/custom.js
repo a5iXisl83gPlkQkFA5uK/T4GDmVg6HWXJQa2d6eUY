@@ -78,25 +78,7 @@ $(document).ready(function(){
 	/////////////////////////////////////////////////////////////////////////////////
 	
 	
-	var onSuccess = function(position) {
-		alert('Latitude: '          + position.coords.latitude          + '\n' +
-			  'Longitude: '         + position.coords.longitude         + '\n' +
-			  'Altitude: '          + position.coords.altitude          + '\n' +
-			  'Accuracy: '          + position.coords.accuracy          + '\n' +
-			  'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-			  'Heading: '           + position.coords.heading           + '\n' +
-			  'Speed: '             + position.coords.speed             + '\n' +
-			  'Timestamp: '         + position.timestamp                + '\n');
-	};
-
-	// onError Callback receives a PositionError object
-	//
-	function onError(error) {
-		alert('code: '    + error.code    + '\n' +
-			  'message: ' + error.message + '\n');
-	}
-
-	navigator.geolocation.getCurrentPosition(onSuccess, onError);
+	badger.updateOverview(47909);
 
 		
 });
@@ -126,6 +108,31 @@ badger.fetch = function(cal, zip){
 			}
 			if(result.data.length == 0)
 				$("#apiResults").append("<div class='notification-box blue-box'><h4>- No Results Found -</h4><div class='clear'></div><p></p></div>");
+		}
+	});
+}
+
+badger.updateOverview = function(zip){
+	$.ajax({
+		url: "http://brassbadger.com/api/?r=o&zip="+zip,
+		type: "GET",
+		success:function(result){
+			result = $.parseJSON(result);
+			for (var i = 0; i < result.data.length; i++) {
+				var color = "blue";
+				if(result.data[i]['code'] == "0")
+					color = "red";
+				if(result.data[i]['code'] == "1")
+					color = "yellow";
+				if(result.data[i]['code'] == "2")
+					color = "green";
+				$("#cal-" + result.data[i]['cal'])
+					.removeClass("type-blue")
+					.removeClass("type-red")
+					.removeClass("type-yellow")
+					.removeClass("type-green")
+					.addClass("type-" + color);
+			}
 		}
 	});
 }

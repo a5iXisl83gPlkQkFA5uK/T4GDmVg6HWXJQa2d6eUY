@@ -297,6 +297,10 @@ body{
 
 .home-nav{		background-image:url(../images/icon/misc/home.png);}
 .type-nav{		background-image:url(../images/icon/misc/infoabout.png);}
+.type-blue{		background-image:url(../images/blue.png);}
+.type-red{		background-image:url(../images/red.png);}
+.type-green{		background-image:url(../images/green.png);}
+.type-yellow{		background-image:url(../images/yellow.png);}
 .jquery-nav{	background-image:url(../images/icon/power/power.png);}
 .other-nav{		background-image:url(../images/icon/misc/preview.png);}
 .gallery-nav{	background-image:url(../images/icon/media/image2.png);}
