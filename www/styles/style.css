@@ -1,19 +1,6 @@
 @charset "utf-8";
 /* CSS Document */
 
-* {
-	-webkit-tap-highlight-color:  rgba(255, 255, 255, 0) !important; 
-	-webkit-user-modify: read-write-plaintext-only;
-	-webkit-focus-ring-color: rgba(255, 255, 255, 0) !important;  
-	-webkit-touch-callout: none;
-    -webkit-user-select: none;
-
-}
-a:active,
-a:hover,
-a:focus {
-    background: rgba(255, 255, 255, 0);
-}
 
 .all-elements{
 	overflow-x:hidden;
@@ -312,6 +299,7 @@ body{
 .home-nav{		background-image:url(../images/icon/misc/home.png);}
 .type-nav{		background-image:url(../images/icon/misc/infoabout.png);}
 .type-blue{		background-image:url(../images/blue.png);}
+.type-grey{		background-image:url(../images/grey.png);}
 .type-red{		background-image:url(../images/red.png);}
 .type-green{		background-image:url(../images/green.png);}
 .type-yellow{		background-image:url(../images/yellow.png);}

@@ -79,6 +79,7 @@ $(document).ready(function(){
 	
 	
 	badger.updateOverview(47909);
+	$(".deploy-sidebar").click()
 
 		
 });
@@ -110,6 +111,7 @@ badger.fetch = function(cal, zip){
 				$("#apiResults").append("<div class='notification-box blue-box'><h4>- No Results Found -</h4><div class='clear'></div><p></p></div>");
 		}
 	});
+	badger.updateOverview(zip);
 }
 
 badger.updateOverview = function(zip){
@@ -119,7 +121,7 @@ badger.updateOverview = function(zip){
 		success:function(result){
 			result = $.parseJSON(result);
 			for (var i = 0; i < result.data.length; i++) {
-				var color = "blue";
+				var color = "grey";
 				if(result.data[i]['code'] == "0")
 					color = "red";
 				if(result.data[i]['code'] == "1")
@@ -128,6 +130,7 @@ badger.updateOverview = function(zip){
 					color = "green";
 				$("#cal-" + result.data[i]['cal'])
 					.removeClass("type-blue")
+					.removeClass("type-grey")
 					.removeClass("type-red")
 					.removeClass("type-yellow")
 					.removeClass("type-green")
