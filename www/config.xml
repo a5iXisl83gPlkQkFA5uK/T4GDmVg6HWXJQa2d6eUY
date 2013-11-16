@@ -30,5 +30,5 @@
     <gap:splash gap:density="xhdpi" gap:platform="android" src="res/screen/android/screen-xhdpi-portrait.png" />
 	-->
     <access origin="*" />
-	<access origin="http://brassbadger.honsoworld.com" />
+	<access origin="http://brassbadger.com" />
 </widget>
