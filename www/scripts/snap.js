@@ -495,8 +495,10 @@
             }
         };
         this.close = function() {
-            utils.dispatchEvent('close');
-            action.translate.easeTo(0);
+			if($(window).width() < 720){
+				utils.dispatchEvent('close');
+				action.translate.easeTo(0);
+			}
         };
         this.expand = function(side){
             var to = win.innerWidth || doc.documentElement.clientWidth;
