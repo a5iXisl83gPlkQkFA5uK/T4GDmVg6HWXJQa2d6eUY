@@ -105,7 +105,7 @@ badger.fetch = function(cal, zip){
 					color = "yellow";
 				if(result.data[i]['code'] == "2")
 					color = "green";
-				$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.data[i]['name']+"</h4><div class='clear'></div><p>"+result.data[i]['address']+", "+result.data[i]['city']+", "+result.data[i]['state']+" "+result.data[i]['zip']+"<br />"+result.data[i]['status']+" (Last Checked: "+result.data[i]['updated']+")</p></div>");
+				$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.data[i]['name']+"</h4><div class='clear'></div><p>"+result.data[i]['address']+", "+result.data[i]['city']+", "+result.data[i]['state']+" "+result.data[i]['zip']+"<br />"+result.data[i]['status']+" (Last checked: "+result.data[i]['updated']+")</p></div>");
 			}
 			if(result.data.length == 0)
 				$("#apiResults").append("<div class='notification-box blue-box'><h4>- No Results Found -</h4><div class='clear'></div><p></p></div>");
