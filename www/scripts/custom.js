@@ -102,10 +102,17 @@ badger.fetch = function(cal, zip){
 				if(result.data[i]['code'] == "0")
 					color = "red";
 				if(result.data[i]['code'] == "1")
-					color = "yellow";
+					color = "blue";
 				if(result.data[i]['code'] == "2")
+					color = "yellow";
+				if(result.data[i]['code'] == "3")
 					color = "green";
-				$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.data[i]['name']+"</h4><div class='clear'></div><p>"+result.data[i]['address']+", "+result.data[i]['city']+", "+result.data[i]['state']+" "+result.data[i]['zip']+"<br />"+result.data[i]['status']+" (Last checked: "+result.data[i]['updated']+")</p></div>");
+				var price = "";
+				if(result.data[i]['price'] != "")
+					price = "$"+result.data[i]['price'];
+					
+				$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.data[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.data[i]['status']+" as of "+result.data[i]['updated']+"<br />"+result.data[i]['address']+", "+result.data[i]['city']+", "+result.data[i]['state']+" "+result.data[i]['zip']+"</p></div>");
+
 			}
 			if(result.data.length == 0)
 				$("#apiResults").append("<div class='notification-box blue-box'><h4>- No Results Found -</h4><div class='clear'></div><p></p></div>");
@@ -125,8 +132,10 @@ badger.updateOverview = function(zip){
 				if(result.data[i]['code'] == "0")
 					color = "red";
 				if(result.data[i]['code'] == "1")
-					color = "yellow";
+					color = "blue";
 				if(result.data[i]['code'] == "2")
+					color = "yellow";
+				if(result.data[i]['code'] == "3")
 					color = "green";
 				$("#cal-" + result.data[i]['cal'])
 					.removeClass("type-blue")
