@@ -98,16 +98,6 @@ $(document).ready(function(){
 		});
 	});
 	
-	document.addEventListener("menubutton", function(){}
-		alert('Menu');
-	, false);
-	document.addEventListener("backbutton", function(){}
-		alert('Back');
-	, false);
-	
-	document.addEventListener("resume", function(){}
-		alert('Resume');
-	, false);
 		
 });
 
