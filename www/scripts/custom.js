@@ -1,26 +1,27 @@
+badger = {};
 $(document).ready(function(){
 	
 	
-	var snapper = new Snap({
+	badger.snapper = new Snap({
 	  element: document.getElementById('content')
 	});
 
 	$('.flat-menu').click(function(){
-		snapper.open('left');
+		badger.snapper.open('left');
 		return false;
 	});
 	
 	$('.sidebar-header').click(function(){
-		snapper.close();
+		badger.snapper.close();
 		return false;
 	});
 
 	
 	$('.deploy-sidebar, .page-header, .close-icon').click(function(){
-		if( snapper.state().state=="left" ){
-			snapper.close();
+		if( badger.snapper.state().state=="left" ){
+			badger.snapper.close();
 		} else {
-			snapper.open('left');
+			badger.snapper.open('left');
 		}
 		return false;
 	});
@@ -47,7 +48,7 @@ $(document).ready(function(){
 	$('.nav-coach').click(function(){
 		$('.page-coach').fadeIn(200);
 		document.ontouchmove = function(event){ event.preventDefault();}
-		snapper.close();
+		badger.snapper.close();
 	});
 	
 	$('.page-coach').click(function(){
@@ -95,11 +96,13 @@ $(document).ready(function(){
 			badger.updateOverview();
 		});
 	});
-	
+	document.addEventListener("menubutton", function(){
+		badger.snapper.open('left');
+		return false;
+	}, false);
 		
 });
 
-badger = {};
 badger.zip = 47909;
 badger.getZipStores = function(callback){
 	$(".nav-item.stores").remove()
@@ -152,11 +155,8 @@ badger.setHeight = function(){
 
 badger.fetch = function(cal){
 	var stores = badger.getSelectedStores();
-	$("#apiResults").html("<p>Loading...</p>");
-	var snapper = new Snap({
-	  element: document.getElementById('content')
-	});		
-	snapper.close();
+	$("#apiResults").html("<p>Loading...</p>");	
+	badger.snapper.close();
 	$.ajax({
 		url: "http://brassbadger.com/api/?cal="+cal+"&store="+stores,
 		type: "GET",
