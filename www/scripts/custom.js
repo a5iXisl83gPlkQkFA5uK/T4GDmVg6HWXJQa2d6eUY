@@ -1,4 +1,5 @@
 badger = {};
+
 $(document).ready(function(){
 	
 	
@@ -96,10 +97,17 @@ $(document).ready(function(){
 			badger.updateOverview();
 		});
 	});
-	document.addEventListener("menubutton", function(){
-		badger.snapper.open('left');
-		return false;
-	}, false);
+	
+	document.addEventListener("menubutton", function(){}
+		alert('Menu');
+	, false);
+	document.addEventListener("backbutton", function(){}
+		alert('Back');
+	, false);
+	
+	document.addEventListener("resume", function(){}
+		alert('Resume');
+	, false);
 		
 });
 
