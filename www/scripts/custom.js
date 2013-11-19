@@ -82,6 +82,7 @@ $(document).ready(function(){
 	
 	badger.getZipStores(function(){
 		badger.updateOverview();
+		navigator.splashscreen.hide();
 	});
 	$(".deploy-sidebar").click()
 	$("#nav-zip").click(function(){
