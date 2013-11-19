@@ -95,7 +95,7 @@ badger.setHeight = function(){
 	var winnerHeight = sidebarHeight;
 	if(windowHeight > sidebarHeight)
 		winnerHeight = windowHeight;
-	$(".page-content").height(winnerHeight);
+	$(".page-content").height(windowHeight);
 }
 
 badger.fetch = function(cal, zip){
