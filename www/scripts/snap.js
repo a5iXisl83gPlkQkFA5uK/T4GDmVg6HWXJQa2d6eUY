@@ -443,7 +443,8 @@
                             } else {
                                 action.translate.easeTo(0); // Close Left
                             }
-                            // Revealing Right
+							$("html, body").animate({ scrollTop: 0 }, "fast");
+                        // Revealing Right
                         } else if (cache.simpleStates.opening === 'right') {
                             // Halfway, Flicking, or Too Far Out
                             if ((cache.simpleStates.halfway || cache.simpleStates.hyperExtending || cache.simpleStates.flick)) {
@@ -458,6 +459,7 @@
                             } else {
                                 action.translate.easeTo(0); // Close Right
                             }
+							$("html, body").animate({ scrollTop: 0 }, "fast");
                         }
                         cache.isDragging = false;
                         cache.startDragX = utils.page('X', e);

@@ -56,6 +56,7 @@ $(document).ready(function(){
 	});
 	
 	$('#cal-357').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("357", 47909); });
+	$('#cal-38').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("38", 47909); });
 	$('#cal-380').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("380", 47909); });
 	$('#cal-40').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("40", 47909); });
 	$('#cal-44').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("44", 47909); });
@@ -85,6 +86,18 @@ $(document).ready(function(){
 });
 
 badger = {};
+badger.setHeight = function(){
+	var windowHeight = innerHeight || 
+		window.innerHeight ||
+		document.documentElement.clientHeight ||
+		document.body.clientHeight;
+	var sidebarHeight = $(".page-sidebar-scroll")[0].scrollHeight;
+	var winnerHeight = sidebarHeight;
+	if(windowHeight > sidebarHeight)
+		winnerHeight = windowHeight;
+	$(".page-content").height(winnerHeight);
+}
+
 badger.fetch = function(cal, zip){
 	$("#apiResults").html("<p>Loading...</p>");
 	var snapper = new Snap({
@@ -122,6 +135,7 @@ badger.fetch = function(cal, zip){
 }
 
 badger.updateOverview = function(zip){
+	badger.setHeight();
 	$.ajax({
 		url: "http://brassbadger.com/api/?r=o&zip="+zip,
 		type: "GET",
@@ -145,6 +159,7 @@ badger.updateOverview = function(zip){
 					.removeClass("type-green")
 					.addClass("type-" + color);
 			}
+			badger.setHeight();
 		}
 	});
 }
