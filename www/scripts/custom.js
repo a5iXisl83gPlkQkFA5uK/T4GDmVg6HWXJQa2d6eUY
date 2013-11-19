@@ -1,7 +1,7 @@
 badger = {};
 
 $(document).ready(function(){
-	
+	badger.zip = window.localStorage.getItem( 'zipcode' );
 	
 	badger.snapper = new Snap({
 	  element: document.getElementById('content')
@@ -87,6 +87,7 @@ $(document).ready(function(){
 	$(".deploy-sidebar").click()
 	$("#nav-zip").click(function(){
 		badger.zip = prompt("Zipcode:",badger.zip);
+		window.localStorage.setItem( 'zipcode', badger.zip);
 		$(".nav-item.cal")
 			.removeClass("type-blue")
 			.removeClass("type-grey")
