@@ -83,7 +83,17 @@ $(document).ready(function(){
 	});
 	$(".deploy-sidebar").click()
 	$("#nav-zip").click(function(){
-		prompt("Zipcode:",badger.zip)
+		badger.zip = prompt("Zipcode:",badger.zip);
+		$(".nav-item.cal")
+			.removeClass("type-blue")
+			.removeClass("type-grey")
+			.removeClass("type-red")
+			.removeClass("type-yellow")
+			.removeClass("type-green")
+			.addClass("type-grey");
+		badger.getZipStores(function(){
+			badger.updateOverview();
+		});
 	});
 	
 		
@@ -93,6 +103,7 @@ badger = {};
 badger.zip = 47909;
 badger.getZipStores = function(callback){
 	$(".nav-item.stores").remove()
+	$("#nav-stores-text").html("");
 	$.ajax({
 		url: "http://brassbadger.com/api/?r=s&zip="+badger.zip,
 		type: "GET",
@@ -111,6 +122,7 @@ badger.getZipStores = function(callback){
 				
 				$("#nav-stores").after(item);
 			}
+			$("#nav-stores-text").html("NEAR " + badger.zip);
 			badger.setHeight();
 			callback();
 			
