@@ -251,7 +251,9 @@ $(document).ready(function(){
 		$('.page-coach').fadeOut(200);
 		document.ontouchmove = function(event){ event.allowDefault();}
 	});
-	document.addEventListener("menubutton", function(){alert("menu")}, false);
+	document.addEventListener("menubutton", function(){$(".deploy-sidebar").click();}, false);
+	document.addEventListener("backbutton", function(){$(".deploy-sidebar").click();}, false);
+
 
 	$('#cal-357').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("357"); });
 	$('#cal-38').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("38"); });
@@ -282,7 +284,7 @@ $(document).ready(function(){
 			navigator.splashscreen.hide();
 		} catch(err){}
 	});
-	$(".deploy-sidebar").click()
+	$(".deploy-sidebar").click();
 	$("#nav-zip").click(function(){
 		badger.zip = prompt("Zipcode:",badger.zip);
 		window.localStorage.setItem( 'zipcode', badger.zip);
