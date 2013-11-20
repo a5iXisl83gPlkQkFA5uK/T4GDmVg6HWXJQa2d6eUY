@@ -170,6 +170,9 @@ badger.geoLocate = function(){
 		script.src = "http://ws.geonames.org/findNearbyPostalCodesJSON?lat=" + pos.coords.latitude + "&lng=" + pos.coords.longitude + "&callback=badger.geoLocateCallback";
 		document.getElementsByTagName("head")[0].appendChild(script);
 		alert("cool");
+	}, function(){
+		alert("foo");
+		console.log(arguments);
 	});
 }
 	/*
