@@ -166,6 +166,7 @@ badger.geoLocateCallback = function(json){
 }
 badger.geoLocate = function(){
 	navigator.geolocation.getCurrentPosition(function(pos){
+		alert(pos.coords.latitude);
 		var script = document.createElement("script");
 		script.src = "http://ws.geonames.org/findNearbyPostalCodesJSON?lat=" + pos.coords.latitude + "&lng=" + pos.coords.longitude + "&callback=badger.geoLocateCallback";
 		document.getElementsByTagName("head")[0].appendChild(script);
