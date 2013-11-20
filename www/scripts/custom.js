@@ -176,7 +176,10 @@ badger.geoLocate = function(){
               'message: ' + error.message + '\n');
 
 		console.log(arguments);
-	});
+	},{
+         enableHighAccuracy: true
+              ,timeout : 15000
+    });
 }
 	/*
 		var xTouches = event.touches[0].pageX;
