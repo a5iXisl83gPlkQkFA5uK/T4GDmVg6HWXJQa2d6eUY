@@ -416,9 +416,9 @@ h3 > a						{	color:#2c3e50; 		font-family: 'Lato', sans-serif;		}
 h4 > a						{	color:#2c3e50;		font-family: 'Lato', sans-serif;		}
 h5 > a						{	color:#2c3e50; 		font-family: 'Lato', sans-serif;		}
 h6 > a						{	color:#2c3e50; 		font-family: 'Lato', sans-serif;		}
-h1, h2, h3, h4, h5, h6		{	color:#2c3e50;		font-family: 'Lato', sans-serif;		}
+h1, h2, h3, h4, h5, h6		{	color:white;		font-family: 'Lato', sans-serif;		}
 span						{	color:#7f8c8d;		font-family: 'Dosis', sans-serif;	}
-body						{	color:#7f8c8d;		font-family: 'Dosis', sans-serif;	}
+body						{	color:white;		font-family: 'Dosis', sans-serif;	}
 input						{						font-family: 'Dosis', sans-serif;}
 textarea					{ 						font-family: 'Dosis', sans-serif;}
 li, ul						{	color:#7f8c8d;		}
