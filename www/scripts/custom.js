@@ -40,6 +40,7 @@ badger.getZipStores = function(callback){
 					badger.saveStoreChecks();
 					$("#subHeader").html("BrassBadger");
 					$("#apiResults").html("");
+					$("#apiResults").append(badger.homeContent);
 					
 					return false;
 				})
@@ -99,10 +100,6 @@ badger.fetch = function(cal){
 					price = "$"+result.data[i]['price'];
 					
 				$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.data[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.data[i]['status']+" as of "+result.data[i]['updated']+"<br />"+result.data[i]['address']+", "+result.data[i]['city']+", "+result.data[i]['state']+" "+result.data[i]['zip']+"</p></div>");
-				
-				
-				
-				
 
 			}
 			if(result.data.length == 0)
@@ -182,6 +179,7 @@ badger.geoLocate = function(){
               ,timeout : 15000
     });
 }
+badger.homeContent = $("<div><p>BrassBadger attempts to keep track of the ammunition availability of a large discount department store chain. Right now, inventory status is only being maintained for Indiana.  Please understand that keeping track of inventory is complicated and that the ammo availability show from this app may not be accurate. <p>What do the different stock statuses mean?</p><p>What does the date/time mean?</p><p>Why are there inventory discrepancies?</p></p></div>");
 	/*
 		var xTouches = event.touches[0].pageX;
 		var yTouches = event.touches[0].pageY;
@@ -253,7 +251,7 @@ $(document).ready(function(){
 	});
 	document.addEventListener("menubutton", function(){$(".deploy-sidebar").click();}, false);
 	document.addEventListener("backbutton", function(){$(".deploy-sidebar").click();}, false);
-
+	$("#apiResults").append(badger.homeContent);
 
 	$('#cal-357').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("357"); });
 	$('#cal-38').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("38"); });
@@ -299,6 +297,12 @@ $(document).ready(function(){
 			badger.updateOverview();
 		});
 	});
+	$(".deploy-home").click(function(){
+		$("#subHeader").html("BrassBadger");
+		$("#apiResults").html("");
+		$("#apiResults").append(badger.homeContent);
+	});
+	
 	
 	$("#nav-geo").click(function(){
 		if (confirm('This will use your device\'s geolocation service to find your zipcode. Make sure your location services are enabled. Do you want to continue?')){
