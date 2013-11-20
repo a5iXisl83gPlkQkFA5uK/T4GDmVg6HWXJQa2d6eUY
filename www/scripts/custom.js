@@ -163,6 +163,7 @@ badger.geoLocateCallback = function(json){
 	badger.getZipStores(function(){
 		badger.updateOverview();
 	});
+	alert("GeoLocate: Using " + badger.zip + " as zipcode.");
 }
 badger.geoLocate = function(){
 	navigator.geolocation.getCurrentPosition(function(pos){
@@ -297,19 +298,21 @@ $(document).ready(function(){
 	});
 	
 	$("#nav-geo").click(function(){
-		navigator.geolocation.getCurrentPosition(function(pos){
-			var script = document.createElement("script");
-			script.src = "http://ws.geonames.org/findNearbyPostalCodesJSON?lat=" + pos.coords.latitude + "&lng=" + pos.coords.longitude + "&callback=badger.geoLocateCallback";
-			document.getElementsByTagName("head")[0].appendChild(script);
-		}, function(){
-			alert('code: '    + error.code    + '\n' +
-				  'message: ' + error.message + '\n');
+		if (confirm('This will use your device\'s geolocation service to find your zipcode. Make sure your location services are enabled. Do you want to continue?')){
+			navigator.geolocation.getCurrentPosition(function(pos){
+				var script = document.createElement("script");
+				script.src = "http://ws.geonames.org/findNearbyPostalCodesJSON?lat=" + pos.coords.latitude + "&lng=" + pos.coords.longitude + "&callback=badger.geoLocateCallback";
+				document.getElementsByTagName("head")[0].appendChild(script);
+			}, function(){
+				alert('code: '    + error.code    + '\n' +
+					  'message: ' + error.message + '\n');
 
-			console.log(arguments);
-		},{
-			 enableHighAccuracy: true
-				  ,timeout : 15000
-		});
+				console.log(arguments);
+			},{
+				 enableHighAccuracy: true
+					  ,timeout : 15000
+			});
+		}
 	});
 	
 		
