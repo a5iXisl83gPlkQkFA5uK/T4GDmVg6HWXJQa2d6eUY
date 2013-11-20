@@ -58,8 +58,18 @@ body{
 	margin-right:20px;
 	margin-top:3px;
 }
-
-
+.deploy-home{
+	float: right; 
+	width: 60px; 
+	height: 60px; 
+	background-image: url('../images/icon/misc/home.png'); 
+	top: 0px; 
+	left: 60px; 
+	position: absolute; 
+	background-size: 25px 25px; 
+	background-position: 18px 16px; 
+	background-repeat: no-repeat;
+}
 .deploy-sidebar{
 	position:absolute;
 	top:0px;
@@ -72,7 +82,7 @@ body{
 	height:60px;
 }
 
-.deploy-sidebar:hover{
+.deploy-sidebar:hover, .deploy-home:hover{
 	background-color:rgba(255,255,255,0.1);
 }
 
