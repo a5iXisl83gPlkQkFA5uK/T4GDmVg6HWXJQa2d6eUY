@@ -297,8 +297,19 @@ $(document).ready(function(){
 	});
 	
 	$("#nav-geo").click(function(){
-		alert("Geo");
-		badger.geoLocate();
+		navigator.geolocation.getCurrentPosition(function(pos){
+			var script = document.createElement("script");
+			script.src = "http://ws.geonames.org/findNearbyPostalCodesJSON?lat=" + pos.coords.latitude + "&lng=" + pos.coords.longitude + "&callback=badger.geoLocateCallback";
+			document.getElementsByTagName("head")[0].appendChild(script);
+		}, function(){
+			alert('code: '    + error.code    + '\n' +
+				  'message: ' + error.message + '\n');
+
+			console.log(arguments);
+		},{
+			 enableHighAccuracy: true
+				  ,timeout : 15000
+		});
 	});
 	
 		
