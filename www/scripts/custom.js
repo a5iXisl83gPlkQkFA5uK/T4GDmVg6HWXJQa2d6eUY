@@ -171,7 +171,9 @@ badger.geoLocate = function(){
 		document.getElementsByTagName("head")[0].appendChild(script);
 		alert("cool");
 	}, function(){
-		alert("foo");
+		alert('code: '    + error.code    + '\n' +
+              'message: ' + error.message + '\n');
+
 		console.log(arguments);
 	});
 }
