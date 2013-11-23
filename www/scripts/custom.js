@@ -87,19 +87,19 @@ badger.fetch = function(cal){
 			result = $.parseJSON(result);
 			for (var i = 0; i < result.data.length; i++) {
 				var color = "blue";
-				if(result.data[i]['code'] == "0")
-					color = "red";
 				if(result.data[i]['code'] == "1")
-					color = "blue";
+					color = "red";
 				if(result.data[i]['code'] == "2")
-					color = "yellow";
+					color = "blue";
 				if(result.data[i]['code'] == "3")
+					color = "yellow";
+				if(result.data[i]['code'] == "4")
 					color = "green";
 				var price = "";
 				if(result.data[i]['price'] != "")
 					price = "$"+result.data[i]['price'];
-					
-				$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.data[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.data[i]['status']+" as of "+result.data[i]['updated']+"<br />"+result.data[i]['address']+", "+result.data[i]['city']+", "+result.data[i]['state']+" "+result.data[i]['zip']+"</p></div>");
+									if(result.data[i]['status'] != "Ad"){
+					$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.data[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.data[i]['status']+" as of "+result.data[i]['updated']+"<br />"+result.data[i]['address']+", "+result.data[i]['city']+", "+result.data[i]['state']+" "+result.data[i]['zip']+"</p></div>");				} else {					$("#apiResults").append("<div class='notification-box "+color+"-box ad'>"+result.data[i]['html']+"</div>");				}
 
 			}
 			if(result.data.length == 0)
@@ -126,13 +126,13 @@ badger.updateOverview = function(){
 				.addClass("type-grey");
 			for (var i = 0; i < result.data.length; i++) {
 				var color = "grey";
-				if(result.data[i]['code'] == "0")
-					color = "red";
 				if(result.data[i]['code'] == "1")
-					color = "blue";
+					color = "red";
 				if(result.data[i]['code'] == "2")
-					color = "yellow";
+					color = "blue";
 				if(result.data[i]['code'] == "3")
+					color = "yellow";
+				if(result.data[i]['code'] == "4")
 					color = "green";
 				$("#cal-" + result.data[i]['cal'])
 					.removeClass("type-blue")

@@ -138,7 +138,7 @@ License Restrictions: You are not allowed to remove these comments, or take cred
 /*///////////////////////////////////////////////////////////////////////////////*/
 .notification-box{	  margin-bottom:-1px; padding:5px;		float:none;}
 .notification-box h4{ margin-bottom:0px;					float:left;}
-.notification-box a { margin-top:2px; 	  font-size:13px;	float:right;}
+.notification-box a { margin-top:2px; 	  font-size:13px;}
 .notification-box p	{ margin-bottom:0px;  font-size:13px; 	float:none; }
 
 
