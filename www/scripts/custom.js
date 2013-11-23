@@ -98,8 +98,17 @@ badger.fetch = function(cal){
 				var price = "";
 				if(result.data[i]['price'] != "")
 					price = "$"+result.data[i]['price'];
-									if(result.data[i]['status'] != "Ad"){
-					$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.data[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.data[i]['status']+" as of "+result.data[i]['updated']+"<br />"+result.data[i]['address']+", "+result.data[i]['city']+", "+result.data[i]['state']+" "+result.data[i]['zip']+"</p></div>");				} else {					$("#apiResults").append("<div class='notification-box "+color+"-box ad'>"+result.data[i]['html']+"</div>");				}
+					
+				if(result.data[i]['status'] != "Ad"){
+					$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.data[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.data[i]['status']+" as of "+result.data[i]['updated']+"<br />"+result.data[i]['address']+", "+result.data[i]['city']+", "+result.data[i]['state']+" "+result.data[i]['zip']+"</p></div>");
+				} else {
+					var ad = $("<div class='notification-box "+color+"-box ad'>"+result.data[i]['html']+"</div>");
+					ad.find("a").click(function(e){
+						window.open( $(this).attr('href'), 'popup' );
+						e.preventDefault();
+					});
+					$("#apiResults").append(ad);
+				}
 
 			}
 			if(result.data.length == 0)
