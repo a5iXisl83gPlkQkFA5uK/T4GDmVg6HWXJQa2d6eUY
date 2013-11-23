@@ -104,7 +104,7 @@ badger.fetch = function(cal){
 				} else {
 					var ad = $("<div class='notification-box "+color+"-box ad'>"+result.data[i]['html']+"</div>");
 					ad.find("a").click(function(e){
-						window.open( $(this).attr('href'), 'popup' );
+						window.open( $(this).attr('href'), '_system' );
 						e.preventDefault();
 					});
 					$("#apiResults").append(ad);
