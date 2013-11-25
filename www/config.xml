@@ -8,7 +8,6 @@
         Taylor Honsowetz
     </author>
     <feature name="http://api.phonegap.com/1.0/device" />
-	<feature name="http://api.phonegap.com/1.0/geolocation"/>
     <preference name="permissions" value="none" />
 	<preference name="phonegap-version" value="3.1.0" />
     <preference name="orientation" value="portrait" />
@@ -22,7 +21,6 @@
     <preference name="android-installLocation" value="auto" />
     <icon src="images/icon/android/icon-96-xhdpi.png" />
 	<gap:platform name="android" />
-	<gap:plugin name="org.apache.cordova.geolocation" />
 	<gap:plugin name="org.apache.cordova.inappbrowser" />
     <icon gap:density="ldpi" gap:platform="android" src="images/icon/android/icon-36-ldpi.png" />
     <icon gap:density="mdpi" gap:platform="android" src="images/icon/android/icon-48-mdpi.png" />
