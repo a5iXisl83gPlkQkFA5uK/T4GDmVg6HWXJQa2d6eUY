@@ -49,7 +49,10 @@ badger.getZipStores = function(callback){
 					$("#nav-stores").after(item);				
 				}
 			}
-			$("#nav-stores-text").html("NEAR " + badger.zip);
+			var zStr = "" + badger.zip;
+			if(zStr.length == 5){
+				$("#nav-stores-text").html("NEAR " + badger.zip);
+			}
 			badger.setHeight();
 			callback();
 			
@@ -62,7 +65,10 @@ badger.getSelectedStores = function(){
 	$(".nav-item.stores.checked-v2").each(function(){		var sid = $(this).data("storeid");		if(sid && sid != "undefined"){
 			stores += "|" + sid;		}
 	})
-	$("#nav-stores-text").html("NEAR " + badger.zip);
+	var zStr = "" + badger.zip;
+	if(zStr.length == 5){
+		$("#nav-stores-text").html("NEAR " + badger.zip);
+	}
 	return stores;
 }
 
@@ -89,7 +95,10 @@ badger.fetch = function(cal){
 			$("#apiResults").html("");
 			result = $.parseJSON(result);
 			badger.zip = result.request.zip;
-			$("#nav-stores-text").html("NEAR " + badger.zip);
+			var zStr = "" + badger.zip;
+			if(zStr.length == 5){
+				$("#nav-stores-text").html("NEAR " + badger.zip);
+			}
 			for (var i = 0; i < result.results.length; i++) {
 				var color = "blue";
 				if(result.results[i]['code'] == "1")
@@ -133,7 +142,10 @@ badger.updateOverviewAjax = function(){
 			result = $.parseJSON(result);
 			badger.updateOverview(result);
 			badger.zip = result.request.zip;
-			$("#nav-stores-text").html("NEAR " + badger.zip);
+			var zStr = "" + badger.zip;
+			if(zStr.length == 5){
+				$("#nav-stores-text").html("NEAR " + badger.zip);
+			}
 			badger.setHeight();
 		}
 	});
@@ -167,6 +179,7 @@ badger.updateOverview = function(result){
 }
 
 badger.geoLocateCallback = function(json){
+	$("#nav-geo-loading").html("");
 	badger.zip = json.postalCodes[0].postalCode;
 	window.localStorage.setItem( 'zipcode', badger.zip);
 	$(".nav-item.cal")
@@ -312,12 +325,14 @@ $(document).ready(function(){
 	
 	$("#nav-geo").click(function(){
 		if (confirm('Do you want to use your device\'s geolocation service to find your zipcode?')){
+			$("#nav-geo-loading").html(" Waiting... ");
 			navigator.geolocation.getCurrentPosition(
 				function(pos){
 					var script = document.createElement("script");
 					script.src = "http://ws.geonames.org/findNearbyPostalCodesJSON?lat=" + pos.coords.latitude + "&lng=" + pos.coords.longitude + "&callback=badger.geoLocateCallback";
 					document.getElementsByTagName("head")[0].appendChild(script);
 				}, function(){
+					$("#nav-geo-loading").html("");
 					alert('code: '    + error.code    + '\n' +
 					'message: ' + error.message + '\n');
 					badger.zip = "";
@@ -326,13 +341,16 @@ $(document).ready(function(){
 					});
 				},
 				{
+					enableHighAccuracy: true,
 					timeout : 15000
 				}
 			);
 		} else {
+			$("#nav-geo-loading").html(" Waiting... ");
 			badger.zip = "";
 			badger.getZipStores(function(){
 				badger.updateOverviewAjax();
+				$("#nav-geo-loading").html("");
 			});
 		}
 	});
