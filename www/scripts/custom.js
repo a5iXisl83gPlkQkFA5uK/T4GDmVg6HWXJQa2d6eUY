@@ -166,6 +166,22 @@ badger.updateOverview = function(result){
 	}
 }
 
+badger.geoLocateCallback = function(json){
+	badger.zip = json.postalCodes[0].postalCode;
+	window.localStorage.setItem( 'zipcode', badger.zip);
+	$(".nav-item.cal")
+		.removeClass("type-blue")
+		.removeClass("type-grey")
+		.removeClass("type-red")
+		.removeClass("type-yellow")
+		.removeClass("type-green")
+		.addClass("type-grey");
+	badger.getZipStores(function(){
+		badger.updateOverview();
+	});
+	alert("GeoLocate: Using " + badger.zip + " as zipcode.");
+}
+
 badger.homeContent = $("<div style='padding: 10px;'><h1>What is BrassBadger?</h1><p>BrassBadger attempts to keep track of the ammunition  availability of a large discount department store chain. Please understand that keeping track of inventory is complicated and that the ammo availability shown from this app may not be accurate. Remember to always be respectful to all store employees, associates, and shoppers.</p><h2>How do I specify my location?</h2><p>The last two items on the menu allow you to explicitly specify your zip code or attempt to use geolocating to estimate your zip code.</p><h2>How do I pick what stores I&rsquo;m interested in?</h2><p>Once you have specified a location, the last section of the menu will be populated with stores near you. By default, ammo availability will include results from all stores near the specified zip code. You can exclude stores by <em>unchecking</em> them in the menu.</p><h2>What do the colors  and statuses mean?</h2><p><span style='color:#629b56;'><strong>Green (In stock</strong>)<br /></span>Chances are good that there are three or more products available.</p><p> <span style='color:#b0b53a;'><strong>Yellow (Limited stock</strong>)<br /></span>There are probably only a couple products available.</p><p> <span style='color:#606bb2;'><strong>Blue (Availability unknown</strong>)<br /></span>More specific availability details are unavailable, however the data source is not explicitly reporting the product as &ldquo;Out of stock&rdquo;. Empirical evidence would suggest that there is a fair chance that some of the product is actually available.</p><p> <span style='color:#a9474a;'><strong>Red (Out of stock</strong>)<br /></span>It is unlikely for that the product to be available. </p><p> <span style='color:#a9474a;'><strong>Red (Expired</strong>)<br /></span>At some point in the last day or so the data source reported the status of the product. However, several subsequent inquiries failed to maintain the availability details for this product. This could happen after a product that is not  typically carried by a store goes out of stock.</p><p> <span style='color:#c4c4c4;'><strong>Grey</strong><br /></span>No information is available.</p><h2>What does the date/time mean?</h2><p>The date/time information associated with each availability tile refers to the EST time that the data source was last <em>checked</em> by our servers. Please be aware that this does not reflect the date/time that the availability was last <em>updated</em> in the data source.</p><h2>Why are there availability discrepancies?</h2><p> Our accuracy is dependent on the data sources we pull from.  BrassBadger is in no way affiliated with any discount department store chain or  third-party source of information.</p><h2>Why isn&rsquo;t geolocating  working?</h2><p> In order to take advantage of geolocating, your device must  support geolocating/location services. If applicable, your GPS should be on and  proper permissions enabled. Poor GPS reception can also prevent geolocating  from working properly.</p></div>");
 	/*
 		var xTouches = event.touches[0].pageX;
@@ -295,10 +311,30 @@ $(document).ready(function(){
 	
 	
 	$("#nav-geo").click(function(){
-		badger.zip = "";
-		badger.getZipStores(function(){
-			badger.updateOverviewAjax();
-		});
+		if (confirm('Do you want to use your device\'s geolocation service to find your zipcode?')){
+			navigator.geolocation.getCurrentPosition(
+				function(pos){
+					var script = document.createElement("script");
+					script.src = "http://ws.geonames.org/findNearbyPostalCodesJSON?lat=" + pos.coords.latitude + "&lng=" + pos.coords.longitude + "&callback=badger.geoLocateCallback";
+					document.getElementsByTagName("head")[0].appendChild(script);
+				}, function(){
+					alert('code: '    + error.code    + '\n' +
+					'message: ' + error.message + '\n');
+					badger.zip = "";
+					badger.getZipStores(function(){
+						badger.updateOverviewAjax();
+					});
+				},
+				{
+					timeout : 15000
+				}
+			);
+		} else {
+			badger.zip = "";
+			badger.getZipStores(function(){
+				badger.updateOverviewAjax();
+			});
+		}
 	});
 	
 		
