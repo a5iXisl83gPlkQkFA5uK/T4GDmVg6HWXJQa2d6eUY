@@ -655,22 +655,22 @@ blockquote					{	color:#7f8c8d!important;}
 /*//////////////////////////////////////////////////////////////////////////////*/
 
 
-.red-box{		background-color:#d45151;	border:1px solid black;}
+.red-box{		background-color:#ff4444;	border:1px solid black;}
 .red-box a{ 	color:black; font-weight:bold; padding-top:3px; margin-top:-3px!important;}
 .red-box h4{	color:black; font-weight:bold; font-size:16px; text-shadow:none;}
 .red-box p{		color:black;}
 
-.yellow-box{	background-color:#d9d83e;	border:1px solid black;}
+.yellow-box{	background-color:#ffbb33;	border:1px solid black;}
 .yellow-box a{ 	color:black; font-weight:bold; padding-top:3px; margin-top:-3px!important;}
 .yellow-box h4{	color:black; font-weight:bold; font-size:16px;  text-shadow:none;}
 .yellow-box p{	color:black;}
 
-.green-box{		background-color:#6fb864;	border:1px solid black;}
+.green-box{		background-color:#99cc00;	border:1px solid black;}
 .green-box a{ 	color:black; font-weight:bold; padding-top:3px; margin-top:-3px!important;}
 .green-box h4{	color:black; font-weight:bold; font-size:16px;  text-shadow:none;}
 .green-box p{	color:black;}
 
-.blue-box{		background-color:#6680d6;	border:1px solid black;}
+.blue-box{		background-color:#33b5e5;	border:1px solid black;}
 .blue-box a{ 	color:black; font-weight:bold; padding-top:3px; margin-top:-3px!important;}
 .blue-box h4{	color:black; font-weight:bold; font-size:16px;  text-shadow:none;}
 .blue-box p{	color:black;}
