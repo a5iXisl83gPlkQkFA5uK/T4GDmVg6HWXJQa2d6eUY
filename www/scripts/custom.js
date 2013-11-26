@@ -114,7 +114,7 @@ badger.fetch = function(cal){
 					price = "$"+result.results[i]['price'];
 					
 				if(result.results[i]['status'] != "Ad"){
-					$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" as of "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"</p></div>");
+					$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" as of "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />Phone: "+result.results[i]['phone']+"&nbsp&nbsp&nbspUPC: "+result.results[i]['upc']+"</p></div>");
 				} else {
 					var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
 					ad.find("a").click(function(e){
