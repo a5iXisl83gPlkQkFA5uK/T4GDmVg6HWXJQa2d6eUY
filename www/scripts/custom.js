@@ -266,7 +266,7 @@ $(document).ready(function(){
 		document.ontouchmove = function(event){ event.allowDefault();}
 	});
 	document.addEventListener("menubutton", function(){$(".deploy-sidebar").click();}, false);
-	document.addEventListener("backbutton", function(){$(".deploy-sidebar").click();}, false);
+	//document.addEventListener("backbutton", function(){$(".deploy-sidebar").click();}, false);
 	$("#apiResults").append(badger.homeContent);
 
 	$('#cal-357').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("357"); });
