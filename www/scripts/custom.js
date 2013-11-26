@@ -210,6 +210,10 @@ badger.homeContent = $("<div style='padding: 10px;'><h1>What is BrassBadger?</h1
 		*/
 
 $(document).ready(function(){
+	$("termsLink").click(function(e){
+		window.open( $(this).attr('href'), '_system' );
+		e.preventDefault();
+	});
 	badger.zip = window.localStorage.getItem( 'zipcode' );
 	
 	badger.snapper = new Snap({
