@@ -81,7 +81,7 @@ body{background-color:#282c33;line-height:18px;-webkit-font-smoothing:antialiase
 :focus{outline:none;}
 *,:after,:before{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;margin:0;padding:0;}
 ::selection{background-color:none;color:#fff;}
-div,a,p,img,blockquote,form,fieldset,textarea,input,label,iframe,code,pre{display:block;overflow:hidden;position:relative;}
+div,img,blockquote,form,fieldset,textarea,input,label,iframe,code,pre{display:block;overflow:hidden;position:relative;}
 p{line-height:15px;font-size:15px;margin-bottom:20px;}
 p > a{display:inline;text-decoration:none;}
 a{text-decoration:none;color:#e34e47;}
