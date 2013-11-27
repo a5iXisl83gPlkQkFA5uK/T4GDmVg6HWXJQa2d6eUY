@@ -33,6 +33,11 @@
 		width:260px !important;
 	}
 }
+@media all and (max-width: 450px) {
+	.notification-box.ad img {
+		margin:auto;
+	}
+}
 
 #preload-01 { background: url(../images/blue.png) no-repeat -9999px -9999px; }
 #preload-02 { background: url(../images/green.png) no-repeat -9999px -9999px; }
