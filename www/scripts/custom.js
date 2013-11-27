@@ -1,6 +1,6 @@
 $(window).load(function() { 
 	$("#status").fadeOut();
-	$("#preloader").delay(350).fadeOut("slow");
+	$("#preloader").delay(500).fadeOut("slow");
 })
 
 badger = {};
@@ -442,5 +442,4 @@ $(document).ready(function(){
 		window.open( $(this).attr('href'), '_system' );
 		e.preventDefault();
 	});
-		
 });
