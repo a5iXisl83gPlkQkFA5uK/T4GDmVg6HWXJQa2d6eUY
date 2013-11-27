@@ -1,11 +1,44 @@
 $(window).load(function() { 
 	$("#status").fadeOut();
 	$("#preloader").delay(500).fadeOut("slow");
-})
+});
+$(window).resize(function () {
+   badger.onResize();
+});
 
 badger = {};
 badger.api = 1;
 badger.zip = 47909;
+badger.onResize = function(){
+	if($(window).width() < 720){
+		try{
+			badger.snapper.enable();
+		} catch(err){}
+		var windowHeight = innerHeight || 
+			window.innerHeight ||
+			document.documentElement.clientHeight ||
+			document.body.clientHeight;
+		var sidebarHeight = $(".page-sidebar-scroll")[0].scrollHeight;
+		var winnerHeight = sidebarHeight;
+		if(windowHeight > sidebarHeight)
+			winnerHeight = windowHeight;
+		$("#content").css("height", windowHeight);
+		$("#content").css("width", "100%");
+		
+	} else {
+		try{
+			badger.snapper.enable();
+			badger.snapper.open("left");
+			badger.snapper.disable();
+		} catch(err){}
+		$("#content").css("height", "100%");
+		var windowWidth = innerWidth || 
+			window.innerWidth ||
+			document.documentElement.clientWidth ||
+			document.body.clientWidth;
+		$("#content").css("width", windowWidth - 260);
+	}
+}
 badger.isOnLine = function(){
 	var test1 = -1;
 	var test2 = -1;
@@ -121,15 +154,18 @@ badger.getZipStores = function(callback){
 				if( savedStoreChecks.length > 0 )
 					usedSavedValues = true;
 			}
-			for (var i = 0; i < result.stores.length; i++) {
+			for (var i = (result.stores.length - 1); i >= 0; i--) {
 				var checkedClass = "";
 				if(usedSavedValues && $.inArray(""+result.stores[i]['id']+"", savedStoreChecks) > -1 ){
 					checkedClass = "checked-v2";
 				}
-				if(!usedSavedValues)
-					checkedClass = "checked-v2";
+				if(!usedSavedValues){
+					if(result.stores[i]['default'] == "1"){
+						checkedClass = "checked-v2";
+					}
+				}
 				if(result.stores[i]['id']){
-					var item = $('<div class="nav-item checker checkbox-v2 '+checkedClass+' stores" style="background-size: 16px 16px; background-position:22px; 3px;padding-left:60px;" data-storeid="'+result.stores[i]['id']+'">'+result.stores[i]['address']+'</div>');
+					var item = $('<div class="nav-item checker checkbox-v2 '+checkedClass+' stores" style="background-size: 16px 16px; background-position:22px; 3px;padding-left:60px;" data-storeid="'+result.stores[i]['id']+'">'+result.stores[i]['address']+' <span>('+result.stores[i]['distance']+'mi)</span></div>');
 					item.click(function(){
 						$(this).toggleClass('checked-v2');
 						badger.updateOverviewAjax();
@@ -148,7 +184,7 @@ badger.getZipStores = function(callback){
 			if(zStr.length == 5){
 				$("#nav-stores-text").html("NEAR " + badger.zip);
 			}
-			badger.setHeight();
+			badger.onResize();
 			callback();
 		},
 		function(textStatus, errorThrown){
@@ -228,11 +264,11 @@ badger.fetch = function(cal){
 			$("#apiResults").html('<div style="margin-top: 70px;">'+ textStatus + ' :: ' + errorThrown +'</div>');
 		}
 	);
-	badger.setHeight();
+	badger.onResize();
 }
 badger.updateOverviewAjax = function(){
 	var stores = badger.getSelectedStores();
-	badger.setHeight();
+	badger.onResize();
 	badger.cache.get(
 		"http://brassbadger.com/api/?api="+badger.api+"&function=overview&zip="+badger.zip+"&store="+stores, 
 		function(result){
@@ -242,7 +278,7 @@ badger.updateOverviewAjax = function(){
 			if(zStr.length == 5){
 				$("#nav-stores-text").html("NEAR " + badger.zip);
 			}
-			badger.setHeight();
+			badger.onResize();
 		},
 		function(textStatus, errorThrown){
 			//alert(textStatus + " :: " + errorThrown);
@@ -358,13 +394,18 @@ $(document).ready(function(){
 	$('#cal-40').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("40"); });
 	$('#cal-44').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("44"); });
 	$('#cal-45').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("45"); });
+	$('#cal-45colt').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("45colt"); });
+	$('#cal-45mag').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("45mag"); });
 	$('#cal-9').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("9"); });
 	$('#cal-12').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("12"); });
 	$('#cal-20').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("20"); });
 	$('#cal-410').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("410"); });
 	$('#cal-17').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("17"); });
 	$('#cal-22').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("22"); });
+	$('#cal-22250').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("22250"); });
 	$('#cal-223').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("223"); });
+	$('#cal-243').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("243"); });
+	$('#cal-270').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("270"); });
 	$('#cal-22mag').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("22mag"); });
 	$('#cal-3006').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("3006"); });
 	$('#cal-3030').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("3030"); });
@@ -442,4 +483,5 @@ $(document).ready(function(){
 		window.open( $(this).attr('href'), '_system' );
 		e.preventDefault();
 	});
+	badger.onResize();
 });

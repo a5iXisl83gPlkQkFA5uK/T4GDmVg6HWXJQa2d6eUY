@@ -25,7 +25,7 @@
             easing: 'ease',
             maxPosition: 260,
             minPosition: 0,
-            tapToClose: true,
+            tapToClose: false,
             touchToDrag: true,
             slideIntent: 40, // degrees
             minDragDistance: 5
