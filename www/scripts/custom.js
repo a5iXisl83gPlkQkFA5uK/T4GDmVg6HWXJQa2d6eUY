@@ -1,6 +1,70 @@
 badger = {};
 badger.api = 1;
 badger.zip = 47909;
+
+badger.cache = {
+	"_LIMIT" : 20,
+	"_TIMEOUT": 900,
+	"cache": new Object(),
+	
+	"get": function( resUrl, callback ){		
+		badger.cache.maintain();
+		
+		if (typeof badger.cache.cache[resUrl] == 'undefined') {
+			
+			var ajaxPromise = $.ajax({
+				url: resUrl,
+				method: "GET",
+				async: true,
+				success: function(res){ 
+					var res = $.parseJSON(res);
+					badger.cache.cache[resUrl] = {
+						"res": res, 
+						"time": parseInt(  new Date().getTime() / 1000  ), 
+						"num": 1
+					};
+					callback(  badger.cache.cache[resUrl]['res']  );
+				}
+			});
+		}
+		else {
+			badger.cache.cache[resUrl]['num']++
+			callback(  badger.cache.cache[resUrl]['res']  );
+		}
+
+	},
+	
+	"maintain": function(){
+		for(var i in badger.cache.cache) {
+			try{
+				if (    (   parseInt(  new Date().getTime() / 1000  )  -  parseInt( badger.cache.cache[i]['time'] )   ) > badger.cache._TIMEOUT ){
+					badger.cache.cache[i] = null;
+					delete badger.cache.cache[i];
+				}
+				if (  badger.cache.cache[i]['num'] > (badger.cache._LIMIT - 1)  ){
+					badger.cache.cache[i] = null;
+					delete badger.cache.cache[i];
+				}
+			} catch(err){
+				console.log(err);
+			}
+		}
+	},
+	
+	"remove": function(resUrl){
+		if (typeof badger.cache.cache[resUrl] != 'undefined') {
+			badger.cache.cache[resUrl] = null;
+			delete badger.cache.cache[resUrl];
+		}
+	},
+	
+	"force": function(resUrl, callback){
+		badger.cache.remove( resUrl );
+		badger.cache.get( resUrl, callback );
+	}
+	
+};
+
 badger.saveStoreChecks = function(){
 	var stores = [];
 	$(".nav-item.stores.checked-v2").each(function(){		var sid = $(this).data("storeid");		if(sid && sid != "undefined"){
@@ -15,48 +79,42 @@ badger.saveStoreChecks = function(){
 badger.getZipStores = function(callback){
 	$(".nav-item.stores").remove()
 	$("#nav-stores-text").html("");
-	$.ajax({
-		url: "http://brassbadger.com/api/?api="+badger.api+"&function=store&zip="+badger.zip,
-		type: "GET",
-		success:function(result){
-			result = $.parseJSON(result);
-			var savedStoreChecks = $.parseJSON(window.localStorage.getItem( 'zip_stores_'+badger.zip ));
-			var usedSavedValues = false;
-			if($.isArray(savedStoreChecks)){
-				if( savedStoreChecks.length > 0 )
-					usedSavedValues = true;
-			}
-			for (var i = 0; i < result.stores.length; i++) {
-				var checkedClass = "";
-				if(usedSavedValues && $.inArray(""+result.stores[i]['id']+"", savedStoreChecks) > -1 ){
-					checkedClass = "checked-v2";
-				}
-				if(!usedSavedValues)
-					checkedClass = "checked-v2";
-				if(result.stores[i]['id']){
-					var item = $('<div class="nav-item checker checkbox-v2 '+checkedClass+' stores" style="background-size: 16px 16px; background-position:22px; 3px;padding-left:60px;" data-storeid="'+result.stores[i]['id']+'">'+result.stores[i]['address']+'</div>');
-					item.click(function(){
-						$(this).toggleClass('checked-v2');
-						badger.updateOverviewAjax();
-						badger.saveStoreChecks();
-						$("#subHeader").html("Getting Started");
-						$("#apiResults").html("");
-						$("#apiResults").append(badger.homeContent);
-						
-						return false;
-					})
-					
-					$("#nav-stores").after(item);				
-				}
-			}
-			var zStr = "" + badger.zip;
-			if(zStr.length == 5){
-				$("#nav-stores-text").html("NEAR " + badger.zip);
-			}
-			badger.setHeight();
-			callback();
-			
+	badger.cache.get("http://brassbadger.com/api/?api="+badger.api+"&function=store&zip="+badger.zip, function(result){
+		var savedStoreChecks = $.parseJSON(window.localStorage.getItem( 'zip_stores_'+badger.zip ));
+		var usedSavedValues = false;
+		if($.isArray(savedStoreChecks)){
+			if( savedStoreChecks.length > 0 )
+				usedSavedValues = true;
 		}
+		for (var i = 0; i < result.stores.length; i++) {
+			var checkedClass = "";
+			if(usedSavedValues && $.inArray(""+result.stores[i]['id']+"", savedStoreChecks) > -1 ){
+				checkedClass = "checked-v2";
+			}
+			if(!usedSavedValues)
+				checkedClass = "checked-v2";
+			if(result.stores[i]['id']){
+				var item = $('<div class="nav-item checker checkbox-v2 '+checkedClass+' stores" style="background-size: 16px 16px; background-position:22px; 3px;padding-left:60px;" data-storeid="'+result.stores[i]['id']+'">'+result.stores[i]['address']+'</div>');
+				item.click(function(){
+					$(this).toggleClass('checked-v2');
+					badger.updateOverviewAjax();
+					badger.saveStoreChecks();
+					$("#subHeader").html("Getting Started");
+					$("#apiResults").html("");
+					$("#apiResults").append(badger.homeContent);
+					
+					return false;
+				})
+				
+				$("#nav-stores").after(item);				
+			}
+		}
+		var zStr = "" + badger.zip;
+		if(zStr.length == 5){
+			$("#nav-stores-text").html("NEAR " + badger.zip);
+		}
+		badger.setHeight();
+		callback();
 	});
 }
 
@@ -88,66 +146,56 @@ badger.fetch = function(cal){
 	var stores = badger.getSelectedStores();
 	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');	
 	badger.snapper.close();
-	$.ajax({
-		url: "http://brassbadger.com/api/?api="+badger.api+"&function=cal&zip="+badger.zip+"&cal="+cal+"&store="+stores,
-		type: "GET",
-		success:function(result){
-			$("#apiResults").html("");
-			result = $.parseJSON(result);
-			badger.zip = result.request.zip;
-			var zStr = "" + badger.zip;
-			if(zStr.length == 5){
-				$("#nav-stores-text").html("NEAR " + badger.zip);
-			}
-			for (var i = 0; i < result.results.length; i++) {
-				var color = "blue";
-				if(result.results[i]['code'] == "1")
-					color = "red";
-				if(result.results[i]['code'] == "2")
-					color = "blue";
-				if(result.results[i]['code'] == "3")
-					color = "yellow";
-				if(result.results[i]['code'] == "4")
-					color = "green";
-				var price = "";
-				if(result.results[i]['price'] != "")
-					price = "$"+result.results[i]['price'];
-					
-				if(result.results[i]['status'] != "Ad"){
-					$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" as of "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />Phone: "+result.results[i]['phone']+"&nbsp&nbsp&nbspUPC: "+result.results[i]['upc']+"</p></div>");
-				} else {
-					var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
-					ad.find("a").click(function(e){
-						window.open( $(this).attr('href'), '_system' );
-						e.preventDefault();
-					});
-					$("#apiResults").append(ad);
-				}
-
-			}
-			if(result.results.length == 0)
-				$("#apiResults").append("<div class='notification-box blue-box'><h4>- No Results Found -</h4><div class='clear'></div><p></p></div>");
-			badger.updateOverview(result);
+	badger.cache.get("http://brassbadger.com/api/?api="+badger.api+"&function=cal&zip="+badger.zip+"&cal="+cal+"&store="+stores, function(result){
+		$("#apiResults").html("");
+		badger.zip = result.request.zip;
+		var zStr = "" + badger.zip;
+		if(zStr.length == 5){
+			$("#nav-stores-text").html("NEAR " + badger.zip);
 		}
+		for (var i = 0; i < result.results.length; i++) {
+			var color = "blue";
+			if(result.results[i]['code'] == "1")
+				color = "red";
+			if(result.results[i]['code'] == "2")
+				color = "blue";
+			if(result.results[i]['code'] == "3")
+				color = "yellow";
+			if(result.results[i]['code'] == "4")
+				color = "green";
+			var price = "";
+			if(result.results[i]['price'] != "")
+				price = "$"+result.results[i]['price'];
+				
+			if(result.results[i]['status'] != "Ad"){
+				$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" as of "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
+			} else {
+				var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
+				ad.find("a").click(function(e){
+					window.open( $(this).attr('href'), '_system' );
+					e.preventDefault();
+				});
+				$("#apiResults").append(ad);
+			}
+
+		}
+		if(result.results.length == 0)
+			$("#apiResults").append("<div class='notification-box blue-box'><h4>- No Results Found -</h4><div class='clear'></div><p></p></div>");
+		badger.updateOverview(result);
 	});
 	badger.setHeight();
 }
 badger.updateOverviewAjax = function(){
 	var stores = badger.getSelectedStores();
 	badger.setHeight();
-	$.ajax({
-		url: "http://brassbadger.com/api/?api="+badger.api+"&function=overview&zip="+badger.zip+"&store="+stores,
-		type: "GET",
-		success:function(result){
-			result = $.parseJSON(result);
-			badger.updateOverview(result);
-			badger.zip = result.request.zip;
-			var zStr = "" + badger.zip;
-			if(zStr.length == 5){
-				$("#nav-stores-text").html("NEAR " + badger.zip);
-			}
-			badger.setHeight();
+	badger.cache.get("http://brassbadger.com/api/?api="+badger.api+"&function=overview&zip="+badger.zip+"&store="+stores, function(result){
+		badger.updateOverview(result);
+		badger.zip = result.request.zip;
+		var zStr = "" + badger.zip;
+		if(zStr.length == 5){
+			$("#nav-stores-text").html("NEAR " + badger.zip);
 		}
+		badger.setHeight();
 	});
 }
 badger.updateOverview = function(result){
