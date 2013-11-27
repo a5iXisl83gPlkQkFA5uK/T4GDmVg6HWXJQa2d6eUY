@@ -2,12 +2,22 @@ badger = {};
 badger.api = 1;
 badger.zip = 47909;
 badger.isOnLine = function(){
+	var test1 = -1;
+	var test2 = -1;
+	
+	try {
+		var online = navigator.connection.type;
+		test1 = (online != Connection.NONE) ? 1 : 0;
+	} catch(err){
+		test2 = 0;
+	}
 	try {
 		var online = window.navigator.onLine;
-		return online;
+		test2 = (online == true) ? 1 : 0;
 	} catch(err){
-		return true;
+		test2 = 1;
 	}
+	return (  test1 == 1  ||  test2 == 1  ||  ( test1 == -1 && test2 == -1 )  );
 }
 
 badger.cache = {
