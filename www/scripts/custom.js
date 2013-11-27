@@ -1,3 +1,8 @@
+$(window).load(function() { 
+	$("#status").fadeOut();
+	$("#preloader").delay(350).fadeOut("slow");
+})
+
 badger = {};
 badger.api = 1;
 badger.zip = 47909;
@@ -330,22 +335,6 @@ $(document).ready(function(){
 		return false;
 	});
 
-			
-	$('.bxslider').bxSlider({
-		pager:false,
-		controls:true,
-		touchEnabed:true,
-		infiniteLoop: true,
-		preventDefaultSwipeX:true
-	});	
-	
-	$('.bx-next').click(function(){
-		return false;
-	});
-	
-	$('.bx-prev').click(function(){
-		return false;
-	});	
 	
 	$('.page-coach').hide();
 	
