@@ -9,6 +9,13 @@ $(window).resize(function () {
 badger = {};
 badger.api = 1;
 badger.zip = 47909;
+badger.platform = function(){
+	if(typeof cordova == "undefined"){
+		return "browser";
+	} else {
+		return "app";
+	}
+}
 badger.onResize = function(){
 	var windowHeight = innerHeight || 
 		window.innerHeight ||
@@ -66,14 +73,31 @@ badger.isOnLine = function(){
 }
 
 badger.cache = {
-	"_LIMIT" : 20,
-	"_TIMEOUT": 900,
-	"cache": new Object(),
+	"_DOM_LIMIT" : 20,
+	"_DOM_TIMEOUT": 900, // 15 min
+	"_LOCAL_TIMEOUT" : 900, // 15 min
 	
-	"get": function( resUrl, successCallback, errorCallback ){		
-		badger.cache.maintain();
+	"domCache": new Object(),
+	
+	"dom": function( resUrl, successCallback, errorCallback ){
+		if(badger.isOnLine()){
+			for(var i in badger.cache.domCache) {
+				try{
+					if (    (   parseInt(  new Date().getTime() / 1000  )  -  parseInt( badger.cache.domCache[i]['time'] )   ) > badger.cache._DOM_TIMEOUT ){
+						badger.cache.domCache[i] = null;
+						delete badger.cache.domCache[i];
+					}
+					if (  badger.cache.domCache[i]['num'] > (badger.cache._DOM_LIMIT - 1)  ){
+						badger.cache.domCache[i] = null;
+						delete badger.cache.domCache[i];
+					}
+				} catch(err){
+					console.log(err);
+				}
+			}
+		}
 		
-		if (typeof badger.cache.cache[resUrl] == 'undefined') {
+		if (typeof badger.cache.domCache[resUrl] == 'undefined') {
 			if(badger.isOnLine()){
 				var ajaxPromise = $.ajax({
 					url: resUrl,
@@ -81,12 +105,12 @@ badger.cache = {
 					async: true,
 					success: function(res){ 
 						var res = $.parseJSON(res);
-						badger.cache.cache[resUrl] = {
+						badger.cache.domCache[resUrl] = {
 							"res": res, 
 							"time": parseInt(  new Date().getTime() / 1000  ), 
 							"num": 1
 						};
-						successCallback(  badger.cache.cache[resUrl]['res']  );
+						successCallback(  badger.cache.domCache[resUrl]['res']  );
 						badger.onResize();
 					},
 					error: function(jqXHR, textStatus, errorThrown){
@@ -101,46 +125,65 @@ badger.cache = {
 		}
 		else {
 			if(badger.isOnLine()){
-				badger.cache.cache[resUrl]['num']++
+				badger.cache.domCache[resUrl]['num']++
 			}
-			successCallback(  badger.cache.cache[resUrl]['res']  );
+			successCallback(  badger.cache.domCache[resUrl]['res']  );
 			badger.onResize();
 		}
 
 	},
 	
-	"maintain": function(){
-		if(badger.isOnLine()){
-			for(var i in badger.cache.cache) {
-				try{
-					if (    (   parseInt(  new Date().getTime() / 1000  )  -  parseInt( badger.cache.cache[i]['time'] )   ) > badger.cache._TIMEOUT ){
-						badger.cache.cache[i] = null;
-						delete badger.cache.cache[i];
+	"local": function( resUrl, successCallback, errorCallback ){	
+		var cachedRes = window.localStorage.getItem( 'localCache_'+resUrl+'_content');
+		var cachedTime = window.localStorage.getItem( 'localCache_'+resUrl+'_time');
+		
+		if (!cachedRes || !cachedTime || (cachedTime && (    (   parseInt(  new Date().getTime() / 1000  )  -  parseInt( cachedTime )   ) > badger.cache._LOCAL_TIMEOUT ))) {
+			if(badger.isOnLine()){
+				var ajaxPromise = $.ajax({
+					url: resUrl,
+					method: "GET",
+					async: true,
+					success: function(res){ 
+						window.localStorage.setItem( 'localCache_'+resUrl+'_content', res);
+						window.localStorage.setItem( 'localCache_'+resUrl+'_time', parseInt(  new Date().getTime() / 1000  ) );
+						successCallback( res );
+						badger.onResize();
+						setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
+					},
+					error: function(jqXHR, textStatus, errorThrown){
+						if(cachedRes){
+							successCallback( cachedRes );
+							badger.onResize();
+							setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
+						} else {
+							errorCallback(textStatus, errorThrown);
+							badger.onResize();
+							setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
+						}
 					}
-					if (  badger.cache.cache[i]['num'] > (badger.cache._LIMIT - 1)  ){
-						badger.cache.cache[i] = null;
-						delete badger.cache.cache[i];
-					}
-				} catch(err){
-					console.log(err);
+				});
+			} else {
+				if(cachedRes){
+					successCallback( cachedRes );
+					badger.onResize();
+					setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
+				} else {
+					errorCallback("offline", "You are not connected to the internet!");
+					badger.onResize();
+					setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
+					
 				}
 			}
 		}
-	},
-	
-	"remove": function(resUrl){
-		if (typeof badger.cache.cache[resUrl] != 'undefined') {
-			badger.cache.cache[resUrl] = null;
-			delete badger.cache.cache[resUrl];
+		else {
+			successCallback( cachedRes );
+			badger.onResize();
+			setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 		}
-	},
-	
-	"force": function(resUrl, callback){
-		badger.cache.remove( resUrl );
-		badger.cache.get( resUrl, callback );
 	}
 	
 };
+
 
 badger.saveStoreChecks = function(){
 	var stores = [];
@@ -156,7 +199,7 @@ badger.saveStoreChecks = function(){
 badger.getZipStores = function(callback){
 	$(".nav-item.stores").remove()
 	$("#nav-stores-text").html("");
-	badger.cache.get(
+	badger.cache.dom(
 		"http://brassbadger.com/api/?api="+badger.api+"&function=store&zip="+badger.zip, 
 		function(result){
 			var savedStoreChecks = $.parseJSON(window.localStorage.getItem( 'zip_stores_'+badger.zip ));
@@ -181,11 +224,7 @@ badger.getZipStores = function(callback){
 						$(this).toggleClass('checked-v2');
 						badger.updateOverviewAjax();
 						badger.saveStoreChecks();
-						$("#subHeader").html("Getting Started");
-						$("#apiResults").html("");
-						$("#apiResults").append(badger.homeContent);
-						
-						return false;
+						badger.loadPage("start", false);
 					})
 					
 					$("#nav-stores").after(item);				
@@ -202,6 +241,43 @@ badger.getZipStores = function(callback){
 			alert(textStatus + " :: " + errorThrown);
 		}
 	);
+}
+
+badger.loadPage = function(page, doClose){
+	var title = "";
+	var url = "";
+	
+	switch (page){
+		case "terms" :
+			title = "Terms and Privacy";
+			url = "http://brassbadger.com/pages/terms.php?platform=" + badger.platform();
+			break
+		case "start" :
+		default:
+			title = "Getting Started";
+			url = "http://brassbadger.com/pages/start.php?platform=" + badger.platform();
+			break;
+	}
+	
+	$("#subHeader").html(title);
+	badger.cache.local(
+		url, 
+		function(result){
+			$("#apiResults").html(" ");
+			$("#apiResults").html(result);
+			if(doClose)
+				badger.snapper.close();
+		},
+		function(textStatus, errorThrown){
+			badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
+			if(doClose)
+				badger.snapper.close();
+		}
+	);
+}
+
+badger.showError = function(color, title, body){
+	$("#apiResults").html("<div class='notification-box "+color+"-box'><h4>"+title+"</h4><div class='clear'></div><p>"+body+"</p></div>");
 }
 
 badger.getSelectedStores = function(){
@@ -232,7 +308,7 @@ badger.fetch = function(cal){
 	var stores = badger.getSelectedStores();
 	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');	
 	badger.snapper.close();
-	badger.cache.get(
+	badger.cache.dom(
 		"http://brassbadger.com/api/?api="+badger.api+"&function=cal&zip="+badger.zip+"&cal="+cal+"&store="+stores, 
 		function(result){
 			$("#apiResults").html("");
@@ -243,14 +319,14 @@ badger.fetch = function(cal){
 			}
 			for (var i = 0; i < result.results.length; i++) {
 				var color = "blue";
-				if(result.results[i]['code'] == "1")
+				if(result.results[i]['code'] == "-1" || result.results[i]['code'] == "0" || result.results[i]['code'] == "1")
 					color = "red";
 				if(result.results[i]['code'] == "2")
-					color = "blue";
-				if(result.results[i]['code'] == "3")
 					color = "yellow";
-				if(result.results[i]['code'] == "4")
+				if(result.results[i]['code'] == "3" || result.results[i]['code'] == "4")
 					color = "green";
+				if(result.results[i]['code'] == "5")
+					color = "blue";	
 				var price = "";
 				if(result.results[i]['price'] != "")
 					price = "$"+result.results[i]['price'];
@@ -268,11 +344,11 @@ badger.fetch = function(cal){
 
 			}
 			if(result.results.length == 0)
-				$("#apiResults").append("<div class='notification-box blue-box'><h4>- No Results Found -</h4><div class='clear'></div><p></p></div>");
+				badger.showError("blue", "No Results Found", "No information for this caliber is available for any of the stores you have selected.");
 			badger.updateOverview(result);
 		},
 		function(textStatus, errorThrown){
-			$("#apiResults").html('<div style="margin-top: 70px;">'+ textStatus + ' :: ' + errorThrown +'</div>');
+			badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
 		}
 	);
 	badger.onResize();
@@ -280,7 +356,7 @@ badger.fetch = function(cal){
 badger.updateOverviewAjax = function(){
 	var stores = badger.getSelectedStores();
 	badger.onResize();
-	badger.cache.get(
+	badger.cache.dom(
 		"http://brassbadger.com/api/?api="+badger.api+"&function=overview&zip="+badger.zip+"&store="+stores, 
 		function(result){
 			badger.updateOverview(result);
@@ -292,7 +368,7 @@ badger.updateOverviewAjax = function(){
 			badger.onResize();
 		},
 		function(textStatus, errorThrown){
-			//alert(textStatus + " :: " + errorThrown);
+			//badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
 		}
 	);
 }
@@ -306,14 +382,14 @@ badger.updateOverview = function(result){
 		.addClass("type-grey");
 	for (var i = 0; i < result.overview.length; i++) {
 		var color = "grey";
-		if(result.overview[i]['code'] == "1")
+		if(result.overview[i]['code'] == "-1" || result.overview[i]['code'] == "0" || result.overview[i]['code'] == "1")
 			color = "red";
 		if(result.overview[i]['code'] == "2")
-			color = "blue";
-		if(result.overview[i]['code'] == "3")
 			color = "yellow";
-		if(result.overview[i]['code'] == "4")
+		if(result.overview[i]['code'] == "3" || result.overview[i]['code'] == "4")
 			color = "green";
+		if(result.overview[i]['code'] == "5")
+			color = "blue";
 		$("#cal-" + result.overview[i]['cal'])
 			.removeClass("type-blue")
 			.removeClass("type-grey")
@@ -340,20 +416,8 @@ badger.geoLocateCallback = function(json){
 	});
 	alert("GeoLocate: Using " + badger.zip + " as zipcode.");
 }
-
-badger.homeContent = $('<div style="padding: 10px;"><h1>BrassBadger</h1><p>BrassBadger tracks local ammunition availability of a large  discount department store chain. Please understand that keeping track of  inventory is complicated and that the ammo availability shown from this app may  not be accurate. Remember to always be respectful to all store employees,  associates, and shoppers.</p><p>To get started, specify your location and select a caliber from the menu.</p><h2>Specifying location</h2><p>The last two menu items let you enter a zip code and  geolocate your location.</p><h2>Picking stores</h2><p>The last section of the menu list stores near you. Availability  results will include ammo from all checked stores.</p><h2>Color and status definitions</h2><p><span style="color:#99cc00">Green (In stock)</span><br />Chances are good that there are 3 or more available.</p><p><span style="color:#ffbb33">Yellow (Limited stock)</span><br />There are probably only a couple available.</p><p><span style="color:#33b5e5">Blue (Availability unknown)</span><br />Specific availability info is unavailable, however the data source is not reporting  &ldquo;Out of stock&rdquo;. There could be a fair chance for some availability.</p><p><span style="color:#ff4444">Red (Out of stock)</span><br />  It is unlikely for there to be any available. </p><p><span style="color:#ff4444">Red (Expired)</span><br />  No recent info exists. This could happen after a product that is not typically  carried by a store goes out of stock.</p><h2>Date and time info</h2><p>The date and time info associated with each availability  tile refers to the time that the data source was last checked by our servers.  Please be aware that this does not reflect the date and time that the  availability was last updated by the individual stores.</p><h2>Availability discrepancies</h2><p>Our accuracy is dependent on the data sources we pull from.  BrassBadger is in no way affiliated with any discount department store chain or  third-party source of information.</p><h2>GeoLocate</h2><p>Your device must support geolocating/location services to  take full advantage of this feature. If applicable, your GPS should be on and  proper permissions enabled. Poor GPS reception can also prevent geolocating  from working properly. IP address geolocating is used as a fallback.</p><h2>Support and improvements</h2><p> Info on how you can suggest additional UPCs, report missing  stores, or buy the developer a drink can be found on the BrassBadger homepage.</p></div>');
-	/*
-		var xTouches = event.touches[0].pageX;
-		var yTouches = event.touches[0].pageY;
-			
-		document.ontouchstart = function(event){
-
-			xTouches.preventDefault();
-			yTouches.allowDefault();	
-			//event.preventDefault();  
-		}
 		
-		*/
+
 
 $(document).ready(function(){
 	badger.zip = window.localStorage.getItem( 'zipcode' );
@@ -402,7 +466,7 @@ $(document).ready(function(){
 	});
 	document.addEventListener("menubutton", function(){$(".deploy-sidebar").click();}, false);
 	//document.addEventListener("backbutton", function(){$(".deploy-sidebar").click();}, false);
-	$("#apiResults").append(badger.homeContent);
+	badger.loadPage("start", true);
 
 	$('#cal-357').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("357"); });
 	$('#cal-38').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("38"); });
@@ -438,7 +502,7 @@ $(document).ready(function(){
 			navigator.splashscreen.hide();
 		} catch(err){}
 	});
-	$(".deploy-sidebar").click();
+	//$(".deploy-sidebar").click();
 	$("#nav-zip").click(function(){	
 		var newZip = prompt("Zipcode:",badger.zip);
 		if(newZip){
@@ -457,10 +521,7 @@ $(document).ready(function(){
 		}
 	});
 	$(".deploy-home").click(function(){
-		$("#subHeader").html("Getting Started");
-		$("#apiResults").html("");
-		$("#apiResults").append(badger.homeContent);
-		badger.onResize();
+		badger.loadPage("start", true);
 	});
 	
 	
@@ -497,7 +558,7 @@ $(document).ready(function(){
 	});
 	
 	$("#termsLink").click(function(e){
-		window.open( $(this).attr('href'), '_system' );
+		badger.loadPage("terms", true);
 		e.preventDefault();
 	});
 	badger.onResize();

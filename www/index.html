@@ -3,97 +3,83 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="X-UA-Compatible" content="Edge" >
 <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0"/>
-
+<meta name="description" content="BrassBadger shows you up-to-date local ammunition availability of all your favorite calibers by tracking Wal-Mart's stock inventory.">
 <title>BrassBadger</title>
-
-<link href="styles/style.css"				rel="stylesheet" type="text/css">
+<link href="styles/style.css" rel="stylesheet" type="text/css">
 <script src="cordova.js"></script>	
 <script src="cordova_plugins.js"></script>	
-<script src="scripts/jquery.min.js"		 type="text/javascript"></script>	
-<script src="scripts/snap.js"			 type="text/javascript"></script>
-<script src="scripts/custom.js"			 type="text/javascript"></script>
+<script src="scripts/jquery.min.js" type="text/javascript"></script>	
+<script src="scripts/snap.js" type="text/javascript"></script>
+<script src="scripts/custom.js" type="text/javascript"></script>
 </head>
 <body>
-
 <div id="preloader">
-	<div id="status">
-    	<p class="center-text">
-			Initializing BrassBadger
-        </p>
-    </div>
+<div id="status">
+<p class="center-text">
+Initializing BrassBadger
+</p>
 </div>
-
-
-
+</div>
+<div class="static">
+<!--#include virtual="../pages/start.php" -->
+</div>
 <div class="all-elements">
-    
-    <div id="sidebar" class="page-sidebar">
-        <div class="page-sidebar-scroll">
-			<div class="sidebar-header">
-            	<div class="delete-sidebar"></div>
-            	<img class="sidebar-logo" src="images/logo.png" width="159" alt="img">
-            </div>
-            
-            <p class="sidebar-separator">HANDGUN</p>
-			<div class="nav-item cal type-grey" id="cal-357">.357 Magnum</div>
-			<div class="nav-item cal type-grey" id="cal-38">.38 Special</div>
-			<div class="nav-item cal type-grey" id="cal-380">.380 ACP</div>
-			<div class="nav-item cal type-grey" id="cal-40">.40 Winchester</div>
-			<div class="nav-item cal type-grey" id="cal-44">.44 Magnum</div>
-			<div class="nav-item cal type-grey" id="cal-45">.45 Auto</div>
-			<div class="nav-item cal type-grey" id="cal-45colt">.45 Colt</div>
-			<div class="nav-item cal type-grey" id="cal-45mag">.45 Magnum</div>
-			<div class="nav-item cal type-grey" id="cal-9">9mm Luger</div>
-			<p class="sidebar-separator">RIFLE</p>
-			<div class="nav-item cal type-grey" id="cal-22250">.22-250 Remington</div>
-			<div class="nav-item cal type-grey" id="cal-223">.223 Remington</div>
-			<div class="nav-item cal type-grey" id="cal-243">.243 Winchester</div>
-			<div class="nav-item cal type-grey" id="cal-270">.270 Winchester</div>
-			<div class="nav-item cal type-grey" id="cal-3006">.30-06 Springfield</div>
-			<div class="nav-item cal type-grey" id="cal-3030">.30-30 Winchester</div>
-			<div class="nav-item cal type-grey" id="cal-308">.308 Winchester</div>
-			<div class="nav-item cal type-grey" id="cal-556">5.56x45mm NATO</div>
-			<div class="nav-item cal type-grey" id="cal-762">7.62x39mm</div>
-			<p class="sidebar-separator">RIMFIRE</p>
-			<div class="nav-item cal type-grey" id="cal-17">.17 HMR</div>
-			<div class="nav-item cal type-grey" id="cal-22">.22 LR</div>
-			<div class="nav-item cal type-grey" id="cal-22mag">.22 Magnum</div>
-			<p class="sidebar-separator">SHOTGUN</p>
-            <div class="nav-item cal type-grey" id="cal-12">12 Gauge</div>
-			<div class="nav-item cal type-grey" id="cal-20">20 Gauge</div>
-            <div class="nav-item cal type-grey" id="cal-410">.410 Bore</div>
-			<p class="sidebar-separator" id="nav-stores">STORES <span id="nav-stores-text" style="color:#757575;"></span></p>
-			<div class="nav-item " id="nav-zip" style="background-image: url('images/cog.png');">Change Zipcode</div>
-			<div class="nav-item " id="nav-geo" style="background-image: url('images/globe.png');">GeoLocate <span id='nav-geo-loading'></span></div>
-			<div class="nav-item"><a id="termsLink" href="http://brassbadger.com/terms.html" target="_blank">Privacy and Terms</a></div>
-
-			
-        </div>
-    </div>
-       
-    <div id="content" class="page-content">
-        <div class="page-header">
-            <p class="logo">
-                <img src="images/logo.png">
-            </p>
-            <div class="deploy-sidebar"></div>
-			<div class="deploy-home"></div>
-        </div>  
-		
-		<h1 align="center" id="subHeader" style="font-weight:bold; font-weight:bold; background-color:#111112; margin:0px; color:white;">Getting Started</h1>
-		
-
-
-        <div id="apiResults" class="container no-bottom"></div>
-		
-	</div>
-	<div id="#preload-01"></div>
-	<div id="#preload-02"></div>
-	<div id="#preload-03"></div>
-	<div id="#preload-04"></div>
-	<div id="#preload-05"></div>
+<div id="sidebar" class="page-sidebar">
+<div class="page-sidebar-scroll">
+<div class="sidebar-header">
+<div class="delete-sidebar"></div>
+<img class="sidebar-logo" src="images/logo.png" width="159" alt="img">
 </div>
-
-
+<p class="sidebar-separator">HANDGUN</p>
+<div class="nav-item cal type-grey" id="cal-357">.357 Magnum</div>
+<div class="nav-item cal type-grey" id="cal-38">.38 Special</div>
+<div class="nav-item cal type-grey" id="cal-380">.380 ACP</div>
+<div class="nav-item cal type-grey" id="cal-40">.40 Winchester</div>
+<div class="nav-item cal type-grey" id="cal-44">.44 Magnum</div>
+<div class="nav-item cal type-grey" id="cal-45">.45 Auto</div>
+<div class="nav-item cal type-grey" id="cal-45colt">.45 Colt</div>
+<div class="nav-item cal type-grey" id="cal-45mag">.45 Magnum</div>
+<div class="nav-item cal type-grey" id="cal-9">9mm Luger</div>
+<p class="sidebar-separator">RIFLE</p>
+<div class="nav-item cal type-grey" id="cal-22250">.22-250 Remington</div>
+<div class="nav-item cal type-grey" id="cal-223">.223 Remington</div>
+<div class="nav-item cal type-grey" id="cal-243">.243 Winchester</div>
+<div class="nav-item cal type-grey" id="cal-270">.270 Winchester</div>
+<div class="nav-item cal type-grey" id="cal-3006">.30-06 Springfield</div>
+<div class="nav-item cal type-grey" id="cal-3030">.30-30 Winchester</div>
+<div class="nav-item cal type-grey" id="cal-308">.308 Winchester</div>
+<div class="nav-item cal type-grey" id="cal-556">5.56x45mm NATO</div>
+<div class="nav-item cal type-grey" id="cal-762">7.62x39mm</div>
+<p class="sidebar-separator">RIMFIRE</p>
+<div class="nav-item cal type-grey" id="cal-17">.17 HMR</div>
+<div class="nav-item cal type-grey" id="cal-22">.22 LR</div>
+<div class="nav-item cal type-grey" id="cal-22mag">.22 Magnum</div>
+<p class="sidebar-separator">SHOTGUN</p>
+<div class="nav-item cal type-grey" id="cal-12">12 Gauge</div>
+<div class="nav-item cal type-grey" id="cal-20">20 Gauge</div>
+<div class="nav-item cal type-grey" id="cal-410">.410 Bore</div>
+<p class="sidebar-separator" id="nav-stores">STORES <span id="nav-stores-text" style="color:#757575;"></span></p>
+<div class="nav-item " id="nav-zip" style="background-image: url('images/cog.png');">Change Zipcode</div>
+<div class="nav-item " id="nav-geo" style="background-image: url('images/globe.png');">GeoLocate <span id='nav-geo-loading'></span></div>
+<div class="nav-item"><a id="termsLink" href="#">Privacy and Terms</a></div>
+</div>
+</div>
+<div id="content" class="page-content">
+<div class="page-header">
+<p class="logo">
+<img src="images/logo.png">
+</p>
+<div class="deploy-sidebar"></div>
+<div class="deploy-home"></div>
+</div>  
+<h1 align="center" id="subHeader" style="font-weight:bold; font-weight:bold; background-color:#111112; margin:0px; color:white;">Getting Started</h1>
+<div id="apiResults" class="container no-bottom"></div>
+</div>
+<div id="#preload-01"></div>
+<div id="#preload-02"></div>
+<div id="#preload-03"></div>
+<div id="#preload-04"></div>
+<div id="#preload-05"></div>
+</div>
 </body>
 </html>

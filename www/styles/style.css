@@ -38,7 +38,9 @@
 		margin:auto;
 	}
 }
-
+.static {
+	display:none;
+}
 #preload-01 { background: url(../images/blue.png) no-repeat -9999px -9999px; }
 #preload-02 { background: url(../images/green.png) no-repeat -9999px -9999px; }
 #preload-03 { background: url(../images/yellow.png) no-repeat -9999px -9999px; }
