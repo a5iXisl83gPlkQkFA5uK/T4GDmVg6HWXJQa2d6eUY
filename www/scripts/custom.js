@@ -1,4 +1,15 @@
-
+/* Copyright (C) 2013 Taylor Honsowetz - All Rights Reserved
+ * Use, distribution and modification this code is licensed under the
+ * terms of the Creative Commons Attribution-NonCommercial-NoDerivatives 
+ * 4.0 International License.
+ *
+ * To view a copy of this license, visit 
+ * http://creativecommons.org/licenses/by-nc-nd/4.0/deed.en_US
+ *
+ * For further Terms of Use, visit
+ * http://brassbadger.com/pages/terms.php
+ */
+ 
 $(window).load(function() { 
 	$("#status").fadeOut();
 	$("#preloader").delay(500).fadeOut("slow");
