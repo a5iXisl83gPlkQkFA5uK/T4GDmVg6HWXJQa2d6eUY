@@ -9,7 +9,7 @@ $(window).resize(function () {
 
 badger = {};
 badger.api = 1;
-badger.zip = 47909;
+badger.zip = 46201;
 badger.platform = function(){
 	if(typeof cordova == "undefined"){
 		return "browser";
@@ -185,6 +185,24 @@ badger.cache = {
 	
 };
 
+badger.validateZip = function(zipIn){
+	zipIn = " "+ zipIn;
+	zipIn = zipIn.replace(/[^0-9]/g, '');
+	if(zipIn.length > 0 && zipIn.length <=5){
+		return zipIn;
+	} else {
+		alert("Error: Valid zip codes are 5 digits long!");
+		var badgerZip = " " + badger.zip;
+		badgerZip = badgerZip.replace(/[^0-9]/g, '');
+		if(badgerZip.length > 0 && badgerZip.length <=5){
+			return badgerZip;
+		} else {
+			return 46201;
+		}
+	}
+	
+	
+}
 
 badger.saveStoreChecks = function(){
 	var stores = [];
@@ -234,17 +252,23 @@ badger.getZipStores = function(callback){
 			var zStr = "" + badger.zip;
 			if(zStr.length == 5){
 				$("#nav-stores-text").html("NEAR " + badger.zip);
+				window.localStorage.setItem( 'zipcode', badger.zip);
 			}
 			badger.onResize();
 			callback();
 		},
 		function(textStatus, errorThrown){
 			alert(textStatus + " :: " + errorThrown);
+			callback();
 		}
 	);
 }
 
 badger.loadPage = function(page, doClose){
+	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');
+	if(doClose)
+		badger.snapper.close();
+	setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 	var title = "";
 	var url = "";
 	
@@ -266,13 +290,9 @@ badger.loadPage = function(page, doClose){
 		function(result){
 			$("#apiResults").html(" ");
 			$("#apiResults").html(result);
-			if(doClose)
-				badger.snapper.close();
 		},
 		function(textStatus, errorThrown){
 			badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
-			if(doClose)
-				badger.snapper.close();
 		}
 	);
 }
@@ -289,6 +309,7 @@ badger.getSelectedStores = function(){
 	var zStr = "" + badger.zip;
 	if(zStr.length == 5){
 		$("#nav-stores-text").html("NEAR " + badger.zip);
+		window.localStorage.setItem( 'zipcode', badger.zip);
 	}
 	return stores;
 }
@@ -317,6 +338,7 @@ badger.fetch = function(cal){
 			var zStr = "" + badger.zip;
 			if(zStr.length == 5){
 				$("#nav-stores-text").html("NEAR " + badger.zip);
+				window.localStorage.setItem( 'zipcode', badger.zip);
 			}
 			for (var i = 0; i < result.results.length; i++) {
 				var color = "blue";
@@ -365,6 +387,7 @@ badger.updateOverviewAjax = function(){
 			var zStr = "" + badger.zip;
 			if(zStr.length == 5){
 				$("#nav-stores-text").html("NEAR " + badger.zip);
+				window.localStorage.setItem( 'zipcode', badger.zip);
 			}
 			badger.onResize();
 		},
@@ -416,6 +439,21 @@ badger.geoLocateCallback = function(json){
 		badger.updateOverview();
 	});
 	alert("GeoLocate: Using " + badger.zip + " as zipcode.");
+}
+
+badger.geoLocateStartTimer = function(){
+	setTimeout(function(){
+		if($("#nav-geo-loading").text() != ""){
+			$("#nav-geo-loading").html('<img width="13" height="13" alt="img" src="images/loading.gif" style="display: inline;">Waiting...');
+			badger.zip = "";
+			badger.getZipStores(function(){
+				badger.updateOverviewAjax();
+				$("#nav-geo-loading").html("");
+				alert("Device geolocation timed out so less accurate IP based geolocation was used.");
+			});
+		}
+	},15000);
+	
 }
 		
 
@@ -507,7 +545,7 @@ $(document).ready(function(){
 	$("#nav-zip").click(function(){	
 		var newZip = prompt("Zipcode:",badger.zip);
 		if(newZip){
-			badger.zip = newZip;
+			badger.zip = badger.validateZip(newZip);
 			window.localStorage.setItem( 'zipcode', badger.zip);
 			$(".nav-item.cal")
 				.removeClass("type-blue")
@@ -527,8 +565,12 @@ $(document).ready(function(){
 	
 	
 	$("#nav-geo").click(function(){
-		if (confirm('Do you want to use your device\'s geolocation service to find your zipcode?')){
-			$("#nav-geo-loading").html(" Waiting... ");
+		if($("#nav-geo-loading").text() != ""){
+			return;
+		}
+		if (confirm('Use your device\'s geolocation service to find your zipcode? If not, then less accurate IP based geolocation will be used.')){
+			$("#nav-geo-loading").html('<img width="13" height="13" alt="img" src="images/loading.gif" style="display: inline;">Waiting...');
+			badger.geoLocateStartTimer();
 			navigator.geolocation.getCurrentPosition(
 				function(pos){
 					var script = document.createElement("script");
@@ -549,7 +591,7 @@ $(document).ready(function(){
 				}
 			);
 		} else {
-			$("#nav-geo-loading").html(" Waiting... ");
+			$("#nav-geo-loading").html('<img width="13" height="13" alt="img" src="images/loading.gif" style="display: inline;">Waiting...');
 			badger.zip = "";
 			badger.getZipStores(function(){
 				badger.updateOverviewAjax();
