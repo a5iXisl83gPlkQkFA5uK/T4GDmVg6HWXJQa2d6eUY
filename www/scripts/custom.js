@@ -619,13 +619,28 @@ $(document).ready(function(){
 	$('#nav-barcode').click(function(){
 		cordova.plugins.barcodeScanner.scan(
 			function (result) {
-				alert("We got a barcode\n" +
-					"Result: " + result.text + "\n" +
-					"Format: " + result.format + "\n" +
-					"Cancelled: " + result.cancelled);
+				if(!result.cancelled){
+					if(result.format == "UPC_A"){
+						var stores = [];
+						$(".nav-item.stores.checked-v2").each(function(){		
+							var sid = $(this).data("storeid");
+							if(sid && sid != "undefined"){
+								stores.push(sid);
+							}
+						})
+						stores = stores.join(',');
+						
+						window.open( "https://mobile.walmart.com/m/j?service=Slap&method=get&p1=&p2=["+result.text+"]&p3=["+stores+"]&p4=&p5=&p6=&p7=&p8=&p9=c4tch4spyder&e=1", '_system' );
+						
+					} else {
+						alert("Only UPC-A codes are supported");
+					}
+				} else {
+					// Cancelled
+				}
 			}, 
 			function (error) {
-				alert("Scanning failed: " + error);
+				alert("Scanning failed (" + error + ")");
 			}
 		);
 	});
