@@ -621,6 +621,9 @@ $(document).ready(function(){
 			function (result) {
 				if(!result.cancelled){
 					if(result.format == "UPC_A"){
+						var upc = result.text + "";
+						upc = upc.replace(/^0+/, '');
+						upc = upc.slice(0, -1);
 						var stores = [];
 						$(".nav-item.stores.checked-v2").each(function(){		
 							var sid = $(this).data("storeid");
@@ -630,7 +633,7 @@ $(document).ready(function(){
 						})
 						stores = stores.join(',');
 						
-						window.open( "https://mobile.walmart.com/m/j?service=Slap&method=get&p1=&p2=["+result.text+"]&p3=["+stores+"]&p4=&p5=&p6=&p7=&p8=&p9=c4tch4spyder&e=1", '_system' );
+						window.open( "https://mobile.walmart.com/m/j?service=Slap&method=get&p1=&p2=["+upc+"]&p3=["+stores+"]&p4=&p5=&p6=&p7=&p8=&p9=c4tch4spyder&e=1", '_system' );
 						
 					} else {
 						alert("Only UPC-A codes are supported");
