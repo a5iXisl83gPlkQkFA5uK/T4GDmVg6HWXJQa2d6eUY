@@ -629,6 +629,9 @@ $(document).ready(function(){
 			function (result) {
 				if(!result.cancelled){
 					if(result.format == "UPC_A"){
+						$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');
+						badger.snapper.close();
+						
 						var upc = result.text + "";
 						upc = upc.replace(/^0+/, '');
 						upc = upc.slice(0, -1);
@@ -684,11 +687,8 @@ $(document).ready(function(){
 										"zip" : raw[0]['stores'][m]['address']['zip']['code']
 									};
 								}
-								console.log(nice);
 								$("#subHeader").html("Scan Results");
 								badger.buildRes(nice);
-
-								
 								badger.onResize();
 							},
 							error: function(jqXHR, textStatus, errorThrown){
