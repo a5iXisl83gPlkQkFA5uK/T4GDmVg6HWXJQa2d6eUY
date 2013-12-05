@@ -336,7 +336,42 @@ badger.setHeight = function(){
 		winnerHeight = windowHeight;
 	$(".page-content").height(windowHeight);
 }
+badger.buildRes = function(result){
+	$("#apiResults").html("");
+	var zStr = "" + badger.zip;
+	if(zStr.length == 5){
+		$("#nav-stores-text").html("NEAR " + badger.zip);
+		window.localStorage.setItem( 'zipcode', badger.zip);
+	}
+	for (var i = 0; i < result.results.length; i++) {
+		var color = "blue";
+		if(result.results[i]['code'] == "-1" || result.results[i]['code'] == "0" || result.results[i]['code'] == "1")
+			color = "red";
+		if(result.results[i]['code'] == "2")
+			color = "yellow";
+		if(result.results[i]['code'] == "3" || result.results[i]['code'] == "4")
+			color = "green";
+		if(result.results[i]['code'] == "5")
+			color = "blue";	
+		var price = "";
+		if(result.results[i]['price'] != "")
+			price = "$"+result.results[i]['price'];
+			
+		if(result.results[i]['status'] != "Ad"){
+			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" as of "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
+		} else {
+			var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
+			ad.find("a").click(function(e){
+				window.open( $(this).attr('href'), '_system' );
+				e.preventDefault();
+			});
+			$("#apiResults").append(ad);
+		}
 
+	}
+	if(result.results.length == 0)
+		badger.showError("blue", "No Results Found", "No information for this caliber is available for any of the stores you have selected.");
+}
 badger.fetch = function(cal){
 	var stores = badger.getSelectedStores();
 	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');	
@@ -344,41 +379,8 @@ badger.fetch = function(cal){
 	badger.cache.dom(
 		"http://brassbadger.com/api/?api="+badger.api+"&function=cal&zip="+badger.zip+"&cal="+cal+"&store="+stores, 
 		function(result){
-			$("#apiResults").html("");
 			badger.zip = result.request.zip;
-			var zStr = "" + badger.zip;
-			if(zStr.length == 5){
-				$("#nav-stores-text").html("NEAR " + badger.zip);
-				window.localStorage.setItem( 'zipcode', badger.zip);
-			}
-			for (var i = 0; i < result.results.length; i++) {
-				var color = "blue";
-				if(result.results[i]['code'] == "-1" || result.results[i]['code'] == "0" || result.results[i]['code'] == "1")
-					color = "red";
-				if(result.results[i]['code'] == "2")
-					color = "yellow";
-				if(result.results[i]['code'] == "3" || result.results[i]['code'] == "4")
-					color = "green";
-				if(result.results[i]['code'] == "5")
-					color = "blue";	
-				var price = "";
-				if(result.results[i]['price'] != "")
-					price = "$"+result.results[i]['price'];
-					
-				if(result.results[i]['status'] != "Ad"){
-					$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" as of "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
-				} else {
-					var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
-					ad.find("a").click(function(e){
-						window.open( $(this).attr('href'), '_system' );
-						e.preventDefault();
-					});
-					$("#apiResults").append(ad);
-				}
-
-			}
-			if(result.results.length == 0)
-				badger.showError("blue", "No Results Found", "No information for this caliber is available for any of the stores you have selected.");
+			badger.buildRes(result);
 			badger.updateOverview(result);
 		},
 		function(textStatus, errorThrown){
@@ -617,14 +619,14 @@ $(document).ready(function(){
 	});
 	
 	$('#nav-barcode').click(function(){
-		var result = {
+		var result2 = {
 			"cancelled" : false,
 			"text" : "814950012019",
 			"format": "UPC_A"
 			
 		};
-		//cordova.plugins.barcodeScanner.scan(
-			//function (result) {
+		cordova.plugins.barcodeScanner.scan(
+			function (result) {
 				if(!result.cancelled){
 					if(result.format == "UPC_A"){
 						var upc = result.text + "";
@@ -641,29 +643,52 @@ $(document).ready(function(){
 						var upcLookup = $.ajax({
 							url: "https://mobile.walmart.com/m/j?service=Slap&method=get&p1=&p2=["+upc+"]&p3=["+stores+"]&p4=&p5=&p6=&p7=&p8=&p9=c4tch4spyder&e=1",
 							method: "GET",
-							async: false,
-							dataType: "html",
+							async: true,
+							dataType : "json",
 							success: function(raw){ 
-								//var raw = $.parseJSON(raw);
-								//for(var m in raw[0]['stores']){
-								//	delete raw[0]['stores'][m]['storeServices'];
-								//}
-								raw = encodeURIComponent(raw + "");
-								var badgerVerify = $.ajax({
-									url: "http://brassbadger.com/api/?api="+badger.api+"&function=upcVerify&zip="+badger.zip+"&store="+stores,
-									method: "POST",
-									data: "data=" + raw,
-									async: false,
-									success: function(res){ 
-										alert(res);
-										badger.onResize();
-									},
-									error: function(jqXHR, textStatus, errorThrown){
-										alert("Error looking up product. (Phase 2 of 2) || " + textStatus + " || " + errorThrown);
-										//errorCallback(textStatus, errorThrown);
-										badger.onResize();
+								console.log(raw);
+								var nice = {
+									"results" : []
+								};
+								if(raw && raw.length > 0 && raw[0]){
+									nice.name = raw[0]['item']['signingDesc'];
+								}
+								for(var m in raw[0]['stores']){
+									var code = 5;
+									var status = raw[0]['stores'][m]['stockStatus'];
+									if(raw[0]['stores'][m]['stockStatus'] == "In stock"){
+										code = 4;
 									}
-								});
+									if(raw[0]['stores'][m]['stockStatus'] == "Availability unknown"){
+										code = 3;
+										status = "In stock";
+									}
+									if(raw[0]['stores'][m]['stockStatus'] == "Limited stock"){
+										code = 2;
+									}
+									if(raw[0]['stores'][m]['stockStatus'] == "Out of stock"){
+										code = 1;
+									}
+									nice.results[m] = {
+										"address" : raw[0]['stores'][m]['address']['street1'],
+										"cal" : "",
+										"city" : raw[0]['stores'][m]['address']['city'],
+										"code" : code,
+										"name" : raw[0]['item']['signingDesc'],
+										"phone" : "("+raw[0]['stores'][m]['phone']['areaCode']+") "+raw[0]['stores'][m]['phone']['prefix']+"-"+raw[0]['stores'][m]['phone']['suffix'],
+										"price" : raw[0]['stores'][m]['price'],
+										"state" : raw[0]['stores'][m]['address']['state']['code'],
+										"status" : status,
+										"upc" : result.text,
+										"updated" : "just now",
+										"zip" : raw[0]['stores'][m]['address']['zip']['code']
+									};
+								}
+								console.log(nice);
+								$("#subHeader").html("Scan Results");
+								badger.buildRes(nice);
+
+								
 								badger.onResize();
 							},
 							error: function(jqXHR, textStatus, errorThrown){
@@ -679,11 +704,11 @@ $(document).ready(function(){
 				} else {
 					// Cancelled
 				}
-			//}, 
-			//function (error) {
+			}, 
+			function (error) {
 				alert("Scanning failed (" + error + ")");
-			//}
-		//);
+			}
+		);
 	});
 	badger.onResize();
 });
