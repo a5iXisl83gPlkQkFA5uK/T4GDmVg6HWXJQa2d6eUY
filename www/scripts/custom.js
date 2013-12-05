@@ -632,8 +632,37 @@ $(document).ready(function(){
 							}
 						})
 						stores = stores.join(',');
-						
-						window.open( "https://mobile.walmart.com/m/j?service=Slap&method=get&p1=&p2=["+upc+"]&p3=["+stores+"]&p4=&p5=&p6=&p7=&p8=&p9=c4tch4spyder&e=1", '_system' );
+						var upcLookup = $.ajax({
+							url: "https://mobile.walmart.com/m/j?service=Slap&method=get&p1=&p2=["+upc+"]&p3=["+stores+"]&p4=&p5=&p6=&p7=&p8=&p9=c4tch4spyder&e=1",
+							method: "GET",
+							async: true,
+							success: function(raw){ 
+								var badgerVerify = $.ajax({
+									url: "http://brassbadger.com/api/?api="+badger.api+"&function=upcVerify&zip="+badger.zip,
+									method: "POST",
+									data: {
+										"data" : raw,
+										"upc_real" : result.format,
+										"upc_sm" : upc
+									},
+									async: true,
+									success: function(res){ 
+										alert("res");
+										badger.onResize();
+									},
+									error: function(jqXHR, textStatus, errorThrown){
+										alert("Error looking up product. (Phase 2 of 2)");
+										//errorCallback(textStatus, errorThrown);
+										badger.onResize();
+									}
+								});
+							},
+							error: function(jqXHR, textStatus, errorThrown){
+								alert("Error looking up product. (Phase 1 of 2)");
+								//errorCallback(textStatus, errorThrown);
+								badger.onResize();
+							}
+						});
 						
 					} else {
 						alert("Only UPC-A codes are supported");
