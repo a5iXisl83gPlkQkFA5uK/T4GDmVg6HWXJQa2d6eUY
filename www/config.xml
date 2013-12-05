@@ -32,5 +32,6 @@
     <icon gap:density="xhdpi" gap:platform="android" src="images/android/icon-96-xhdpi.png" />
     <access origin="*" />
 	<access origin="http://brassbadger.com" />
+	<access origin="https://mobile.walmart.com" />
 	<access origin="http://ws.geonames.org" />
 </widget>

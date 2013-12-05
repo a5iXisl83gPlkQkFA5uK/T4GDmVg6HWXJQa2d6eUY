@@ -637,6 +637,10 @@ $(document).ready(function(){
 							method: "GET",
 							async: true,
 							success: function(raw){ 
+								var raw = $.parseJSON(raw);
+								for(var m in raw[0]['stores']){
+									delete raw[0]['stores'][m]['storeServices'];
+								}
 								var badgerVerify = $.ajax({
 									url: "http://brassbadger.com/api/?api="+badger.api+"&function=upcVerify&zip="+badger.zip,
 									method: "POST",
@@ -656,9 +660,10 @@ $(document).ready(function(){
 										badger.onResize();
 									}
 								});
+								badger.onResize();
 							},
 							error: function(jqXHR, textStatus, errorThrown){
-								alert("Error looking up product. (Phase 1 of 2)");
+								alert("Error looking up product.");
 								//errorCallback(textStatus, errorThrown);
 								badger.onResize();
 							}
