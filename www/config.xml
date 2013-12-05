@@ -32,5 +32,4 @@
     <access origin="*" />
 	<access origin="http://brassbadger.com" />
 	<access origin="http://ws.geonames.org" />
-	
 </widget>
