@@ -617,8 +617,14 @@ $(document).ready(function(){
 	});
 	
 	$('#nav-barcode').click(function(){
-		cordova.plugins.barcodeScanner.scan(
-			function (result) {
+		var result = {
+			"cancelled" : false,
+			"text" : "814950012019",
+			"format": "UPC_A"
+			
+		};
+		//cordova.plugins.barcodeScanner.scan(
+			//function (result) {
 				if(!result.cancelled){
 					if(result.format == "UPC_A"){
 						var upc = result.text + "";
@@ -635,21 +641,19 @@ $(document).ready(function(){
 						var upcLookup = $.ajax({
 							url: "https://mobile.walmart.com/m/j?service=Slap&method=get&p1=&p2=["+upc+"]&p3=["+stores+"]&p4=&p5=&p6=&p7=&p8=&p9=c4tch4spyder&e=1",
 							method: "GET",
-							async: true,
+							async: false,
+							dataType: "html",
 							success: function(raw){ 
-								var raw = $.parseJSON(raw);
-								for(var m in raw[0]['stores']){
-									delete raw[0]['stores'][m]['storeServices'];
-								}
+								//var raw = $.parseJSON(raw);
+								//for(var m in raw[0]['stores']){
+								//	delete raw[0]['stores'][m]['storeServices'];
+								//}
+								raw = encodeURIComponent(raw + "");
 								var badgerVerify = $.ajax({
-									url: "http://brassbadger.com/api/?api="+badger.api+"&function=upcVerify&zip="+badger.zip,
+									url: "http://brassbadger.com/api/?api="+badger.api+"&function=upcVerify&zip="+badger.zip+"&store="+stores,
 									method: "POST",
-									data: {
-										"data" : raw,
-										"upc_real" : result.format,
-										"upc_sm" : upc
-									},
-									async: true,
+									data: "data=" + raw,
+									async: false,
 									success: function(res){ 
 										alert(res);
 										badger.onResize();
@@ -675,11 +679,11 @@ $(document).ready(function(){
 				} else {
 					// Cancelled
 				}
-			}, 
-			function (error) {
+			//}, 
+			//function (error) {
 				alert("Scanning failed (" + error + ")");
-			}
-		);
+			//}
+		//);
 	});
 	badger.onResize();
 });
