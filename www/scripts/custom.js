@@ -527,7 +527,6 @@ $(document).ready(function(){
 	$('#cal-44').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("44"); });
 	$('#cal-45').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("45"); });
 	$('#cal-45colt').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("45colt"); });
-	$('#cal-45mag').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("45mag"); });
 	$('#cal-9').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("9"); });
 	$('#cal-12').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("12"); });
 	$('#cal-20').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("20"); });
@@ -629,6 +628,7 @@ $(document).ready(function(){
 			function (result) {
 				if(!result.cancelled){
 					if(result.format == "UPC_A"){
+						$("#subHeader").html("Scan Results");
 						$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');
 						badger.snapper.close();
 						
@@ -687,9 +687,16 @@ $(document).ready(function(){
 										"zip" : raw[0]['stores'][m]['address']['zip']['code']
 									};
 								}
-								$("#subHeader").html("Scan Results");
+								
 								badger.buildRes(nice);
 								badger.onResize();
+								var ajaxPromise = $.ajax({
+									url: "http://brassbadger.com/api/?api="+badger.api+"&function=upcScan&upc="+upc+"&name="+nice.name,
+									method: "GET",
+									async: true,
+									success: function(g){return;},
+									error: function(jqXHR, textStatus, errorThrown){return;}
+								});
 							},
 							error: function(jqXHR, textStatus, errorThrown){
 								alert("Error looking up product.");
