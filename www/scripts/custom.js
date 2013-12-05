@@ -647,11 +647,11 @@ $(document).ready(function(){
 									},
 									async: true,
 									success: function(res){ 
-										alert("res");
+										alert(res);
 										badger.onResize();
 									},
 									error: function(jqXHR, textStatus, errorThrown){
-										alert("Error looking up product. (Phase 2 of 2)");
+										alert("Error looking up product. (Phase 2 of 2) || " + textStatus + " || " + errorThrown);
 										//errorCallback(textStatus, errorThrown);
 										badger.onResize();
 									}
