@@ -389,6 +389,122 @@ badger.fetch = function(cal){
 	);
 	badger.onResize();
 }
+
+badger.upc = function(result){
+	var upc = result.text + "";
+	upc = upc.replace(/^0+/, '');
+	upc = upc.slice(0, -1);
+	var stores = [];
+	$(".nav-item.stores.checked-v2").each(function(){		
+		var sid = $(this).data("storeid");
+		if(sid && sid != "undefined"){
+			stores.push(sid);
+		}
+	})
+	stores = stores.join(',');
+	var upcLookup = $.ajax({
+		url: "https://mobile.walmart.com/m/j?service=Slap&method=get&p1=&p2=["+upc+"]&p3=["+stores+"]&p4=&p5=&p6=&p7=&p8=&p9=c4tch4spyder&e=1",
+		method: "GET",
+		async: true,
+		dataType : "json",
+		success: function(raw){ 
+			badger.snapper.close();
+			console.log(raw);
+			var nice = {
+				"results" : []
+			};
+			if(raw && raw.length > 0 && raw[0]){
+				nice.name = raw[0]['item']['signingDesc'];
+			}
+			var isAmmo = "No";
+			if( 
+				nice.name.indexOf("357") !== -1 || nice.name.indexOf("38") !== -1 || nice.name.indexOf("380") !== -1 || 
+				nice.name.indexOf("40") !== -1 || nice.name.indexOf("44") !== -1 || nice.name.indexOf("45") !== -1 || 
+				nice.name.indexOf("22") !== -1 || nice.name.indexOf("223") !== -1 || 
+				nice.name.indexOf("243") !== -1 || nice.name.indexOf("06") !== -1 || 
+				nice.name.indexOf("308") !== -1 || nice.name.indexOf("5.56") !== -1 || nice.name.indexOf("7.62") !== -1 || 
+				nice.name.indexOf("17") !== -1 || nice.name.indexOf("12") !== -1 || nice.name.indexOf("20") !== -1 || 
+				nice.name.indexOf("410") !== -1 || nice.name.indexOf("FMJ") !== -1 || nice.name.indexOf("AMMO") !== -1 || 
+				nice.name.indexOf("AUTO") !== -1 || nice.name.indexOf("GRAIN") !== -1 || nice.name.indexOf("GR") !== -1 || 
+				nice.name.indexOf("RNDS") !== -1 || nice.name.indexOf("FED") !== -1 || nice.name.indexOf("TULA") !== -1 || 
+				nice.name.indexOf("JSP") !== -1 || nice.name.indexOf("MAG") !== -1 || nice.name.indexOf("JHP") !== -1 || 
+				nice.name.indexOf("REM") !== -1 || nice.name.indexOf("UMC") !== -1 || nice.name.indexOf("SPL") !== -1 || 
+				nice.name.indexOf("BRASS") !== -1 || nice.name.indexOf("S&W") !== -1 ||
+				nice.name.indexOf("50") !== -1 || nice.name.indexOf("100") !== -1 || nice.name.indexOf("MC") !== -1 || 
+				nice.name.indexOf("COLT") !== -1 || nice.name.indexOf("AMO") !== -1 || nice.name.indexOf("LEAD") !== -1 || 
+				nice.name.indexOf("BOX") !== -1 || nice.name.indexOf("LUGER") !== -1 || nice.name.indexOf("SHO") !== -1 || 
+				nice.name.indexOf("PTD") !== -1 || nice.name.indexOf("SP") !== -1 || nice.name.indexOf("CAL") !== -1 || 
+				nice.name.indexOf("FMC") !== -1 || nice.name.indexOf("BX") !== -1 || nice.name.indexOf("MATCH") !== -1 || 
+				nice.name.indexOf("VARM") !== -1 || nice.name.indexOf("MSR") !== -1 || nice.name.indexOf("FUSI") !== -1 || 
+				nice.name.indexOf("POINT") !== -1 || nice.name.indexOf("SUPER") !== -1 || nice.name.indexOf("BALL") !== -1 || 
+				nice.name.indexOf("HMR") !== -1 || nice.name.indexOf("PREM") !== -1 || nice.name.indexOf("CHP") !== -1 || 
+				nice.name.indexOf("LR") !== -1 || nice.name.indexOf("VELOCITY") !== -1 || 
+				nice.name.indexOf("RIFLE") !== -1 || nice.name.indexOf("NOSE") !== -1 || nice.name.indexOf("QUIET") !== -1 || 
+				nice.name.indexOf("PLATED") !== -1 || nice.name.indexOf("CCI") !== -1 || nice.name.indexOf("SLUG") !== -1 || 
+				nice.name.indexOf("TARGET") !== -1 || nice.name.indexOf("LOAD") !== -1 ||
+				nice.name.indexOf("16") !== -1 || nice.name.indexOf("STS") !== -1 || nice.name.indexOf("BUCK") !== -1 || 
+				nice.name.indexOf("SHOT") !== -1 || nice.name.indexOf("USA") !== -1 || nice.name.indexOf("ARM") !== -1 || 
+				nice.name.indexOf("SABOT") !== -1 || nice.name.indexOf("SPRG") !== -1 || nice.name.indexOf("ACP") !== -1 || 
+				nice.name.indexOf("BROWNING") !== -1 || nice.name.indexOf("WESSON") !== -1 || nice.name.indexOf("45") !== -1 
+			) {
+				isAmmo = "Yes";
+				for(var m in raw[0]['stores']){
+					var code = 5;
+					var status = raw[0]['stores'][m]['stockStatus'];
+					if(raw[0]['stores'][m]['stockStatus'] == "In stock"){
+						code = 4;
+					}
+					if(raw[0]['stores'][m]['stockStatus'] == "Availability unknown"){
+						code = 3;
+						status = "In stock";
+					}
+					if(raw[0]['stores'][m]['stockStatus'] == "Limited stock"){
+						code = 2;
+					}
+					if(raw[0]['stores'][m]['stockStatus'] == "Out of stock"){
+						code = 1;
+					}
+					nice.results[m] = {
+						"address" : raw[0]['stores'][m]['address']['street1'],
+						"cal" : "",
+						"city" : raw[0]['stores'][m]['address']['city'],
+						"code" : code,
+						"name" : raw[0]['item']['signingDesc'],
+						"phone" : "("+raw[0]['stores'][m]['phone']['areaCode']+") "+raw[0]['stores'][m]['phone']['prefix']+"-"+raw[0]['stores'][m]['phone']['suffix'],
+						"price" : raw[0]['stores'][m]['price'],
+						"state" : raw[0]['stores'][m]['address']['state']['code'],
+						"status" : status,
+						"upc" : result.text,
+						"updated" : "just now",
+						"zip" : raw[0]['stores'][m]['address']['zip']['code']
+					};
+				}
+				badger.buildRes(nice);
+			} else {
+				badger.snapper.close();
+				badger.showError("blue", "Not ammo...", "This does not look like ammo. ");
+			}
+
+			
+			
+			badger.onResize();
+			var ajaxPromise = $.ajax({
+				url: "http://brassbadger.com/api/?api="+badger.api+"&function=upcScan&upc="+upc+"&name="+nice.name+"&isAmmo="+isAmmo,
+				method: "GET",
+				async: true,
+				success: function(g){return;},
+				error: function(jqXHR, textStatus, errorThrown){return;}
+			});
+		},
+		error: function(jqXHR, textStatus, errorThrown){
+			badger.snapper.close();
+			badger.showError("blue", "Error looking up product", "No information for this UPC is available for any of the stores you have selected.");
+			//errorCallback(textStatus, errorThrown);
+			badger.onResize();
+		}
+	});
+}
+
 badger.updateOverviewAjax = function(){
 	var stores = badger.getSelectedStores();
 	badger.onResize();
@@ -618,7 +734,23 @@ $(document).ready(function(){
 	});
 	
 	$('#nav-upc').click(function(){
-		var upc = prompt("Enter an 11 or 12 digit UPC-A code");
+		var upc = prompt("Enter a UPC-A code");
+		if(upc){
+			var result = {
+				"cancelled" : false,
+				"text" : upc,
+				"format": "UPC_A"
+			};
+		
+			$("#subHeader").html("Search Results");
+			$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');
+			badger.snapper.close();
+			badger.upc(result);
+			
+		} else {
+			badger.snapper.close();
+			badger.showError("blue", "Invalid UPC", "Only valid 11 or 12 digit UPC-A codes are supported");
+		}
 	});
 	
 	$('#nav-barcode').click(function(){
@@ -641,119 +773,7 @@ $(document).ready(function(){
 						$("#subHeader").html("Scan Results");
 						$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');
 						badger.snapper.close();
-						
-						var upc = result.text + "";
-						upc = upc.replace(/^0+/, '');
-						upc = upc.slice(0, -1);
-						var stores = [];
-						$(".nav-item.stores.checked-v2").each(function(){		
-							var sid = $(this).data("storeid");
-							if(sid && sid != "undefined"){
-								stores.push(sid);
-							}
-						})
-						stores = stores.join(',');
-						var upcLookup = $.ajax({
-							url: "https://mobile.walmart.com/m/j?service=Slap&method=get&p1=&p2=["+upc+"]&p3=["+stores+"]&p4=&p5=&p6=&p7=&p8=&p9=c4tch4spyder&e=1",
-							method: "GET",
-							async: true,
-							dataType : "json",
-							success: function(raw){ 
-								badger.snapper.close();
-								console.log(raw);
-								var nice = {
-									"results" : []
-								};
-								if(raw && raw.length > 0 && raw[0]){
-									nice.name = raw[0]['item']['signingDesc'];
-								}
-								var isAmmo = "No";
-								if( 
-									nice.name.indexOf("357") !== -1 || nice.name.indexOf("38") !== -1 || nice.name.indexOf("380") !== -1 || 
-									nice.name.indexOf("40") !== -1 || nice.name.indexOf("44") !== -1 || nice.name.indexOf("45") !== -1 || 
-									nice.name.indexOf("22") !== -1 || nice.name.indexOf("223") !== -1 || 
-									nice.name.indexOf("243") !== -1 || nice.name.indexOf("06") !== -1 || 
-									nice.name.indexOf("308") !== -1 || nice.name.indexOf("5.56") !== -1 || nice.name.indexOf("7.62") !== -1 || 
-									nice.name.indexOf("17") !== -1 || nice.name.indexOf("12") !== -1 || nice.name.indexOf("20") !== -1 || 
-									nice.name.indexOf("410") !== -1 || nice.name.indexOf("FMJ") !== -1 || nice.name.indexOf("AMMO") !== -1 || 
-									nice.name.indexOf("AUTO") !== -1 || nice.name.indexOf("GRAIN") !== -1 || nice.name.indexOf("GR") !== -1 || 
-									nice.name.indexOf("RNDS") !== -1 || nice.name.indexOf("FED") !== -1 || nice.name.indexOf("TULA") !== -1 || 
-									nice.name.indexOf("JSP") !== -1 || nice.name.indexOf("MAG") !== -1 || nice.name.indexOf("JHP") !== -1 || 
-									nice.name.indexOf("REM") !== -1 || nice.name.indexOf("UMC") !== -1 || nice.name.indexOf("SPL") !== -1 || 
-									nice.name.indexOf("BRASS") !== -1 || nice.name.indexOf("S&W") !== -1 ||
-									nice.name.indexOf("50") !== -1 || nice.name.indexOf("100") !== -1 || nice.name.indexOf("MC") !== -1 || 
-									nice.name.indexOf("COLT") !== -1 || nice.name.indexOf("AMO") !== -1 || nice.name.indexOf("LEAD") !== -1 || 
-									nice.name.indexOf("BOX") !== -1 || nice.name.indexOf("LUGER") !== -1 || nice.name.indexOf("SHO") !== -1 || 
-									nice.name.indexOf("PTD") !== -1 || nice.name.indexOf("SP") !== -1 || nice.name.indexOf("CAL") !== -1 || 
-									nice.name.indexOf("FMC") !== -1 || nice.name.indexOf("BX") !== -1 || nice.name.indexOf("MATCH") !== -1 || 
-									nice.name.indexOf("VARM") !== -1 || nice.name.indexOf("MSR") !== -1 || nice.name.indexOf("FUSI") !== -1 || 
-									nice.name.indexOf("POINT") !== -1 || nice.name.indexOf("SUPER") !== -1 || nice.name.indexOf("BALL") !== -1 || 
-									nice.name.indexOf("HMR") !== -1 || nice.name.indexOf("PREM") !== -1 || nice.name.indexOf("CHP") !== -1 || 
-									nice.name.indexOf("LR") !== -1 || nice.name.indexOf("VELOCITY") !== -1 || 
-									nice.name.indexOf("RIFLE") !== -1 || nice.name.indexOf("NOSE") !== -1 || nice.name.indexOf("QUIET") !== -1 || 
-									nice.name.indexOf("PLATED") !== -1 || nice.name.indexOf("CCI") !== -1 || nice.name.indexOf("SLUG") !== -1 || 
-									nice.name.indexOf("TARGET") !== -1 || nice.name.indexOf("LOAD") !== -1 ||
-									nice.name.indexOf("16") !== -1 || nice.name.indexOf("STS") !== -1 || nice.name.indexOf("BUCK") !== -1 || 
-									nice.name.indexOf("SHOT") !== -1 || nice.name.indexOf("USA") !== -1 || nice.name.indexOf("ARM") !== -1 || 
-									nice.name.indexOf("SABOT") !== -1 || nice.name.indexOf("SPRG") !== -1 || nice.name.indexOf("ACP") !== -1 || 
-									nice.name.indexOf("BROWNING") !== -1 || nice.name.indexOf("WESSON") !== -1 || nice.name.indexOf("45") !== -1 
-								) {
-									isAmmo = "Yes";
-									for(var m in raw[0]['stores']){
-										var code = 5;
-										var status = raw[0]['stores'][m]['stockStatus'];
-										if(raw[0]['stores'][m]['stockStatus'] == "In stock"){
-											code = 4;
-										}
-										if(raw[0]['stores'][m]['stockStatus'] == "Availability unknown"){
-											code = 3;
-											status = "In stock";
-										}
-										if(raw[0]['stores'][m]['stockStatus'] == "Limited stock"){
-											code = 2;
-										}
-										if(raw[0]['stores'][m]['stockStatus'] == "Out of stock"){
-											code = 1;
-										}
-										nice.results[m] = {
-											"address" : raw[0]['stores'][m]['address']['street1'],
-											"cal" : "",
-											"city" : raw[0]['stores'][m]['address']['city'],
-											"code" : code,
-											"name" : raw[0]['item']['signingDesc'],
-											"phone" : "("+raw[0]['stores'][m]['phone']['areaCode']+") "+raw[0]['stores'][m]['phone']['prefix']+"-"+raw[0]['stores'][m]['phone']['suffix'],
-											"price" : raw[0]['stores'][m]['price'],
-											"state" : raw[0]['stores'][m]['address']['state']['code'],
-											"status" : status,
-											"upc" : result.text,
-											"updated" : "just now",
-											"zip" : raw[0]['stores'][m]['address']['zip']['code']
-										};
-									}
-									badger.buildRes(nice);
-								} else {
-									badger.snapper.close();
-									badger.showError("blue", "Not ammo...", "This does not look like ammo. ");
-								}
-
-								
-								
-								badger.onResize();
-								var ajaxPromise = $.ajax({
-									url: "http://brassbadger.com/api/?api="+badger.api+"&function=upcScan&upc="+upc+"&name="+nice.name+"&isAmmo="+isAmmo,
-									method: "GET",
-									async: true,
-									success: function(g){return;},
-									error: function(jqXHR, textStatus, errorThrown){return;}
-								});
-							},
-							error: function(jqXHR, textStatus, errorThrown){
-								badger.snapper.close();
-								badger.showError("blue", "Error looking up product", "No information for this UPC is available for any of the stores you have selected.");
-								//errorCallback(textStatus, errorThrown);
-								badger.onResize();
-							}
-						});
+						badger.upc(result);
 						
 					} else {
 						badger.snapper.close();
