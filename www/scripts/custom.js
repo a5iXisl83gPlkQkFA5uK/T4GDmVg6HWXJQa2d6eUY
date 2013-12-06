@@ -720,6 +720,7 @@ $(document).ready(function(){
 										};
 									}
 								} else {
+									badger.snapper.close();
 									badger.showError("blue", "Not ammo...", "This doesn’t look like ammo. ");
 								}
 
@@ -735,6 +736,7 @@ $(document).ready(function(){
 								});
 							},
 							error: function(jqXHR, textStatus, errorThrown){
+								badger.snapper.close();
 								badger.showError("blue", "Error looking up product", "No information for this UPC is available for any of the stores you have selected.");
 								//errorCallback(textStatus, errorThrown);
 								badger.onResize();
@@ -742,13 +744,15 @@ $(document).ready(function(){
 						});
 						
 					} else {
+						badger.snapper.close();
 						badger.showError("blue", "Invalid barcode", "Only UPC-A codes are supported");
 					}
 				} else {
 					// Cancelled
 				}
 			}, 
-			function (error) {
+			function (error) {	
+				badger.snapper.close();
 				badger.showError("blue", "Error", "Scanning failed (" + error + ")");
 
 			}
