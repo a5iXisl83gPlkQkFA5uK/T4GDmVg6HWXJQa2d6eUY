@@ -19,7 +19,7 @@ $(window).resize(function () {
 });
 
 badger = {};
-badger.api = 1;
+badger.api = 2;
 badger.zip = 46201;
 badger.platform = function(){
 	if(typeof cordova == "undefined"){
@@ -349,16 +349,21 @@ badger.buildRes = function(result){
 			color = "red";
 		if(result.results[i]['code'] == "2")
 			color = "yellow";
-		if(result.results[i]['code'] == "3" || result.results[i]['code'] == "4")
+		if(result.results[i]['code'] == "3")
+			color = "yellowgreen";
+		if(result.results[i]['code'] == "4")
 			color = "green";
 		if(result.results[i]['code'] == "5")
 			color = "blue";	
 		var price = "";
 		if(result.results[i]['price'] != "")
 			price = "$"+result.results[i]['price'];
-			
+		var was = "";
+		if(result.results[i]['previously'] != "Unknown"){
+			was = " was ("+result.results[i]['previously']+")";
+		}
 		if(result.results[i]['status'] != "Ad"){
-			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" for the past "+result.results[i]['since']+" ("+result.results[i]['confidenceLevel']+"%)<br /> Last checked "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
+			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" for the past "+result.results[i]['since']+""+was+"<br /> Last checked "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
 		} else {
 			var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
 			ad.find("a").click(function(e){
@@ -539,7 +544,9 @@ badger.updateOverview = function(result){
 			color = "red";
 		if(result.overview[i]['code'] == "2")
 			color = "yellow";
-		if(result.overview[i]['code'] == "3" || result.overview[i]['code'] == "4")
+		if(result.overview[i]['code'] == "3")
+			color = "yellowgreen";
+		if(result.overview[i]['code'] == "4")
 			color = "green";
 		if(result.overview[i]['code'] == "5")
 			color = "blue";
