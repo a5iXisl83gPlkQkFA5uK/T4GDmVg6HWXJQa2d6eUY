@@ -682,7 +682,7 @@ $(document).ready(function(){
 									nice.name.indexOf("LR") !== -1 || nice.name.indexOf("VELOCITY") !== -1 || 
 									nice.name.indexOf("RIFLE") !== -1 || nice.name.indexOf("NOSE") !== -1 || nice.name.indexOf("QUIET") !== -1 || 
 									nice.name.indexOf("PLATED") !== -1 || nice.name.indexOf("CCI") !== -1 || nice.name.indexOf("SLUG") !== -1 || 
-									nice.name.indexOf("TARGET") !== -1 || nice.name.indexOf("LOAD") !== -1
+									nice.name.indexOf("TARGET") !== -1 || nice.name.indexOf("LOAD") !== -1 ||
 									nice.name.indexOf("16") !== -1 || nice.name.indexOf("STS") !== -1 || nice.name.indexOf("BUCK") !== -1 || 
 									nice.name.indexOf("SHOT") !== -1 || nice.name.indexOf("USA") !== -1 || nice.name.indexOf("ARM") !== -1 || 
 									nice.name.indexOf("SABOT") !== -1 || nice.name.indexOf("SPRG") !== -1 || nice.name.indexOf("ACP") !== -1 || 
