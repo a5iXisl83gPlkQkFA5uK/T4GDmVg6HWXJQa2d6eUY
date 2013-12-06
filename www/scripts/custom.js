@@ -617,6 +617,10 @@ $(document).ready(function(){
 		e.preventDefault();
 	});
 	
+	$('#nav-upc').click(function(){
+		var upc = prompt("Enter an 11 or 12 digit UPC-A code");
+	});
+	
 	$('#nav-barcode').click(function(){
 		var result2 = {
 			"cancelled" : false,
@@ -624,6 +628,12 @@ $(document).ready(function(){
 			"format": "UPC_A"
 			
 		};
+		if(badger.platform() != "app"){
+			if (confirm('This feature is only available from the Android app. Do you want to install it from Google Play?')){
+				window.open( "https://play.google.com/store/apps/details?id=com.honsoworld.brassbadger", '_system' );
+			}
+			return;
+		}
 		cordova.plugins.barcodeScanner.scan(
 			function (result) {
 				if(!result.cancelled){
