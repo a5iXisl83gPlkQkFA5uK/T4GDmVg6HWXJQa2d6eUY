@@ -657,7 +657,7 @@ $(document).ready(function(){
 								if(raw && raw.length > 0 && raw[0]){
 									nice.name = raw[0]['item']['signingDesc'];
 								}
-								var isAmmo = false;
+								var isAmmo = "No";
 								if( 
 									nice.name.indexOf("357") !== -1 || nice.name.indexOf("38") !== -1 || nice.name.indexOf("380") !== -1 || 
 									nice.name.indexOf("40") !== -1 || nice.name.indexOf("44") !== -1 || nice.name.indexOf("45") !== -1 || 
@@ -688,7 +688,7 @@ $(document).ready(function(){
 									nice.name.indexOf("SABOT") !== -1 || nice.name.indexOf("SPRG") !== -1 || nice.name.indexOf("ACP") !== -1 || 
 									nice.name.indexOf("BROWNING") !== -1 || nice.name.indexOf("WESSON") !== -1 || nice.name.indexOf("45") !== -1 
 								) {
-									isAmmo = true;
+									isAmmo = "Yes";
 									for(var m in raw[0]['stores']){
 										var code = 5;
 										var status = raw[0]['stores'][m]['stockStatus'];
@@ -723,7 +723,7 @@ $(document).ready(function(){
 									badger.buildRes(nice);
 								} else {
 									badger.snapper.close();
-									badger.showError("blue", "Not ammo...", "This doesn’t look like ammo. ");
+									badger.showError("blue", "Not ammo...", "This does not look like ammo. ");
 								}
 
 								
