@@ -360,7 +360,7 @@ badger.buildRes = function(result){
 			price = "$"+result.results[i]['price'];
 		var was = "";
 		if(result.results[i]['previously'] != "Unknown"){
-			was = " was ("+result.results[i]['previously']+")";
+			was = " (was "+result.results[i]['previously']+")";
 		}
 		if(result.results[i]['status'] != "Ad"){
 			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" for the past "+result.results[i]['since']+""+was+"<br /> Last checked "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
