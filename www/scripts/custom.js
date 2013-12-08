@@ -85,9 +85,9 @@ badger.isOnLine = function(){
 }
 
 badger.cache = {
-	"_DOM_LIMIT" : 20,
-	"_DOM_TIMEOUT": 900, // 15 min
-	"_LOCAL_TIMEOUT" : 900, // 15 min
+	"_DOM_LIMIT" : 5,
+	"_DOM_TIMEOUT": 300, // 5 min
+	"_LOCAL_TIMEOUT" : 300, // 5 min
 	
 	"domCache": new Object(),
 	
@@ -399,6 +399,24 @@ badger.fetch = function(cal){
 	badger.onResize();
 }
 
+badger.upcFetch = function(upc){
+	var stores = badger.getSelectedStores();
+	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');	
+	badger.snapper.close();
+	badger.cache.dom(
+		"http://brassbadger.com/api/?api="+badger.api+"&function=upc&zip="+badger.zip+"&upc="+upc+"&store="+stores, 
+		function(result){
+			badger.zip = result.request.zip;
+			badger.buildRes(result);
+			badger.updateOverview(result);
+		},
+		function(textStatus, errorThrown){
+			badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
+		}
+	);
+	badger.onResize();
+}
+
 badger.upc = function(result){
 	var upc = result.text + "";
 	upc = upc.replace(/^0+/, '');
@@ -540,6 +558,7 @@ badger.updateOverview = function(result){
 		.removeClass("type-grey")
 		.removeClass("type-red")
 		.removeClass("type-yellow")
+		.removeClass("type-yellowgreen")
 		.removeClass("type-green")
 		.addClass("type-grey");
 	for (var i = 0; i < result.overview.length; i++) {
@@ -559,6 +578,7 @@ badger.updateOverview = function(result){
 			.removeClass("type-grey")
 			.removeClass("type-red")
 			.removeClass("type-yellow")
+			.removeClass("type-yellowgreen")
 			.removeClass("type-green")
 			.addClass("type-" + color);
 	}
@@ -573,6 +593,7 @@ badger.geoLocateCallback = function(json){
 		.removeClass("type-grey")
 		.removeClass("type-red")
 		.removeClass("type-yellow")
+		.removeClass("type-yellowgreen")
 		.removeClass("type-green")
 		.addClass("type-grey");
 	badger.getZipStores(function(){
@@ -692,6 +713,7 @@ $(document).ready(function(){
 				.removeClass("type-grey")
 				.removeClass("type-red")
 				.removeClass("type-yellow")
+				.removeClass("type-yellowgreen")
 				.removeClass("type-green")
 				.addClass("type-grey");
 			badger.getZipStores(function(){
@@ -748,17 +770,8 @@ $(document).ready(function(){
 	$('#nav-upc').click(function(){
 		var upc = prompt("Enter a UPC-A code");
 		if(upc){
-			var result = {
-				"cancelled" : false,
-				"text" : upc,
-				"format": "UPC_A"
-			};
-		
 			$("#subHeader").html("Search Results");
-			$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');
-			badger.snapper.close();
-			badger.upc(result);
-			
+			badger.upcFetch(upc);
 		} else {
 			badger.snapper.close();
 			badger.showError("blue", "Invalid UPC", "Only valid 11 or 12 digit UPC-A codes are supported");
@@ -783,9 +796,7 @@ $(document).ready(function(){
 				if(!result.cancelled){
 					if(result.format == "UPC_A"){
 						$("#subHeader").html("Scan Results");
-						$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');
-						badger.snapper.close();
-						badger.upc(result);
+						badger.upcFetch(upc);
 						
 					} else {
 						badger.snapper.close();
