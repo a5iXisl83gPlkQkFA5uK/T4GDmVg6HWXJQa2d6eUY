@@ -786,6 +786,7 @@ $(document).ready(function(){
 			function (result) {
 				if(!result.cancelled){
 					if(result.format == "UPC_A"){
+						alert(result.text);
 						$("#subHeader").html("Scan Results");
 						badger.upcFetch(result.text);
 						
