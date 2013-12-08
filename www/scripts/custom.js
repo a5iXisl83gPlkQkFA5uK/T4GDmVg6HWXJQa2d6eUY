@@ -787,7 +787,7 @@ $(document).ready(function(){
 				if(!result.cancelled){
 					if(result.format == "UPC_A"){
 						$("#subHeader").html("Scan Results");
-						badger.upcFetch(upc);
+						badger.upcFetch(result.text);
 						
 					} else {
 						badger.snapper.close();
