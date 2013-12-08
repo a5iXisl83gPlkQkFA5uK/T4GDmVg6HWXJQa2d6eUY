@@ -772,19 +772,10 @@ $(document).ready(function(){
 		if(upc){
 			$("#subHeader").html("Search Results");
 			badger.upcFetch(upc);
-		} else {
-			badger.snapper.close();
-			badger.showError("blue", "Invalid UPC", "Only valid 11 or 12 digit UPC-A codes are supported");
 		}
 	});
 	
 	$('#nav-barcode').click(function(){
-		var result2 = {
-			"cancelled" : false,
-			"text" : "814950012019",
-			"format": "UPC_A"
-			
-		};
 		if(badger.platform() != "app"){
 			if (confirm('This feature is only available from the Android app. Do you want to install it from Google Play?')){
 				window.open( "https://play.google.com/store/apps/details?id=com.honsoworld.brassbadger", '_system' );
@@ -802,8 +793,6 @@ $(document).ready(function(){
 						badger.snapper.close();
 						badger.showError("blue", "Invalid barcode", "Only UPC-A codes are supported");
 					}
-				} else {
-					// Cancelled
 				}
 			}, 
 			function (error) {	
