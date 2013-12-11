@@ -371,7 +371,7 @@ badger.buildRes = function(result){
 			
 		}
 		if(result.results[i]['status'] != "Ad"){
-			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p>"+result.results[i]['status']+""+since+""+was+"<br /><b>"+price+"</b> Last checked "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
+			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p>"+result.results[i]['status']+""+since+""+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p><div class='tab-cnt'> <div class='tab-tr'><p class='tab-p'><b>"+price+"</b> as of "+result.results[i]['updated']+"</p><div class='like-btn like-h'>99</div><div class='dislike-btn '>99</div></div></div></div>");
 		} else {
 			var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
 			ad.find("a").click(function(e){
