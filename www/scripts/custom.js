@@ -376,28 +376,49 @@ badger.buildRes = function(result){
 			var dislikeBtn = $("<div class='dislike-btn'>0</div>");
 			likeBtn.click((function(lb, dlb, sr){
 				return function(){
-					dlb.removeClass('dislike-h');    
+					var lct = lb.text();
+					var dlct = dlb.text();
+					if(dlb.hasClass('dislike-h')){
+						dlct--;
+					}
+					if(!lb.hasClass('like-h')){
+						lct++;
+					}
+					dlb.removeClass('dislike-h');
+					dlb.html(dlct);
+					lb.html(lct);
 					lb.addClass('like-h');
-					$.ajax({
+					/*$.ajax({
 						type:"POST",
 						url:"ajax.php",
 						data:'act=like&pageID='+sr,
 						success: function(){
 						}
-					});
+					});*/
 				}
 			})(likeBtn, dislikeBtn, result.results[i]['stock_reference']));
 			dislikeBtn.click((function(lb, dlb, sr){
 				return function(){
+					var lct = lb.text();
+					var dlct = dlb.text();
+					if(lb.hasClass('like-h')){
+						lct--;
+					}
+					if(!dlb.hasClass('dislike-h')){
+						dlct++;
+					}
+					lb.removeClass('like-h');
+					lb.html(lct);
+					dlb.html(dlct);
 					lb.removeClass('like-h');
 					dlb.addClass('dislike-h');
-					$.ajax({
+					/*$.ajax({
 						type:"POST",
 						url:"ajax.php",
 						data:'act=dislike&pageID='+ sr,
 						success: function(){
 						}
-					});
+					});*/
 				}
 			})(likeBtn, dislikeBtn, result.results[i]['stock_reference']));
 			
