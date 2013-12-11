@@ -385,6 +385,7 @@ badger.buildRes = function(result){
 						lct++;
 					}
 					dlb.removeClass('dislike-h');
+					lb.removeClass('like-h');
 					dlb.html(dlct);
 					lb.html(lct);
 					lb.addClass('like-h');
@@ -408,9 +409,9 @@ badger.buildRes = function(result){
 						dlct++;
 					}
 					lb.removeClass('like-h');
+					dlb.removeClass('dislike-h');
 					lb.html(lct);
 					dlb.html(dlct);
-					lb.removeClass('like-h');
 					dlb.addClass('dislike-h');
 					/*$.ajax({
 						type:"POST",
