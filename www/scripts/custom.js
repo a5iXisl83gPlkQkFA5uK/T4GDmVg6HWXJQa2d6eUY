@@ -380,7 +380,7 @@ badger.buildRes = function(result){
 			});
 			$("#apiResults").append(ad);
 			// /*
-			$(ad).find('img.avant_adb_image,img.avant_adb_image_tracking').each(function(){
+			$(ad).find('img.avant_adb_image').each(function(){
 				$(this).error(function(){
 					if(!this.complete || (typeof this.naturalWidth != 'undefined' && this.naturalWidth == 0)){
 						$(this).closest('.ad').hide();
