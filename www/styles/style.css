@@ -41,26 +41,6 @@
 .static {
 	display:none;
 }
-.tab-p{
-	float:left !important;
-	display:block;
-}
-.like-btn, .dislike-btn{
-	width: auto; height: 18px; padding: 0 1px 0 22px; 
-	float: right; 
-	margin-right: 4px;
-	cursor: pointer; color: #333333; font-size: 13px; line-height: 18px;
-
-}
-.like-btn{background: url(../images/like-ico.png) 3px 50% no-repeat; }
-.like-btn:hover, .like-h{
-	background: url(../images/like-ico-h.png) 3px 50% no-repeat;
-}
-.dislike-btn{background: url(../images/dislike-ico.png) 3px 50% no-repeat; }
-.dislike-btn:hover, .dislike-h{
-	background: url(../images/dislike-ico-h.png) 3px 50% no-repeat;
-}
-
 #preload-01 { background: url(../images/blue.png) no-repeat -9999px -9999px; }
 #preload-02 { background: url(../images/green.png) no-repeat -9999px -9999px; }
 #preload-03 { background: url(../images/yellow.png) no-repeat -9999px -9999px; }

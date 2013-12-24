@@ -94,6 +94,8 @@
                 return (cache.vendor==='Moz' || cache.vendor==='ms') ? 'transitionend' : cache.vendor+'TransitionEnd';
             },
             canTransform: function(){
+				var c = cache.vendor+'Transform';
+				if(c == "undefinedTransform") return false;
                 return typeof settings.element.style[cache.vendor+'Transform'] !== 'undefined';
             },
             deepExtend: function(destination, source) {
