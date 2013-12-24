@@ -336,6 +336,55 @@ badger.setHeight = function(){
 		winnerHeight = windowHeight;
 	$(".page-content").height(windowHeight);
 }
+badger.like = function(stockRef){
+	var lb = $("#like-"+stockRef);
+	var dlb = $("#dislike-"+stockRef);
+	var lct = lb.text();
+	var dlct = dlb.text();
+	if(dlb.hasClass('dislike-h')){
+		dlct--;
+	}
+	if(!lb.hasClass('like-h')){
+		lct++;
+	}
+	dlb.removeClass('dislike-h');
+	lb.removeClass('like-h');
+	dlb.html(dlct);
+	lb.html(lct);
+	lb.addClass('like-h');
+	/*$.ajax({
+		type:"POST",
+		url:"ajax.php",
+		data:'act=like&pageID='+stockRef,
+		success: function(){
+		}
+	});*/
+}
+badger.dislike = function(stockRef){
+	var lb = $("#like-"+stockRef);
+	var dlb = $("#dislike-"+stockRef);
+	var lct = lb.text();
+	var dlct = dlb.text();
+	if(lb.hasClass('like-h')){
+		lct--;
+	}
+	if(!dlb.hasClass('dislike-h')){
+		dlct++;
+	}
+	lb.removeClass('like-h');
+	dlb.removeClass('dislike-h');
+	lb.html(lct);
+	dlb.html(dlct);
+	dlb.addClass('dislike-h');
+	/*$.ajax({
+		type:"POST",
+		url:"ajax.php",
+		data:'act=dislike&pageID='+ sr,
+		success: function(){
+		}
+	});*/
+}
+
 badger.buildRes = function(result){
 	$("#apiResults").html("");
 	var zStr = "" + badger.zip;
@@ -371,60 +420,7 @@ badger.buildRes = function(result){
 			
 		}
 		if(result.results[i]['status'] != "Ad"){
-			var sr = result.results[i]['stock_reference'];
-			var likeBtn = $("<div class='like-btn'>0</div>");
-			var dislikeBtn = $("<div class='dislike-btn'>0</div>");
-			likeBtn.click((function(lb, dlb, sr){
-				return function(){
-					var lct = lb.text();
-					var dlct = dlb.text();
-					if(dlb.hasClass('dislike-h')){
-						dlct--;
-					}
-					if(!lb.hasClass('like-h')){
-						lct++;
-					}
-					dlb.removeClass('dislike-h');
-					lb.removeClass('like-h');
-					dlb.html(dlct);
-					lb.html(lct);
-					lb.addClass('like-h');
-					/*$.ajax({
-						type:"POST",
-						url:"ajax.php",
-						data:'act=like&pageID='+sr,
-						success: function(){
-						}
-					});*/
-				}
-			})(likeBtn, dislikeBtn, result.results[i]['stock_reference']));
-			dislikeBtn.click((function(lb, dlb, sr){
-				return function(){
-					var lct = lb.text();
-					var dlct = dlb.text();
-					if(lb.hasClass('like-h')){
-						lct--;
-					}
-					if(!dlb.hasClass('dislike-h')){
-						dlct++;
-					}
-					lb.removeClass('like-h');
-					dlb.removeClass('dislike-h');
-					lb.html(lct);
-					dlb.html(dlct);
-					dlb.addClass('dislike-h');
-					/*$.ajax({
-						type:"POST",
-						url:"ajax.php",
-						data:'act=dislike&pageID='+ sr,
-						success: function(){
-						}
-					});*/
-				}
-			})(likeBtn, dislikeBtn, result.results[i]['stock_reference']));
-			
-			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p>"+result.results[i]['status']+""+since+""+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p><div class='tab-cnt'> <div class='tab-tr'><p class='tab-p tab-"+result.results[i]['stock_reference']+"'><b>"+price+"</b> as of "+result.results[i]['updated']+"</p></div></div></div>")
-			$(".tab-"+result.results[i]['stock_reference']).after(likeBtn).after(dislikeBtn);
+			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p>"+result.results[i]['status']+""+since+""+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p><div class='tab-cnt'> <div class='tab-tr'><p class='tab-p tab-"+result.results[i]['stock_reference']+"'><b>"+price+"</b> as of "+result.results[i]['updated']+"</p><div id='dislike-"+result.results[i]['stock_reference']+"' class='dislike-btn' onClick=\"badger.dislike('"+result.results[i]['stock_reference']+"');\">0</div><div id='like-"+result.results[i]['stock_reference']+"' class='like-btn' onClick=\"badger.like('"+result.results[i]['stock_reference']+"');\">0</div></div></div></div>");
 		} else {
 			var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
 			ad.find("a").click(function(e){
