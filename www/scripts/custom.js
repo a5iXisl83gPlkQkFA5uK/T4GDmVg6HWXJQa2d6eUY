@@ -384,10 +384,15 @@ badger.buildRes = function(result){
 				$(this).error(function(){
 					if(!this.complete || (typeof this.naturalWidth != 'undefined' && this.naturalWidth == 0)){
 						$(this).closest('.ad').hide();
-						//$(this).closest('.ad').after('<div class=\'notification-box blue-box ad blocked\'><p><form target=\'_system\' method=\'post\' action=\'https://www.paypal.com/cgi-bin/webscr\'><input type=\'hidden\' value=\'_s-xclick\' name=\'cmd\'><input type=\'hidden\' value=\'525F5V88XVC2E\' name=\'hosted_button_id\'><input type=\'image\' border=\'0\' alt=\'PayPal - The safer, easier way to pay online!\' name=\'submit\' style=\'padding-left:50px;\' src=\'https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif\'><img width=\'1\' height=\'1\' border=\'0\' src=\'https://www.paypalobjects.com/en_US/i/scr/pixel.gif\'></form></p></div>');
-						$(this).closest('.ad').after('<div class=\'notification-box blue-box ad blocked\'><p><a href=\'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VM3R9BG9SQ9NS\' target=\'_system\'>Consider making a donation to help offset the cost of server resources and development.</a></p></div>');
+						var newAd = $('<div class=\'notification-box blue-box ad blocked\'><p><a href=\'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VM3R9BG9SQ9NS\'>Consider making a donation to help offset the cost of server resources and development.</a></p></div>');
+						newAd.find("a").click(function(e){
+							window.open( $(this).attr('href'), '_system' );
+							e.preventDefault();
+						});
+						$(this).closest('.ad').after(newAd);
 						$(".notification-box.blue-box.ad.blocked").hide();
 						$(".notification-box.blue-box.ad.blocked").first().show();
+
 					}
 				});
 
