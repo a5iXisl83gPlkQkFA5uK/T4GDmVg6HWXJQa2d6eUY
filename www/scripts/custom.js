@@ -14,55 +14,16 @@ $(window).load(function() {
 	$("#status").fadeOut();
 	$("#preloader").delay(500).fadeOut("slow");
 });
-$(window).resize(function () {
-   badger.onResize();
-});
 
 badger = {};
 badger.api = 2;
 badger.zip = 46201;
 badger.platform = function(){
+	return "app";
 	if(typeof cordova == "undefined"){
 		return "browser";
 	} else {
 		return "app";
-	}
-}
-badger.onResize = function(){
-	var windowHeight = innerHeight || 
-		window.innerHeight ||
-		document.documentElement.clientHeight ||
-		document.body.clientHeight;
-	var windowWidth = innerWidth || 
-		window.innerWidth ||
-		document.documentElement.clientWidth ||
-		document.body.clientWidth;
-	var sidebarHeight = $(".page-sidebar-scroll")[0].scrollHeight;
-	var contentHeight = $("#content")[0].scrollHeight;
-	
-	if($(window).width() < 720){
-		try{
-			badger.snapper.enable();
-		} catch(err){}
-		
-		var winnerHeight = sidebarHeight;
-		if(windowHeight > sidebarHeight)
-			winnerHeight = windowHeight;
-		$("#content").css("height", windowHeight);
-		$("#content").css("width", "100%");
-		
-	} else {
-		try{
-			badger.snapper.enable();
-			badger.snapper.open("left");
-			badger.snapper.disable();
-		} catch(err){}
-		var adjustment = 0;
-		if(windowHeight > contentHeight){
-			adjustment = 20;
-		}
-		$("#content").css("height", "100%");
-		$("#content").css("width", windowWidth - 260 + adjustment);
 	}
 }
 badger.isOnLine = function(){
@@ -123,16 +84,16 @@ badger.cache = {
 							"num": 1
 						};
 						successCallback(  badger.cache.domCache[resUrl]['res']  );
-						badger.onResize();
+						
 					},
 					error: function(jqXHR, textStatus, errorThrown){
 						errorCallback(textStatus, errorThrown);
-						badger.onResize();
+						
 					}
 				});
 			} else {
 				errorCallback("offline", "You are not connected to the internet!");
-				badger.onResize();
+				
 			}
 		}
 		else {
@@ -140,7 +101,7 @@ badger.cache = {
 				badger.cache.domCache[resUrl]['num']++
 			}
 			successCallback(  badger.cache.domCache[resUrl]['res']  );
-			badger.onResize();
+			
 		}
 
 	},
@@ -159,17 +120,17 @@ badger.cache = {
 						window.localStorage.setItem( 'localCache_'+resUrl+'_content', res);
 						window.localStorage.setItem( 'localCache_'+resUrl+'_time', parseInt(  new Date().getTime() / 1000  ) );
 						successCallback( res );
-						badger.onResize();
+						
 						setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 					},
 					error: function(jqXHR, textStatus, errorThrown){
 						if(cachedRes){
 							successCallback( cachedRes );
-							badger.onResize();
+							
 							setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 						} else {
 							errorCallback(textStatus, errorThrown);
-							badger.onResize();
+							
 							setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 						}
 					}
@@ -177,11 +138,11 @@ badger.cache = {
 			} else {
 				if(cachedRes){
 					successCallback( cachedRes );
-					badger.onResize();
+					
 					setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 				} else {
 					errorCallback("offline", "You are not connected to the internet!");
-					badger.onResize();
+					
 					setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 					
 				}
@@ -189,7 +150,7 @@ badger.cache = {
 		}
 		else {
 			successCallback( cachedRes );
-			badger.onResize();
+			
 			setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 		}
 	}
@@ -265,7 +226,7 @@ badger.getZipStores = function(callback){
 				$("#nav-stores-text").html("NEAR " + badger.zip);
 				window.localStorage.setItem( 'zipcode', badger.zip);
 			}
-			badger.onResize();
+			
 			callback();
 		},
 		function(textStatus, errorThrown){
@@ -277,8 +238,6 @@ badger.getZipStores = function(callback){
 
 badger.loadPage = function(page, doClose){
 	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');
-	if(doClose)
-		badger.snapper.close();
 	setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 	var title = "";
 	var url = "";
@@ -295,7 +254,7 @@ badger.loadPage = function(page, doClose){
 			break;
 	}
 	
-	$("#subHeader").html(title);
+	//$("#subHeader").html(title);
 	badger.cache.local(
 		url, 
 		function(result){
@@ -313,6 +272,7 @@ badger.showError = function(color, title, body){
 }
 
 badger.getSelectedStores = function(){
+	return "|2339|1547|3851";
 	var stores = "";
 	$(".nav-item.stores.checked-v2").each(function(){		var sid = $(this).data("storeid");		if(sid && sid != "undefined"){
 			stores += "|" + sid;		}
@@ -325,17 +285,6 @@ badger.getSelectedStores = function(){
 	return stores;
 }
 
-badger.setHeight = function(){
-	var windowHeight = innerHeight || 
-		window.innerHeight ||
-		document.documentElement.clientHeight ||
-		document.body.clientHeight;
-	var sidebarHeight = $(".page-sidebar-scroll")[0].scrollHeight;
-	var winnerHeight = sidebarHeight;
-	if(windowHeight > sidebarHeight)
-		winnerHeight = windowHeight;
-	$(".page-content").height(windowHeight);
-}
 badger.buildRes = function(result){
 	$("#apiResults").html("");
 	var zStr = "" + badger.zip;
@@ -373,30 +322,32 @@ badger.buildRes = function(result){
 		if(result.results[i]['status'] != "Ad"){
 			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p>"+result.results[i]['status']+""+since+""+was+"<br /><b>"+price+"</b> Last checked "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
 		} else {
-			var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
-			ad.find("a").click(function(e){
-				window.open( $(this).attr('href'), '_system' );
-				e.preventDefault();
-			});
-			$("#apiResults").append(ad);
-			// /*
-			$(ad).find('img.avant_adb_image').each(function(){
-				$(this).error(function(){
-					if(!this.complete || (typeof this.naturalWidth != 'undefined' && this.naturalWidth == 0)){
-						$(this).closest('.ad').hide();
-						var newAd = $('<div class=\'notification-box blue-box ad blocked\'><p><a href=\'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VM3R9BG9SQ9NS\'>Consider making a donation to help offset the cost of server resources and development.</a></p></div>');
-						newAd.find("a").click(function(e){
-							window.open( $(this).attr('href'), '_system' );
-							e.preventDefault();
-						});
-						$(this).closest('.ad').after(newAd);
-						$(".notification-box.blue-box.ad.blocked").hide();
-						$(".notification-box.blue-box.ad.blocked").first().show();
-
-					}
+			if(false){
+				var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
+				ad.find("a").click(function(e){
+					window.open( $(this).attr('href'), '_system' );
+					e.preventDefault();
 				});
+				$("#apiResults").append(ad);
+				// /*
+				$(ad).find('img.avant_adb_image').each(function(){
+					$(this).error(function(){
+						if(!this.complete || (typeof this.naturalWidth != 'undefined' && this.naturalWidth == 0)){
+							$(this).closest('.ad').hide();
+							var newAd = $('<div class=\'notification-box blue-box ad blocked\'><p><a href=\'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VM3R9BG9SQ9NS\'>Consider making a donation to help offset the cost of server resources and development.</a></p></div>');
+							newAd.find("a").click(function(e){
+								window.open( $(this).attr('href'), '_system' );
+								e.preventDefault();
+							});
+							$(this).closest('.ad').after(newAd);
+							$(".notification-box.blue-box.ad.blocked").hide();
+							$(".notification-box.blue-box.ad.blocked").first().show();
 
-			});
+						}
+					});
+
+				});
+			}
 			// */
 		}
 
@@ -407,7 +358,6 @@ badger.buildRes = function(result){
 badger.fetch = function(cal){
 	var stores = badger.getSelectedStores();
 	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');	
-	badger.snapper.close();
 	badger.cache.dom(
 		"http://brassbadger.com/api/?api="+badger.api+"&function=cal&zip="+badger.zip+"&cal="+cal+"&store="+stores, 
 		function(result){
@@ -419,13 +369,12 @@ badger.fetch = function(cal){
 			badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
 		}
 	);
-	badger.onResize();
+	
 }
 
 badger.upcFetch = function(upc){
 	var stores = badger.getSelectedStores();
 	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');	
-	badger.snapper.close();
 	badger.cache.dom(
 		"http://brassbadger.com/api/?api="+badger.api+"&function=upc&zip="+badger.zip+"&upc="+upc+"&store="+stores, 
 		function(result){
@@ -435,13 +384,13 @@ badger.upcFetch = function(upc){
 			badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
 		}
 	);
-	badger.onResize();
+	
 }
 
 
 badger.updateOverviewAjax = function(){
 	var stores = badger.getSelectedStores();
-	badger.onResize();
+	
 	badger.cache.dom(
 		"http://brassbadger.com/api/?api="+badger.api+"&function=overview&zip="+badger.zip+"&store="+stores, 
 		function(result){
@@ -452,7 +401,7 @@ badger.updateOverviewAjax = function(){
 				$("#nav-stores-text").html("NEAR " + badger.zip);
 				window.localStorage.setItem( 'zipcode', badger.zip);
 			}
-			badger.onResize();
+			
 		},
 		function(textStatus, errorThrown){
 			//badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
@@ -528,78 +477,14 @@ badger.geoLocateStartTimer = function(){
 
 $(document).ready(function(){
 	badger.zip = window.localStorage.getItem( 'zipcode' );
-	
-	badger.snapper = new Snap({
-	  element: document.getElementById('content')
-	});
-
-	$('.flat-menu').click(function(){
-		badger.snapper.open('left');
-		badger.onResize();
-		return false;
-	});
-	
-	$('.sidebar-header').click(function(){
-		badger.snapper.close();
-		badger.onResize();
-		return false;
-	});
-
-	
-	$('.deploy-sidebar, .close-icon').click(function(){
-		if( badger.snapper.state().state=="left" ){
-			badger.snapper.close();
-		} else {
-			badger.snapper.open('left');
+	$('#caliber').change(function(){ 
+		if($(this).val() != "FALSE"){
+			badger.fetch($(this).val());
+			$(this).blur();
 		}
-		badger.onResize();
-		return false;
 	});
-
-	
-	$('.page-coach').hide();
-	
-	$('.nav-coach').click(function(){
-		$('.page-coach').fadeIn(200);
-		document.ontouchmove = function(event){ event.preventDefault();}
-		badger.snapper.close();
-		badger.onResize();
-	});
-	
-	$('.page-coach').click(function(){
-		$('.page-coach').fadeOut(200);
-		document.ontouchmove = function(event){ event.allowDefault();}
-		badger.onResize();
-	});
-	document.addEventListener("menubutton", function(){$(".deploy-sidebar").click();}, false);
-	//document.addEventListener("backbutton", function(){$(".deploy-sidebar").click();}, false);
 	badger.loadPage("start", true);
 
-	$('#cal-357').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("357"); });
-	$('#cal-38').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("38"); });
-	$('#cal-380').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("380"); });
-	$('#cal-40').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("40"); });
-	$('#cal-44').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("44"); });
-	$('#cal-45').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("45"); });
-	$('#cal-45colt').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("45colt"); });
-	$('#cal-9').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("9"); });
-	$('#cal-12').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("12"); });
-	$('#cal-20').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("20"); });
-	$('#cal-410').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("410"); });
-	$('#cal-17').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("17"); });
-	$('#cal-22').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("22"); });
-	$('#cal-22250').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("22250"); });
-	$('#cal-223').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("223"); });
-	$('#cal-243').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("243"); });
-	$('#cal-270').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("270"); });
-	$('#cal-22mag').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("22mag"); });
-	$('#cal-3006').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("3006"); });
-	$('#cal-3030').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("3030"); });
-	$('#cal-308').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("308"); });
-	$('#cal-556').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("556"); });
-	$('#cal-762').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("762"); });
-	$('#cal-300aac').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("300aac"); });
-	$('#cal-68spc').click(function(){ $("#subHeader").html($(this).text()); badger.fetch("68spc"); });
 	
 	
 	
@@ -611,7 +496,7 @@ $(document).ready(function(){
 			navigator.splashscreen.hide();
 		} catch(err){}
 	});
-	//$(".deploy-sidebar").click();
+	
 	$("#nav-zip").click(function(){	
 		var newZip = prompt("Zipcode:",badger.zip);
 		if(newZip){
@@ -630,6 +515,7 @@ $(document).ready(function(){
 			});
 		}
 	});
+	
 	$(".deploy-home").click(function(){
 		badger.loadPage("start", true);
 	});
@@ -699,17 +585,15 @@ $(document).ready(function(){
 						badger.upcFetch(result.text);
 						
 					} else {
-						badger.snapper.close();
 						badger.showError("blue", "Invalid barcode", "Only UPC-A codes are supported");
 					}
 				}
 			}, 
 			function (error) {	
-				badger.snapper.close();
 				badger.showError("blue", "Error", "Scanning failed (" + error + ")");
 
 			}
 		);
 	});
-	badger.onResize();
+	
 });
