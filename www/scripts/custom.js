@@ -19,7 +19,6 @@ badger = {};
 badger.api = 2;
 badger.zip = 46201;
 badger.platform = function(){
-	return "app";
 	if(typeof cordova == "undefined"){
 		return "browser";
 	} else {
@@ -237,6 +236,7 @@ badger.getZipStores = function(callback){
 }
 
 badger.loadPage = function(page, doClose){
+	document.getElementById("caliberMenu").selectedIndex = 0;
 	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');
 	setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 	var title = "";
@@ -477,14 +477,103 @@ badger.geoLocateStartTimer = function(){
 
 $(document).ready(function(){
 	badger.zip = window.localStorage.getItem( 'zipcode' );
-	$('#caliber').change(function(){ 
+	$('#caliberMenu').change(function(){ 
 		if($(this).val() != "FALSE"){
 			badger.fetch($(this).val());
 			$(this).blur();
 		}
 	});
 	badger.loadPage("start", true);
+	document.getElementById("hiddenMenu").selectedIndex = -1;
+	
+	document.addEventListener("menubutton", function(){
+		$(".deploy-home").click();
+	}, false);
+	
+	
+	$('#hiddenMenu').change(function(){ 
+		var v = $(this).val();
+		$(this).blur();
+		document.getElementById("hiddenMenu").selectedIndex = -1;
+		
+		if(v == "start"){
+			badger.loadPage("start", true);
+			return;
+		}
+		
+		if(v == "caliber"){
+			setTimeout(function(){
+			var element = $("#caliberMenu")[0];
+				if (document.createEvent) {
+					var e = document.createEvent("MouseEvents");
+					e.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+					element.dispatchEvent(e);
+				} else if (element.fireEvent) {
+					element.fireEvent("onmousedown");
+				}
+			}, 200);
+			return;
+		}
+		
+		if(v == "scan"){
+			if(badger.platform() != "app"){
+				if (confirm('This feature is only available from the Android app. Do you want to install it from Google Play?')){
+					window.open( "https://play.google.com/store/apps/details?id=com.honsoworld.brassbadger", '_system' );
+				}
+				return;
+			}
+			cordova.plugins.barcodeScanner.scan(
+				function (result) {
+					if(!result.cancelled){
+						if(result.format == "UPC_A"){
+							//$("#subHeader").html("Scan Results");
+							badger.upcFetch(result.text);
+							
+						} else {
+							badger.showError("blue", "Invalid barcode", "Only UPC-A codes are supported");
+						}
+					}
+				}, 
+				function (error) {	
+					badger.showError("blue", "Error", "Scanning failed (" + error + ")");
 
+				}
+			);
+			return;
+		}
+		
+		if(v == "type"){
+			var upc = prompt("Enter a UPC-A code");
+			if(upc){
+				//$("#subHeader").html("Search Results");
+				badger.upcFetch(upc);
+			}
+			return;
+		}
+		
+		if(v == "zip"){
+			var newZip = prompt("Zipcode:",badger.zip);
+			if(newZip){
+				badger.zip = badger.validateZip(newZip);
+				window.localStorage.setItem( 'zipcode', badger.zip);
+				badger.getZipStores(function(){
+					badger.updateOverviewAjax();
+				});
+			}
+			return;
+		}
+		
+		if(v == "geo"){
+			return;
+		}
+		
+		if(v == "terms"){
+			badger.loadPage("terms", true);
+			return;
+		}
+
+
+	});
 	
 	
 	
@@ -497,27 +586,18 @@ $(document).ready(function(){
 		} catch(err){}
 	});
 	
-	$("#nav-zip").click(function(){	
-		var newZip = prompt("Zipcode:",badger.zip);
-		if(newZip){
-			badger.zip = badger.validateZip(newZip);
-			window.localStorage.setItem( 'zipcode', badger.zip);
-			$(".nav-item.cal")
-				.removeClass("type-blue")
-				.removeClass("type-grey")
-				.removeClass("type-red")
-				.removeClass("type-yellow")
-				.removeClass("type-yellowgreen")
-				.removeClass("type-green")
-				.addClass("type-grey");
-			badger.getZipStores(function(){
-				badger.updateOverviewAjax();
-			});
-		}
-	});
+
 	
 	$(".deploy-home").click(function(){
-		badger.loadPage("start", true);
+		//badger.loadPage("start", true);
+		var element = $("#hiddenMenu")[0];
+		if (document.createEvent) {
+			var e = document.createEvent("MouseEvents");
+			e.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+			element.dispatchEvent(e);
+		} else if (element.fireEvent) {
+			element.fireEvent("onmousedown");
+		}
 	});
 	
 	
@@ -557,43 +637,5 @@ $(document).ready(function(){
 		}
 	});
 	
-	$("#termsLink").click(function(e){
-		badger.loadPage("terms", true);
-		e.preventDefault();
-	});
-	
-	$('#nav-upc').click(function(){
-		var upc = prompt("Enter a UPC-A code");
-		if(upc){
-			$("#subHeader").html("Search Results");
-			badger.upcFetch(upc);
-		}
-	});
-	
-	$('#nav-barcode').click(function(){
-		if(badger.platform() != "app"){
-			if (confirm('This feature is only available from the Android app. Do you want to install it from Google Play?')){
-				window.open( "https://play.google.com/store/apps/details?id=com.honsoworld.brassbadger", '_system' );
-			}
-			return;
-		}
-		cordova.plugins.barcodeScanner.scan(
-			function (result) {
-				if(!result.cancelled){
-					if(result.format == "UPC_A"){
-						$("#subHeader").html("Scan Results");
-						badger.upcFetch(result.text);
-						
-					} else {
-						badger.showError("blue", "Invalid barcode", "Only UPC-A codes are supported");
-					}
-				}
-			}, 
-			function (error) {	
-				badger.showError("blue", "Error", "Scanning failed (" + error + ")");
-
-			}
-		);
-	});
 	
 });

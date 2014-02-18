@@ -57,38 +57,47 @@ Initializing BrassBadger
 <div class="deploy-home"></div>
 </div>  
 <div align="center" id="subHeader" style="font-weight:bold; font-weight:bold; background-color:#111112; margin:0px; color:white;">
-<select id="caliber">
-	<option value="FALSE">Select a caliber...</option>
-	<option value="FALSE">---- HANDGUN ----</option>
-	<option value="357">.357 Magnum</option>
-	<option value="38">.38 Special</option>
-	<option value="380">.380 ACP</option>
-	<option value="40">.40 Smith &amp; Wesson</option>
-	<option value="44">.44 Magnum</option>
-	<option value="45">.45 Auto</option>
-	<option value="45colt">.45 Colt</option>
-	<option value="9">9mm Luger</option>
-	<option value="FALSE">---- RIFLE ----</option>
-	<option value="22250">.22-250 Remington</option>
-	<option value="223">.223 Remington</option>
-	<option value="243">.243 Winchester</option>
-	<option value="270">.270 Winchester</option>
-	<option value="3006">.30-06 Springfield</option>
-	<option value="3030">.30-30 Winchester</option>
-	<option value="308">.308 Winchester</option>
-	<option value="556">5.56x45mm NATO</option>
-	<option value="68spc">6.8mm Remington SPC</option>
-	<option value="300aac">7.62x35mm (300 BLK)</option>
-	<option value="762">7.62x39mm</option>
-	<option value="FALSE">---- RIMFIRE ----</option>
-	<option value="17">.17 HMR</option>
-	<option value="22">.22 LR</option>
-	<option value="22mag">.22 Magnum</option>
-	<option value="FALSE">---- SHOTGUN ----</option>
-	<option value="12">12 Gauge</option>
-	<option value="20">20 Gauge</option>
-	<option value="410">.410 Bore</option>
- </select> 
+	<select id="hiddenMenu" style="width:1px; height:1px;">
+		<option value="start">Start Page</option>
+		<option value="caliber">Select a Caliber</option>
+		<option value="scan">Scan Barcode</option>
+		<option value="type">Type Barcode</option>
+		<option value="zip">Change Zipcode</option>
+		<option value="geo">GeoLocate</option>
+		<option value="terms">Privacy and Terms</option>
+	</select> 
+	<select id="caliberMenu">
+		<option value="FALSE">Select a caliber...</option>
+		<option value="FALSE">---- HANDGUN ----</option>
+		<option value="357">.357 Magnum</option>
+		<option value="38">.38 Special</option>
+		<option value="380">.380 ACP</option>
+		<option value="40">.40 Smith &amp; Wesson</option>
+		<option value="44">.44 Magnum</option>
+		<option value="45">.45 Auto</option>
+		<option value="45colt">.45 Colt</option>
+		<option value="9">9mm Luger</option>
+		<option value="FALSE">---- RIFLE ----</option>
+		<option value="22250">.22-250 Remington</option>
+		<option value="223">.223 Remington</option>
+		<option value="243">.243 Winchester</option>
+		<option value="270">.270 Winchester</option>
+		<option value="3006">.30-06 Springfield</option>
+		<option value="3030">.30-30 Winchester</option>
+		<option value="308">.308 Winchester</option>
+		<option value="556">5.56x45mm NATO</option>
+		<option value="68spc">6.8mm Remington SPC</option>
+		<option value="300aac">7.62x35mm (300 BLK)</option>
+		<option value="762">7.62x39mm</option>
+		<option value="FALSE">---- RIMFIRE ----</option>
+		<option value="17">.17 HMR</option>
+		<option value="22">.22 LR</option>
+		<option value="22mag">.22 Magnum</option>
+		<option value="FALSE">---- SHOTGUN ----</option>
+		<option value="12">12 Gauge</option>
+		<option value="20">20 Gauge</option>
+		<option value="410">.410 Bore</option>
+	</select> 
 </div>
 <div id="apiResults" class="container no-bottom">
 </div>
@@ -98,7 +107,6 @@ Initializing BrassBadger
 <div id="#preload-03"></div>
 <div id="#preload-04"></div>
 <div id="#preload-05"></div>
-
 </div>
 </body>
 </html>
