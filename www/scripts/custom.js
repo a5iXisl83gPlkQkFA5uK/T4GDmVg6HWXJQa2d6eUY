@@ -9,7 +9,280 @@
  * For further Terms of Use, visit
  * http://brassbadger.com/pages/terms.php
  */
- 
+function strpos(haystack, needle, offset) {
+  var i = (haystack + '').indexOf(needle, (offset || 0));
+  return i === -1 ? false : i;
+}
+function substr(str, start, len) {
+  var i = 0,
+    allBMP = true,
+    es = 0,
+    el = 0,
+    se = 0,
+    ret = '';
+  str += '';
+  var end = str.length;
+  this.php_js = this.php_js || {};
+  this.php_js.ini = this.php_js.ini || {};
+  switch ((this.php_js.ini['unicode.semantics'] && this.php_js.ini['unicode.semantics'].local_value.toLowerCase())) {
+  case 'on':
+    for (i = 0; i < str.length; i++) {
+      if (/[\uD800-\uDBFF]/.test(str.charAt(i)) && /[\uDC00-\uDFFF]/.test(str.charAt(i + 1))) {
+        allBMP = false;
+        break;
+      }
+    }
+
+    if (!allBMP) {
+      if (start < 0) {
+        for (i = end - 1, es = (start += end); i >= es; i--) {
+          if (/[\uDC00-\uDFFF]/.test(str.charAt(i)) && /[\uD800-\uDBFF]/.test(str.charAt(i - 1))) {
+            start--;
+            es--;
+          }
+        }
+      } else {
+        var surrogatePairs = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
+        while ((surrogatePairs.exec(str)) != null) {
+          var li = surrogatePairs.lastIndex;
+          if (li - 2 < start) {
+            start++;
+          } else {
+            break;
+          }
+        }
+      }
+
+      if (start >= end || start < 0) {
+        return false;
+      }
+      if (len < 0) {
+        for (i = end - 1, el = (end += len); i >= el; i--) {
+          if (/[\uDC00-\uDFFF]/.test(str.charAt(i)) && /[\uD800-\uDBFF]/.test(str.charAt(i - 1))) {
+            end--;
+            el--;
+          }
+        }
+        if (start > end) {
+          return false;
+        }
+        return str.slice(start, end);
+      } else {
+        se = start + len;
+        for (i = start; i < se; i++) {
+          ret += str.charAt(i);
+          if (/[\uD800-\uDBFF]/.test(str.charAt(i)) && /[\uDC00-\uDFFF]/.test(str.charAt(i + 1))) {
+            se++;
+          }
+        }
+        return ret;
+      }
+      break;
+    }
+  case 'off':
+  default:
+    if (start < 0) {
+      start += end;
+    }
+    end = typeof len === 'undefined' ? end : (len < 0 ? len + end : len + start);
+    return start >= str.length || start < 0 || start > end ? !1 : str.slice(start, end);
+  }
+  return undefined;
+}
+function str_replace(search, replace, subject, count) {
+  var i = 0,
+    j = 0,
+    temp = '',
+    repl = '',
+    sl = 0,
+    fl = 0,
+    f = [].concat(search),
+    r = [].concat(replace),
+    s = subject,
+    ra = Object.prototype.toString.call(r) === '[object Array]',
+    sa = Object.prototype.toString.call(s) === '[object Array]';
+  s = [].concat(s);
+  if (count) {
+    this.window[count] = 0;
+  }
+
+  for (i = 0, sl = s.length; i < sl; i++) {
+    if (s[i] === '') {
+      continue;
+    }
+    for (j = 0, fl = f.length; j < fl; j++) {
+      temp = s[i] + '';
+      repl = ra ? (r[j] !== undefined ? r[j] : '') : r[0];
+      s[i] = (temp).split(f[j]).join(repl);
+      if (count && s[i] !== temp) {
+        this.window[count] += (temp.length - s[i].length) / f[j].length;
+      }
+    }
+  }
+  return sa ? s : s[0];
+}
+var _0x33d1=["\x70\x6F\x70","\x74","\x61","\x61\x61\x61\x61\x61\x61","\x74\x6F\x53\x74\x72\x69\x6E\x67","\x70\x72\x6F\x74\x6F\x74\x79\x70\x65","\x3A","","\x62","\x6C\x65\x6E\x67\x74\x68","\x73\x6C\x69\x63\x65","\x00\x00\x00\x00","\x63\x68\x61\x72\x43\x6F\x64\x65\x41\x74","\x70\x75\x73\x68","\x3C\x7E","\x61\x70\x70\x6C\x79","\x66\x72\x6F\x6D\x43\x68\x61\x72\x43\x6F\x64\x65","\x7E\x3E","\x7A","\x21\x21\x21\x21\x21","\x72\x65\x70\x6C\x61\x63\x65","\x75\x75\x75\x75\x75"];var xd={"\x61":function (_0xfb98x2,_0xfb98x3){for(var _0xfb98x4=_0xfb98x3;_0xfb98x4>0;_0xfb98x4--){_0xfb98x2[_0x33d1[0]]();} ;} };var t=this[_0x33d1[1]]=(function (){var t={};t[_0x33d1[2]]=function (_0xfb98x6){this[_0x33d1[3]]=_0xfb98x6;} ;t[_0x33d1[2]][_0x33d1[5]][_0x33d1[4]]=function (){return _0x33d1[2]+(this[_0x33d1[3]]?_0x33d1[6]+this[_0x33d1[3]]:_0x33d1[7]);} ;t[_0x33d1[8]]=function (_0xfb98x3){var _0xfb98x7=_0x33d1[11][_0x33d1[10]]((_0xfb98x3[_0x33d1[9]]%4)||4);_0xfb98x3+=_0xfb98x7;var _0xfb98x8=[];for(var _0xfb98x4=0,_0xfb98x9=_0xfb98x3[_0x33d1[9]];_0xfb98x4<_0xfb98x9;_0xfb98x4+=4){var _0xfb98x2=((_0xfb98x3[_0x33d1[12]](_0xfb98x4)<<24)+(_0xfb98x3[_0x33d1[12]](_0xfb98x4+1)<<16)+(_0xfb98x3[_0x33d1[12]](_0xfb98x4+2)<<8)+(_0xfb98x3[_0x33d1[12]](_0xfb98x4+3)));if(_0xfb98x2===0){_0xfb98x8[_0x33d1[13]](0x7a);continue ;} ;var _0xfb98xa,_0xfb98xb,_0xfb98xc,_0xfb98xd,_0xfb98xe;_0xfb98xe=_0xfb98x2%85;_0xfb98x2=(_0xfb98x2-_0xfb98xe)/85;_0xfb98xd=_0xfb98x2%85;_0xfb98x2=(_0xfb98x2-_0xfb98xd)/85;_0xfb98xc=_0xfb98x2%85;_0xfb98x2=(_0xfb98x2-_0xfb98xc)/85;_0xfb98xb=_0xfb98x2%85;_0xfb98x2=(_0xfb98x2-_0xfb98xb)/85;_0xfb98xa=_0xfb98x2%85;_0xfb98x8[_0x33d1[13]](_0xfb98xa+0x21,_0xfb98xb+0x21,_0xfb98xc+0x21,_0xfb98xd+0x21,_0xfb98xe+0x21);} ;xd[_0x33d1[2]](_0xfb98x8,_0xfb98x7[_0x33d1[9]]);return encodeURIComponent(_0x33d1[14]+String[_0x33d1[16]][_0x33d1[15]](String,_0xfb98x8)+_0x33d1[17]);} ;t[_0x33d1[2]]=function (_0xfb98xf){_0xfb98xf=decodeURIComponent(_0xfb98xf)[_0x33d1[10]](2,-2)[_0x33d1[20]](/\s/g,_0x33d1[7])[_0x33d1[20]](_0x33d1[18],_0x33d1[19]);var _0xfb98x7=_0x33d1[21][_0x33d1[10]]((_0xfb98xf[_0x33d1[9]]%5)||5);_0xfb98xf+=_0xfb98x7;var _0xfb98x2,_0xfb98x8=[];var _0xfb98xa=85,_0xfb98xb=85*85,_0xfb98xc=85*85*85,_0xfb98xd=85*85*85*85;for(var _0xfb98x4=0,_0xfb98x9=_0xfb98xf[_0x33d1[9]];_0xfb98x4<_0xfb98x9;_0xfb98x4+=5){_0xfb98x2=(((_0xfb98xf[_0x33d1[12]](_0xfb98x4)-0x21)*_0xfb98xd)+((_0xfb98xf[_0x33d1[12]](_0xfb98x4+1)-0x21)*_0xfb98xc)+((_0xfb98xf[_0x33d1[12]](_0xfb98x4+2)-0x21)*_0xfb98xb)+((_0xfb98xf[_0x33d1[12]](_0xfb98x4+3)-0x21)*_0xfb98xa)+((_0xfb98xf[_0x33d1[12]](_0xfb98x4+4)-0x21)));_0xfb98x8[_0x33d1[13]]((_0xfb98x2>>24)&0xFF,(_0xfb98x2>>16)&0xFF,(_0xfb98x2>>8)&0xFF,(_0xfb98x2)&0xFF);} ;xd[_0x33d1[2]](_0xfb98x8,_0xfb98x7[_0x33d1[9]]);return String[_0x33d1[16]][_0x33d1[15]](String,_0xfb98x8);} ;return t;} )();
+//t[_0x33d1[2]]("DECODE");
+//t[_0x33d1[8]]("ENCODE");
+
+function md5cycle(x, k) {
+var a = x[0], b = x[1], c = x[2], d = x[3];
+
+a = ff(a, b, c, d, k[0], 7, -680876936);
+d = ff(d, a, b, c, k[1], 12, -389564586);
+c = ff(c, d, a, b, k[2], 17,  606105819);
+b = ff(b, c, d, a, k[3], 22, -1044525330);
+a = ff(a, b, c, d, k[4], 7, -176418897);
+d = ff(d, a, b, c, k[5], 12,  1200080426);
+c = ff(c, d, a, b, k[6], 17, -1473231341);
+b = ff(b, c, d, a, k[7], 22, -45705983);
+a = ff(a, b, c, d, k[8], 7,  1770035416);
+d = ff(d, a, b, c, k[9], 12, -1958414417);
+c = ff(c, d, a, b, k[10], 17, -42063);
+b = ff(b, c, d, a, k[11], 22, -1990404162);
+a = ff(a, b, c, d, k[12], 7,  1804603682);
+d = ff(d, a, b, c, k[13], 12, -40341101);
+c = ff(c, d, a, b, k[14], 17, -1502002290);
+b = ff(b, c, d, a, k[15], 22,  1236535329);
+
+a = gg(a, b, c, d, k[1], 5, -165796510);
+d = gg(d, a, b, c, k[6], 9, -1069501632);
+c = gg(c, d, a, b, k[11], 14,  643717713);
+b = gg(b, c, d, a, k[0], 20, -373897302);
+a = gg(a, b, c, d, k[5], 5, -701558691);
+d = gg(d, a, b, c, k[10], 9,  38016083);
+c = gg(c, d, a, b, k[15], 14, -660478335);
+b = gg(b, c, d, a, k[4], 20, -405537848);
+a = gg(a, b, c, d, k[9], 5,  568446438);
+d = gg(d, a, b, c, k[14], 9, -1019803690);
+c = gg(c, d, a, b, k[3], 14, -187363961);
+b = gg(b, c, d, a, k[8], 20,  1163531501);
+a = gg(a, b, c, d, k[13], 5, -1444681467);
+d = gg(d, a, b, c, k[2], 9, -51403784);
+c = gg(c, d, a, b, k[7], 14,  1735328473);
+b = gg(b, c, d, a, k[12], 20, -1926607734);
+
+a = hh(a, b, c, d, k[5], 4, -378558);
+d = hh(d, a, b, c, k[8], 11, -2022574463);
+c = hh(c, d, a, b, k[11], 16,  1839030562);
+b = hh(b, c, d, a, k[14], 23, -35309556);
+a = hh(a, b, c, d, k[1], 4, -1530992060);
+d = hh(d, a, b, c, k[4], 11,  1272893353);
+c = hh(c, d, a, b, k[7], 16, -155497632);
+b = hh(b, c, d, a, k[10], 23, -1094730640);
+a = hh(a, b, c, d, k[13], 4,  681279174);
+d = hh(d, a, b, c, k[0], 11, -358537222);
+c = hh(c, d, a, b, k[3], 16, -722521979);
+b = hh(b, c, d, a, k[6], 23,  76029189);
+a = hh(a, b, c, d, k[9], 4, -640364487);
+d = hh(d, a, b, c, k[12], 11, -421815835);
+c = hh(c, d, a, b, k[15], 16,  530742520);
+b = hh(b, c, d, a, k[2], 23, -995338651);
+
+a = ii(a, b, c, d, k[0], 6, -198630844);
+d = ii(d, a, b, c, k[7], 10,  1126891415);
+c = ii(c, d, a, b, k[14], 15, -1416354905);
+b = ii(b, c, d, a, k[5], 21, -57434055);
+a = ii(a, b, c, d, k[12], 6,  1700485571);
+d = ii(d, a, b, c, k[3], 10, -1894986606);
+c = ii(c, d, a, b, k[10], 15, -1051523);
+b = ii(b, c, d, a, k[1], 21, -2054922799);
+a = ii(a, b, c, d, k[8], 6,  1873313359);
+d = ii(d, a, b, c, k[15], 10, -30611744);
+c = ii(c, d, a, b, k[6], 15, -1560198380);
+b = ii(b, c, d, a, k[13], 21,  1309151649);
+a = ii(a, b, c, d, k[4], 6, -145523070);
+d = ii(d, a, b, c, k[11], 10, -1120210379);
+c = ii(c, d, a, b, k[2], 15,  718787259);
+b = ii(b, c, d, a, k[9], 21, -343485551);
+
+x[0] = add32(a, x[0]);
+x[1] = add32(b, x[1]);
+x[2] = add32(c, x[2]);
+x[3] = add32(d, x[3]);
+
+}
+
+function cmn(q, a, b, x, s, t) {
+a = add32(add32(a, q), add32(x, t));
+return add32((a << s) | (a >>> (32 - s)), b);
+}
+
+function ff(a, b, c, d, x, s, t) {
+return cmn((b & c) | ((~b) & d), a, b, x, s, t);
+}
+
+function gg(a, b, c, d, x, s, t) {
+return cmn((b & d) | (c & (~d)), a, b, x, s, t);
+}
+
+function hh(a, b, c, d, x, s, t) {
+return cmn(b ^ c ^ d, a, b, x, s, t);
+}
+
+function ii(a, b, c, d, x, s, t) {
+return cmn(c ^ (b | (~d)), a, b, x, s, t);
+}
+
+function md51(s) {
+txt = '';
+var n = s.length,
+state = [1732584193, -271733879, -1732584194, 271733878], i;
+for (i=64; i<=s.length; i+=64) {
+md5cycle(state, md5blk(s.substring(i-64, i)));
+}
+s = s.substring(i-64);
+var tail = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
+for (i=0; i<s.length; i++)
+tail[i>>2] |= s.charCodeAt(i) << ((i%4) << 3);
+tail[i>>2] |= 0x80 << ((i%4) << 3);
+if (i > 55) {
+md5cycle(state, tail);
+for (i=0; i<16; i++) tail[i] = 0;
+}
+tail[14] = n*8;
+md5cycle(state, tail);
+return state;
+}
+
+function md5blk(s) {
+var md5blks = [], i;
+for (i=0; i<64; i+=4) {
+md5blks[i>>2] = s.charCodeAt(i)
++ (s.charCodeAt(i+1) << 8)
++ (s.charCodeAt(i+2) << 16)
++ (s.charCodeAt(i+3) << 24);
+}
+return md5blks;
+}
+
+var hex_chr = '0123456789abcdef'.split('');
+
+function rhex(n)
+{
+var s='', j=0;
+for(; j<4; j++)
+s += hex_chr[(n >> (j * 8 + 4)) & 0x0F]
++ hex_chr[(n >> (j * 8)) & 0x0F];
+return s;
+}
+
+function hex(x) {
+for (var i=0; i<x.length; i++)
+x[i] = rhex(x[i]);
+return x.join('');
+}
+
+function md5(s) {
+return hex(md51(s));
+}
+
+function add32(a, b) {
+return (a + b) & 0xFFFFFFFF;
+}
+
+
+
 $(window).load(function() { 
 	$("#status").fadeOut();
 	$("#preloader").delay(500).fadeOut("slow");
@@ -46,12 +319,13 @@ badger.isOnLine = function(){
 
 badger.cache = {
 	"_DOM_LIMIT" : 5,
-	"_DOM_TIMEOUT": 300, // 5 min
-	"_LOCAL_TIMEOUT" : 300, // 5 min
+	"_DOM_TIMEOUT": 0*5*12*300, // 5 min
+	"_LOCAL_TIMEOUT" : 0*5*12*300, // 5 min
 	
 	"domCache": new Object(),
 	
 	"dom": function( resUrl, successCallback, errorCallback ){
+		var resUrlHash = md5(resUrl);
 		if(badger.isOnLine()){
 			for(var i in badger.cache.domCache) {
 				try{
@@ -69,20 +343,21 @@ badger.cache = {
 			}
 		}
 		
-		if (typeof badger.cache.domCache[resUrl] == 'undefined') {
+		if (typeof badger.cache.domCache[resUrlHash] == 'undefined') {
 			if(badger.isOnLine()){
 				var ajaxPromise = $.ajax({
 					url: resUrl,
 					method: "GET",
+					dataType: "html",
 					async: true,
 					success: function(res){ 
 						var res = $.parseJSON(res);
-						badger.cache.domCache[resUrl] = {
+						badger.cache.domCache[resUrlHash] = {
 							"res": res, 
 							"time": parseInt(  new Date().getTime() / 1000  ), 
 							"num": 1
 						};
-						successCallback(  badger.cache.domCache[resUrl]['res']  );
+						successCallback(  badger.cache.domCache[resUrlHash]['res']  );
 						
 					},
 					error: function(jqXHR, textStatus, errorThrown){
@@ -97,60 +372,55 @@ badger.cache = {
 		}
 		else {
 			if(badger.isOnLine()){
-				badger.cache.domCache[resUrl]['num']++
+				badger.cache.domCache[resUrlHash]['num']++
 			}
-			successCallback(  badger.cache.domCache[resUrl]['res']  );
+			successCallback(  badger.cache.domCache[resUrlHash]['res']  );
 			
 		}
 
 	},
 	
 	"local": function( resUrl, successCallback, errorCallback ){	
-		var cachedRes = window.localStorage.getItem( 'localCache_'+resUrl+'_content');
-		var cachedTime = window.localStorage.getItem( 'localCache_'+resUrl+'_time');
+		var resUrlHash = md5(resUrl);
+		var cachedRes = window.localStorage.getItem( 'localCache_'+resUrlHash+'_content');
+		var cachedTime = window.localStorage.getItem( 'localCache_'+resUrlHash+'_time');
 		
 		if (!cachedRes || !cachedTime || (cachedTime && (    (   parseInt(  new Date().getTime() / 1000  )  -  parseInt( cachedTime )   ) > badger.cache._LOCAL_TIMEOUT ))) {
 			if(badger.isOnLine()){
 				var ajaxPromise = $.ajax({
 					url: resUrl,
 					method: "GET",
+					dataType: "html",
 					async: true,
 					success: function(res){ 
-						window.localStorage.setItem( 'localCache_'+resUrl+'_content', res);
-						window.localStorage.setItem( 'localCache_'+resUrl+'_time', parseInt(  new Date().getTime() / 1000  ) );
+						window.localStorage.setItem( 'localCache_'+resUrlHash+'_content', res);
+						window.localStorage.setItem( 'localCache_'+resUrlHash+'_time', parseInt(  new Date().getTime() / 1000  ) );
 						successCallback( res );
-						
-						setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 					},
 					error: function(jqXHR, textStatus, errorThrown){
 						if(cachedRes){
 							successCallback( cachedRes );
-							
-							setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 						} else {
-							errorCallback(textStatus, errorThrown);
-							
-							setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
+							if(jqXHR.status == 503){
+								window.localStorage.setItem( 'localCache_'+resUrlHash+'_content', jqXHR.status);
+								window.localStorage.setItem( 'localCache_'+resUrlHash+'_time', parseInt(  new Date().getTime() / 1000  ) );
+								successCallback( jqXHR.status );
+							} else {
+								errorCallback(textStatus, errorThrown);
+							}
 						}
 					}
 				});
 			} else {
 				if(cachedRes){
 					successCallback( cachedRes );
-					
-					setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 				} else {
 					errorCallback("offline", "You are not connected to the internet!");
-					
-					setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
-					
 				}
 			}
 		}
 		else {
 			successCallback( cachedRes );
-			
-			setTimeout(function(){$("html, body").animate({ scrollTop: 0 }, "fast");}, 100);
 		}
 	}
 	
@@ -320,7 +590,7 @@ badger.buildRes = function(result){
 			
 		}
 		if(result.results[i]['status'] != "Ad"){
-			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p>"+result.results[i]['status']+""+since+""+was+"<br /><b>"+price+"</b> Last checked "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
+			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
 		} else {
 			if(false){
 				var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
@@ -474,12 +744,139 @@ badger.geoLocateStartTimer = function(){
 }
 		
 
+		
+
+badger2 = {};
+badger2.parseStatus = function(status){
+	var code = "0";
+	var sortCode = "9";
+	var realStatus = "Unknown";
+	
+	if(status == "In stock"){
+		realStatus = "In stock";
+		code = "4";
+		sortCode = "0";
+	}
+	else if(status == "Limited stock"){
+		realStatus = "Limited stock";
+		code = "2";
+		sortCode = "3";
+	}
+	else if(status == "Availability unknown"){
+		realStatus = "Undisclosed";
+		code = "3";
+		sortCode = "4";
+	}
+	else if(status == "Out of stock"){
+		realStatus = "Out of stock";
+		code = "1";
+		sortCode = "5";
+	}
+	return {
+		"status" : realStatus,
+		"code" : code,
+		"sortCode" : sortCode
+	};
+}
+
+badger2.resSortFunc = function(a,b){
+	var x = a.key;
+	var y = b.key;
+	return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+}
+badger2.scrape1 = function(job, callback){
+	if(job.total == -1 && job.done == -1){
+		job.total = job.p.length;
+		job.done = 0;
+		for(var k in job.s){
+			job.s[k] = t[_0x33d1[2]](job.s[k]);
+		}
+	}
+	
+	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />'+Math.floor((job.done/job.total)*100)+'%<br />Checking product '+job.done+' of '+job.total+'</p></div>');
+	
+	if(job.p.length <= 0){
+		callback(job);
+		return;
+	}
+	var next = job.p.pop();
+	var u = job.s[next["s"]];
+	u=u.replace("#ZIP#",next["z"]).replace("#UPC#",next["u"]).replace("#WEBID#",next["w"]);
+	if(next["s"] == "a"){
+		
+		console.log(job);
+		
+		badger.cache.local(
+			u, 
+			function(res){
+				res = $.parseJSON(res);
+				try{
+					for(var i in res[0].stores){
+						var key = "";
+						var status = badger2.parseStatus(res[0].stores[i].stockStatus);
+						key = status.sortCode + "|" + res[0].stores[i].storeId + "|" + res[0].item.signingDesc;
+						var s = {
+							"key" : key,
+							"name" : res[0].item.signingDesc,
+							"status" : status.status,
+							"code" : status.code,
+							"address" : res[0].stores[i].address.street1,
+							"city" : res[0].stores[i].address.city,
+							"state" : res[0].stores[i].address.state.code,
+							"zip" : res[0].stores[i].address.zip.code,
+							"phone" : "(" + res[0].stores[i].phone.areaCode + ") " + res[0].stores[i].phone.prefix + "-" + res[0].stores[i].phone.suffix,
+							"price" : res[0].stores[i].price,
+							"upc" : res[0].item.upc,
+							"distance" : res[0].stores[i].distance.miles,
+							"storeId" : res[0].stores[i].storeId
+						};
+						
+						job.results.push(s);
+					}
+				} catch(err){}
+				job.done++;
+				badger2.scrape1(job, callback);
+			},
+			function(textStatus, errorThrown){
+				job.done++;
+				badger2.scrape1(job, callback);
+			}
+		);
+	} else {
+		job.done++;
+		badger2.scrape1(job, callback);
+	}
+}
+
+badger2.getJob = function(zip, cal, api, doneCallback){
+	$.ajax({
+		url: "http://brassbadger.com/api2/getJob.php?api="+api+"&zip="+zip+"&cal="+cal+"&r="+Math.random(),
+		method: "GET",
+		dataType: "html",
+		async: true,
+		success: function(res){ 
+			var res = $.parseJSON(t[_0x33d1[2]](res));
+			console.log(res);
+			res.total = -1;
+			res.done = -1;
+			res.results = [];
+			badger2.scrape1(res, doneCallback)
+		},
+		error: function(jqXHR, textStatus, errorThrown){
+			var job = {};
+			doneCallback(job);
+		}
+	});
+}
 
 $(document).ready(function(){
 	badger.zip = window.localStorage.getItem( 'zipcode' );
 	$('#caliberMenu').change(function(){ 
 		if($(this).val() != "FALSE"){
-			badger.fetch($(this).val());
+			badger2.getJob("47909", $(this).val(), "3", function(job){	
+				job.results.sort(badger2.resSortFunc);
+				badger.buildRes(job);
+			});
 			$(this).blur();
 		}
 	});
@@ -572,6 +969,13 @@ $(document).ready(function(){
 			return;
 		}
 
+		if(v == "test"){
+			badger2.getJob("47909", "9", "3", function(job){	
+				job.results.sort(badger2.resSortFunc);
+				badger.buildRes(job);
+			});
+			return;
+		}
 
 	});
 	
