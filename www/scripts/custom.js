@@ -319,8 +319,8 @@ badger.isOnLine = function(){
 
 badger.cache = {
 	"_DOM_LIMIT" : 5,
-	"_DOM_TIMEOUT": 0*5*12*300, // 5 min
-	"_LOCAL_TIMEOUT" : 0*5*12*300, // 5 min
+	"_DOM_TIMEOUT": 5*12, // 5 min
+	"_LOCAL_TIMEOUT" : 5*12, // 5 min
 	
 	"domCache": new Object(),
 	
