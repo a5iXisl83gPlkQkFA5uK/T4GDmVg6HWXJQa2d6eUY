@@ -748,34 +748,41 @@ badger.geoLocateStartTimer = function(){
 
 badger2 = {};
 badger2.parseStatus = function(status){
+	status = status.trim();
 	var code = "0";
 	var sortCode = "9";
 	var realStatus = "Unknown";
+	var flag = "1";
 	
 	if(status == "In stock"){
 		realStatus = "In stock";
 		code = "4";
 		sortCode = "0";
+		flag = "0"
 	}
 	else if(status == "Limited stock"){
 		realStatus = "Limited stock";
 		code = "2";
-		sortCode = "3";
+		sortCode = "4";
+		flag = "0"
 	}
 	else if(status == "Availability unknown"){
 		realStatus = "Undisclosed";
 		code = "3";
-		sortCode = "4";
+		sortCode = "3";
+		flag = "0"
 	}
 	else if(status == "Out of stock"){
 		realStatus = "Out of stock";
 		code = "1";
 		sortCode = "5";
+		flag = "1"
 	}
 	return {
 		"status" : realStatus,
 		"code" : code,
-		"sortCode" : sortCode
+		"sortCode" : sortCode,
+		"flag" : flag
 	};
 }
 
@@ -803,9 +810,6 @@ badger2.scrape1 = function(job, callback){
 	var u = job.s[next["s"]];
 	u=u.replace("#ZIP#",next["z"]).replace("#UPC#",next["u"]).replace("#WEBID#",next["w"]);
 	if(next["s"] == "a"){
-		
-		console.log(job);
-		
 		badger.cache.local(
 			u, 
 			function(res){
@@ -813,25 +817,82 @@ badger2.scrape1 = function(job, callback){
 				try{
 					for(var i in res[0].stores){
 						var key = "";
-						var status = badger2.parseStatus(res[0].stores[i].stockStatus);
-						key = status.sortCode + "|" + res[0].stores[i].storeId + "|" + res[0].item.signingDesc;
-						var s = {
-							"key" : key,
-							"name" : res[0].item.signingDesc,
-							"status" : status.status,
-							"code" : status.code,
-							"address" : res[0].stores[i].address.street1,
-							"city" : res[0].stores[i].address.city,
-							"state" : res[0].stores[i].address.state.code,
-							"zip" : res[0].stores[i].address.zip.code,
-							"phone" : "(" + res[0].stores[i].phone.areaCode + ") " + res[0].stores[i].phone.prefix + "-" + res[0].stores[i].phone.suffix,
-							"price" : res[0].stores[i].price,
-							"upc" : res[0].item.upc,
-							"distance" : res[0].stores[i].distance.miles,
-							"storeId" : res[0].stores[i].storeId
-						};
+						res[0].stores[i].storeId = ("0000" + res[0].stores[i].storeId).slice(-4);
 						
-						job.results.push(s);
+						if('a'+res[0].stores[i].storeId in job.d ){
+							var status = badger2.parseStatus(res[0].stores[i].stockStatus);
+							var sortDistance = job.d['a'+res[0].stores[i].storeId][0];
+							key = status.flag + sortDistance + status.sortCode;
+							var s = {
+								"key" : key,
+								"name" : res[0].item.signingDesc,
+								"status" : status.status,
+								"code" : status.code,
+								"address" : res[0].stores[i].address.street1,
+								"city" : res[0].stores[i].address.city,
+								"state" : res[0].stores[i].address.state.code,
+								"zip" : res[0].stores[i].address.zip.code,
+								"phone" : "(" + res[0].stores[i].phone.areaCode + ") " + res[0].stores[i].phone.prefix + "-" + res[0].stores[i].phone.suffix,
+								"price" : res[0].stores[i].price,
+								"upc" : res[0].item.upc,
+								"distance" : job.d['a'+res[0].stores[i].storeId][1],
+								"storeId" : res[0].stores[i].storeId
+							};
+							
+							job.results.push(s);
+						}
+					}
+				} catch(err){}
+				job.done++;
+				badger2.scrape1(job, callback);
+			},
+			function(textStatus, errorThrown){
+				job.done++;
+				badger2.scrape1(job, callback);
+			}
+		);
+	} else if(next["s"] == "b"){
+		badger.cache.local(
+			u, 
+			function(res){
+				try{
+					res = " " + res;
+					var str = "WALMART.storeFinder.resultOverlay.stores = [";
+					var bet_n = strpos( res, str );
+					if ( bet_n == 0 ) { 
+						res = "";
+					} else { 
+						bet_n += str.length; var bet_l = strpos( res, "];", bet_n ) - bet_n; res = substr( res, bet_n, bet_l );
+					}
+					res = str_replace( "\n", "", "["+res+"]" );
+					res = res.replace(/(WALMART.storeFinder.resultOverlay.util.formatTime\(\d+, \d+\))/ig, "''");
+					res = str_replace( "'", "\"", res );
+					
+					res = $.parseJSON(res);
+					for(var i in res){
+						var key = "";
+						res[i].storeId = ("0000" + res[i].storeId).slice(-4);
+						if('a'+res[i].storeId in job.d ){
+							var status = badger2.parseStatus(res[i].stockStatus);
+							var sortDistance = job.d['a'+res[i].storeId][0];
+							key =status.flag + sortDistance + status.sortCode;
+							var s = {
+								"key" : key,
+								"name" : next["n"],
+								"status" : status.status,
+								"code" : status.code,
+								"address" : res[i].address.fullStreet,
+								"city" : res[i].address.city,
+								"state" : res[i].address.stateCode,
+								"zip" : res[i].address.zipCode,
+								"phone" : res[i].phoneNumber,
+								"price" : "",
+								"upc" : next["u"],
+								"distance" : job.d['a'+res[i].storeId][1],
+								"storeId" : res[i].storeId
+							};
+							job.results.push(s);
+						}
 					}
 				} catch(err){}
 				job.done++;
