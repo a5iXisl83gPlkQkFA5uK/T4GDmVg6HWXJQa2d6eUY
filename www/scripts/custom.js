@@ -319,8 +319,8 @@ badger.isOnLine = function(){
 
 badger.cache = {
 	"_DOM_LIMIT" : 5,
-	"_DOM_TIMEOUT": 5*12, // 5 min
-	"_LOCAL_TIMEOUT" : 5*12, // 5 min
+	"_DOM_TIMEOUT": 5*12*300, // 5 min
+	"_LOCAL_TIMEOUT" : 5*12*300, // 5 min
 	
 	"domCache": new Object(),
 	
@@ -850,7 +850,7 @@ badger2.scrape1 = function(job, callback){
 
 badger2.getJob = function(zip, cal, api, doneCallback){
 	$.ajax({
-		url: "http://brassbadger.com/api2/getJob.php?api="+api+"&zip="+zip+"&cal="+cal+"&r="+Math.random(),
+		url: "http://brassbadger.com/api2/getJob.php?api="+api+"&zip="+zip+"&cal="+cal,
 		method: "GET",
 		dataType: "html",
 		async: true,
