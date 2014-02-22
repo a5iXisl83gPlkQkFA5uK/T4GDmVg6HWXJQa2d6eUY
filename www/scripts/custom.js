@@ -81,7 +81,7 @@ badger.cache = {
 		
 		if (typeof badger.cache.domCache[resUrlHash] == 'undefined') {
 			if(badger.isOnLine()){
-				var ajaxPromise = $.ajax({
+				badger2.ajaxPromise = $.ajax({
 					url: resUrl,
 					method: "GET",
 					dataType: "html",
@@ -123,7 +123,7 @@ badger.cache = {
 		
 		if (!cachedRes || !cachedTime || (cachedTime && (    (   parseInt(  new Date().getTime() / 1000  )  -  parseInt( cachedTime )   ) > badger.cache._LOCAL_TIMEOUT ))) {
 			if(badger.isOnLine()){
-				var ajaxPromise = $.ajax({
+				badger2.ajaxPromise = $.ajax({
 					url: resUrl,
 					method: "GET",
 					dataType: "html",
@@ -292,7 +292,14 @@ badger.getSelectedStores = function(){
 }
 
 badger.buildRes = function(result){
-	$("#apiResults").html("");
+	if(badger2.currentJob.running){
+		var progress = $("#jobProgress").remove();
+		$("#apiResults").html("");
+		$("#apiResults").append(progress);
+	} else {
+		$("#apiResults").html("");
+	}
+	
 	var zStr = "" + badger.zip;
 	if(zStr.length == 5){
 		$("#nav-stores-text").html("NEAR " + badger.zip);
@@ -358,7 +365,7 @@ badger.buildRes = function(result){
 		}
 
 	}
-	if(result.results.length == 0)
+	if(!badger2.currentJob.running && result.results.length == 0)
 		badger.showError("blue", "No Results Found", "The requested information could not be found for any of the stores you have selected.");
 }
 badger.fetch = function(cal){
@@ -478,9 +485,6 @@ badger.geoLocateStartTimer = function(){
 	},15000);
 	
 }
-		
-
-		
 
 badger2 = {};
 badger2.parseStatus = function(status){
@@ -527,23 +531,32 @@ badger2.resSortFunc = function(a,b){
 	var y = b.key;
 	return ((x < y) ? -1 : ((x > y) ? 1 : 0));
 }
-badger2.scrape1 = function(job, callback){
-	if(job.total == -1 && job.done == -1){
-		job.total = job.p.length;
-		job.done = 0;
-		for(var k in job.s){
-			job.s[k] = t[_0x33d1[2]](job.s[k]);
+badger2.ajaxPromise = {};
+badger2.currentJob = {
+	"running" : false,
+	"job" : {}
+};
+
+badger2.jobWorkUnit = function(callback){
+	if(badger2.currentJob.job.total == -1 && badger2.currentJob.job.done == -1){
+		badger2.currentJob.job.total = badger2.currentJob.job.p.length;
+		badger2.currentJob.job.done = 0;
+		for(var k in badger2.currentJob.job.s){
+			badger2.currentJob.job.s[k] = t[_0x33d1[2]](badger2.currentJob.job.s[k]);
 		}
 	}
+	$("#jobProgress").remove();
+	$("#apiResults").html('<div id="jobProgress" style="margin-top: 5px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />'+Math.floor((badger2.currentJob.job.done/badger2.currentJob.job.total)*100)+'%<br />Checking product '+badger2.currentJob.job.done+' of '+badger2.currentJob.job.total+'</p></div>');
 	
-	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />'+Math.floor((job.done/job.total)*100)+'%<br />Checking product '+job.done+' of '+job.total+'</p></div>');
+	badger2.currentJob.job.results.sort(badger2.resSortFunc);
+	badger.buildRes(badger2.currentJob.job);
 	
-	if(job.p.length <= 0){
-		callback(job);
+	if(badger2.currentJob.job.p.length <= 0){
+		callback();
 		return;
 	}
-	var next = job.p.pop();
-	var u = job.s[next["s"]];
+	var next = badger2.currentJob.job.p.pop();
+	var u = badger2.currentJob.job.s[next["s"]];
 	u=u.replace("#ZIP#",next["z"]).replace("#UPC#",next["u"]).replace("#WEBID#",next["w"]);
 	if(next["s"] == "a"){
 		badger.cache.local(
@@ -555,9 +568,9 @@ badger2.scrape1 = function(job, callback){
 						var key = "";
 						res[0].stores[i].storeId = ("0000" + res[0].stores[i].storeId).slice(-4);
 						
-						if('a'+res[0].stores[i].storeId in job.d ){
+						if('a'+res[0].stores[i].storeId in badger2.currentJob.job.d ){
 							var status = badger2.parseStatus(res[0].stores[i].stockStatus);
-							var sortDistance = job.d['a'+res[0].stores[i].storeId][0];
+							var sortDistance = badger2.currentJob.job.d['a'+res[0].stores[i].storeId][0];
 							key = status.flag + sortDistance + status.sortCode;
 							var s = {
 								"key" : key,
@@ -571,20 +584,20 @@ badger2.scrape1 = function(job, callback){
 								"phone" : "(" + res[0].stores[i].phone.areaCode + ") " + res[0].stores[i].phone.prefix + "-" + res[0].stores[i].phone.suffix,
 								"price" : res[0].stores[i].price,
 								"upc" : res[0].item.upc,
-								"distance" : job.d['a'+res[0].stores[i].storeId][1],
+								"distance" : badger2.currentJob.job.d['a'+res[0].stores[i].storeId][1],
 								"storeId" : res[0].stores[i].storeId
 							};
 							
-							job.results.push(s);
+							badger2.currentJob.job.results.push(s);
 						}
 					}
 				} catch(err){}
-				job.done++;
-				badger2.scrape1(job, callback);
+				badger2.currentJob.job.done++;
+				badger2.jobWorkUnit(callback);
 			},
 			function(textStatus, errorThrown){
-				job.done++;
-				badger2.scrape1(job, callback);
+				badger2.currentJob.job.done++;
+				badger2.jobWorkUnit(callback);
 			}
 		);
 	} else if(next["s"] == "b"){
@@ -608,9 +621,9 @@ badger2.scrape1 = function(job, callback){
 					for(var i in res){
 						var key = "";
 						res[i].storeId = ("0000" + res[i].storeId).slice(-4);
-						if('a'+res[i].storeId in job.d ){
+						if('a'+res[i].storeId in badger2.currentJob.job.d ){
 							var status = badger2.parseStatus(res[i].stockStatus);
-							var sortDistance = job.d['a'+res[i].storeId][0];
+							var sortDistance = badger2.currentJob.job.d['a'+res[i].storeId][0];
 							key =status.flag + sortDistance + status.sortCode;
 							var s = {
 								"key" : key,
@@ -624,161 +637,242 @@ badger2.scrape1 = function(job, callback){
 								"phone" : res[i].phoneNumber,
 								"price" : "",
 								"upc" : next["u"],
-								"distance" : job.d['a'+res[i].storeId][1],
+								"distance" : badger2.currentJob.job.d['a'+res[i].storeId][1],
 								"storeId" : res[i].storeId
 							};
-							job.results.push(s);
+							badger2.currentJob.job.results.push(s);
 						}
 					}
 				} catch(err){}
-				job.done++;
-				badger2.scrape1(job, callback);
+				badger2.currentJob.job.done++;
+				badger2.jobWorkUnit(callback);
 			},
 			function(textStatus, errorThrown){
-				job.done++;
-				badger2.scrape1(job, callback);
+				badger2.currentJob.job.done++;
+				badger2.jobWorkUnit(callback);
 			}
 		);
 	} else {
-		job.done++;
-		badger2.scrape1(job, callback);
+		badger2.currentJob.job.done++;
+		badger2.jobWorkUnit(callback);
 	}
 }
 
-badger2.getJob = function(zip, cal, api, doneCallback){
-	$.ajax({
+badger2.stopJob = function(){
+	if(badger2.currentJob.running){
+		badger2.currentJob.job.p = [];
+		try{
+			badger2.ajaxPromise.abort();
+		}
+		catch(err){}
+	}
+}
+
+badger2.getJob = function(zip, cal, api, doneCallback_a){
+	if(badger2.currentJob.running){
+		badger2.stopJob();
+	}
+	var doneCallback = function(){
+		//doneCallback_a();
+		badger2.currentJob.running = false;
+		badger2.currentJob.job.results.sort(badger2.resSortFunc);
+		badger.buildRes(badger2.currentJob.job);
+	}
+	
+	badger2.currentJob.running = true;
+	$("#apiResults").html('<div id="jobProgress" style="margin-top: 5px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />Getting product list</p></div>');
+	badger2.ajaxPromise = $.ajax({
 		url: "http://brassbadger.com/api2/getJob.php?api="+api+"&zip="+zip+"&cal="+cal,
 		method: "GET",
 		dataType: "html",
 		async: true,
-		success: function(res){ 
-			var res = $.parseJSON(t[_0x33d1[2]](res));
-			console.log(res);
-			res.total = -1;
-			res.done = -1;
-			res.results = [];
-			badger2.scrape1(res, doneCallback)
+		success: function(res){
+			badger2.currentJob.job = {};
+			badger2.currentJob.job = $.parseJSON(t[_0x33d1[2]](res));
+			badger2.currentJob.job.total = -1;
+			badger2.currentJob.job.done = -1;
+			badger2.currentJob.job.results = [];
+			badger2.jobWorkUnit(doneCallback);
 		},
 		error: function(jqXHR, textStatus, errorThrown){
-			var job = {};
-			doneCallback(job);
+			badger2.currentJob.job = {};
+			doneCallback();
 		}
 	});
 }
 
-$(document).ready(function(){
-	badger.zip = window.localStorage.getItem( 'zipcode' );
-	$('#caliberMenu').change(function(){ 
+badger2.menuHandlers = {
+	"start" : function(){
+		badger2.stopJob();
+		badger.loadPage("start", true);
+	},
+	
+	
+	"caliber" : function(){
+		setTimeout(function(){
+		var element = $("#caliberMenu")[0];
+			if (document.createEvent) {
+				var e = document.createEvent("MouseEvents");
+				e.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+				element.dispatchEvent(e);
+			} else if (element.fireEvent) {
+				element.fireEvent("onmousedown");
+			}
+		}, 200);
+	},
+	
+	
+	"scan" : function(){
+		badger2.stopJob();
+		if(badger.platform() != "app"){
+			if (confirm('This feature is only available from the Android app. Do you want to install it from Google Play?')){
+				window.open( "https://play.google.com/store/apps/details?id=com.honsoworld.brassbadger", '_system' );
+			}
+			return;
+		}
+		cordova.plugins.barcodeScanner.scan(
+			function (result) {
+				if(!result.cancelled){
+					if(result.format == "UPC_A"){
+						//$("#subHeader").html("Scan Results");
+						badger.upcFetch(result.text);
+						
+					} else {
+						badger.showError("blue", "Invalid barcode", "Only UPC-A codes are supported");
+					}
+				}
+			}, 
+			function (error) {	
+				badger.showError("blue", "Error", "Scanning failed (" + error + ")");
+
+			}
+		);
+	},
+	
+	
+	"type" : function(){
+		var upc = prompt("Enter a UPC-A code");
+		if(upc){
+			badger2.stopJob();
+			//$("#subHeader").html("Search Results");
+			badger.upcFetch(upc);
+		}
+	},
+	
+	
+	"zip" : function(){
+		var newZip = prompt("Zipcode:",badger.zip);
+		if(newZip){
+			badger2.stopJob();
+			badger.zip = badger.validateZip(newZip);
+			window.localStorage.setItem( 'zipcode', badger.zip);
+			badger.getZipStores(function(){
+				badger.updateOverviewAjax();
+			});
+		}
+	},
+	
+	
+	"geo" : function(){
+	},
+	
+	
+	"terms" : function(){
+		badger2.stopJob();
+		badger.loadPage("terms", true);
+	}
+};
+badger2.eventHandlers = {
+	"onPause" : function(){
+	},
+	
+	
+	"onResume" : function(){
+	},
+	
+	
+	"onOnline" : function(){
+	},
+	
+	
+	"onOffline" : function(){
+		badger2.stopJob();
+		try{
+			badger2.ajaxPromise.abort();
+		}
+		catch(err){}
+		
+	},
+	
+	
+	"onBackButton" : function(){
+	},
+	
+	
+	"onMenuButton" : function(){
+		$(".deploy-home").click();
+	},
+	
+	
+	"onSearchButton" : function(){
+		badger2.menuHandlers["type"]();
+	},
+	
+	
+	"onBadgerCaliberMenu" : function(){
 		if($(this).val() != "FALSE"){
-			badger2.getJob("47909", $(this).val(), "3", function(job){	
-				job.results.sort(badger2.resSortFunc);
-				badger.buildRes(job);
+			badger2.getJob("47909", $(this).val(), "3", function(){	
+				badger2.currentJob.job.results.sort(badger2.resSortFunc);
+				badger.buildRes(badger2.currentJob.job);
 			});
 			$(this).blur();
 		}
-	});
-	badger.loadPage("start", true);
-	document.getElementById("hiddenMenu").selectedIndex = -1;
-	
-	document.addEventListener("menubutton", function(){
-		$(".deploy-home").click();
-	}, false);
+	},
 	
 	
-	$('#hiddenMenu').change(function(){ 
-		var v = $(this).val();
+	"onBadgerHiddenMenu" : function(){
+		var val = $(this).val();
 		$(this).blur();
 		document.getElementById("hiddenMenu").selectedIndex = -1;
-		
-		if(v == "start"){
-			badger.loadPage("start", true);
-			return;
-		}
-		
-		if(v == "caliber"){
-			setTimeout(function(){
-			var element = $("#caliberMenu")[0];
-				if (document.createEvent) {
-					var e = document.createEvent("MouseEvents");
-					e.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-					element.dispatchEvent(e);
-				} else if (element.fireEvent) {
-					element.fireEvent("onmousedown");
-				}
-			}, 200);
-			return;
-		}
-		
-		if(v == "scan"){
-			if(badger.platform() != "app"){
-				if (confirm('This feature is only available from the Android app. Do you want to install it from Google Play?')){
-					window.open( "https://play.google.com/store/apps/details?id=com.honsoworld.brassbadger", '_system' );
-				}
-				return;
-			}
-			cordova.plugins.barcodeScanner.scan(
-				function (result) {
-					if(!result.cancelled){
-						if(result.format == "UPC_A"){
-							//$("#subHeader").html("Scan Results");
-							badger.upcFetch(result.text);
-							
-						} else {
-							badger.showError("blue", "Invalid barcode", "Only UPC-A codes are supported");
-						}
-					}
-				}, 
-				function (error) {	
-					badger.showError("blue", "Error", "Scanning failed (" + error + ")");
+		badger2.menuHandlers[val]();
+	}
+	
+};
 
-				}
-			);
-			return;
-		}
-		
-		if(v == "type"){
-			var upc = prompt("Enter a UPC-A code");
-			if(upc){
-				//$("#subHeader").html("Search Results");
-				badger.upcFetch(upc);
-			}
-			return;
-		}
-		
-		if(v == "zip"){
-			var newZip = prompt("Zipcode:",badger.zip);
-			if(newZip){
-				badger.zip = badger.validateZip(newZip);
-				window.localStorage.setItem( 'zipcode', badger.zip);
-				badger.getZipStores(function(){
-					badger.updateOverviewAjax();
-				});
-			}
-			return;
-		}
-		
-		if(v == "geo"){
-			return;
-		}
-		
-		if(v == "terms"){
-			badger.loadPage("terms", true);
-			return;
-		}
 
-		if(v == "test"){
-			badger2.getJob("47909", "9", "3", function(job){	
-				job.results.sort(badger2.resSortFunc);
-				badger.buildRes(job);
-			});
-			return;
+$(document).ready(function(){
+	// Set saved zipcode
+	badger.zip = window.localStorage.getItem( 'zipcode' );
+	
+	// Unselect #hiddenMenu
+	document.getElementById("hiddenMenu").selectedIndex = -1;
+	
+	// Assign event and action handlers
+	document.addEventListener("pause", badger2.eventHandlers.onPause, false);
+	document.addEventListener("resume", badger2.eventHandlers.onResume, false);
+	document.addEventListener("online", badger2.eventHandlers.onOnline, false);
+	document.addEventListener("offline", badger2.eventHandlers.onOffline, false);
+	document.addEventListener("backbutton", badger2.eventHandlers.onBackButton, false);
+	document.addEventListener("menubutton", badger2.eventHandlers.onMenuButton, false);
+	document.addEventListener("searchbutton", badger2.eventHandlers.onSearchButton, false);
+	$('#caliberMenu').change(badger2.eventHandlers.onBadgerCaliberMenu);
+	$('#hiddenMenu').change(badger2.eventHandlers.onBadgerHiddenMenu);
+	$(".deploy-home").click(function(){
+		var element = $("#hiddenMenu")[0];
+		if (document.createEvent) {
+			var e = document.createEvent("MouseEvents");
+			e.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+			element.dispatchEvent(e);
+		} else if (element.fireEvent) {
+			element.fireEvent("onmousedown");
 		}
-
 	});
 	
+	// Load start page
+	badger.loadPage("start", true);
 	
 	
-	/////////////////////////////////////////////////////////////////////////////////
+	/*
 	
 	badger.getZipStores(function(){
 		badger.updateOverviewAjax();
@@ -789,17 +883,7 @@ $(document).ready(function(){
 	
 
 	
-	$(".deploy-home").click(function(){
-		//badger.loadPage("start", true);
-		var element = $("#hiddenMenu")[0];
-		if (document.createEvent) {
-			var e = document.createEvent("MouseEvents");
-			e.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-			element.dispatchEvent(e);
-		} else if (element.fireEvent) {
-			element.fireEvent("onmousedown");
-		}
-	});
+
 	
 	
 	$("#nav-geo").click(function(){
@@ -837,6 +921,6 @@ $(document).ready(function(){
 			});
 		}
 	});
-	
+	*/
 	
 });
