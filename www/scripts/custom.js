@@ -332,36 +332,34 @@ badger.buildRes = function(result){
 			}
 			
 		}
-		if(result.results[i]['status'] != "Ad"){
-			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
-		} else {
-			if(false){
-				var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
-				ad.find("a").click(function(e){
-					window.open( $(this).attr('href'), '_system' );
-					e.preventDefault();
-				});
-				$("#apiResults").append(ad);
-				// /*
-				$(ad).find('img.avant_adb_image').each(function(){
-					$(this).error(function(){
-						if(!this.complete || (typeof this.naturalWidth != 'undefined' && this.naturalWidth == 0)){
-							$(this).closest('.ad').hide();
-							var newAd = $('<div class=\'notification-box blue-box ad blocked\'><p><a href=\'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VM3R9BG9SQ9NS\'>Consider making a donation to help offset the cost of server resources and development.</a></p></div>');
-							newAd.find("a").click(function(e){
-								window.open( $(this).attr('href'), '_system' );
-								e.preventDefault();
-							});
-							$(this).closest('.ad').after(newAd);
-							$(".notification-box.blue-box.ad.blocked").hide();
-							$(".notification-box.blue-box.ad.blocked").first().show();
+		
+		$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
+		var pos = "p"+i;
+		if(pos in badger2.currentJob.job.a){
+			var ad = $("<div class='notification-box blue-box ad'>"+badger2.currentJob.job.a[pos]+"</div>");
+			ad.find("a").click(function(e){
+				window.open( $(this).attr('href'), '_system' );
+				e.preventDefault();
+			});
+			$("#apiResults").append(ad);
+			// /*
+			$(ad).find('img.avant_adb_image').each(function(){
+				$(this).error(function(){
+					if(!this.complete || (typeof this.naturalWidth != 'undefined' && this.naturalWidth == 0)){
+						$(this).closest('.ad').hide();
+						var newAd = $('<div class=\'notification-box blue-box ad blocked\'><p><a href=\'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VM3R9BG9SQ9NS\'>Consider making a donation to help offset the cost of server resources and development.</a></p></div>');
+						newAd.find("a").click(function(e){
+							window.open( $(this).attr('href'), '_system' );
+							e.preventDefault();
+						});
+						$(this).closest('.ad').after(newAd);
+						$(".notification-box.blue-box.ad.blocked").hide();
+						$(".notification-box.blue-box.ad.blocked").first().show();
 
-						}
-					});
-
+					}
 				});
-			}
-			// */
+
+			});
 		}
 	}
 	if(!badger2.currentJob.running && result.results.length == 0)
