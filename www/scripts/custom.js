@@ -363,7 +363,6 @@ badger.buildRes = function(result){
 			}
 			// */
 		}
-
 	}
 	if(!badger2.currentJob.running && result.results.length == 0)
 		badger.showError("blue", "No Results Found", "The requested information could not be found for any of the stores you have selected.");
