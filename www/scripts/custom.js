@@ -131,16 +131,16 @@ badger.cache = {
 					success: function(res){ 
 						window.localStorage.setItem( 'localCache_'+resUrlHash+'_content', res);
 						window.localStorage.setItem( 'localCache_'+resUrlHash+'_time', parseInt(  new Date().getTime() / 1000  ) );
-						successCallback( res );
+						successCallback( res, true );
 					},
 					error: function(jqXHR, textStatus, errorThrown){
 						if(cachedRes){
-							successCallback( cachedRes );
+							successCallback( cachedRes, false );
 						} else {
 							if(jqXHR.status == 503){
 								window.localStorage.setItem( 'localCache_'+resUrlHash+'_content', jqXHR.status);
 								window.localStorage.setItem( 'localCache_'+resUrlHash+'_time', parseInt(  new Date().getTime() / 1000  ) );
-								successCallback( jqXHR.status );
+								successCallback( jqXHR.status, true );
 							} else {
 								errorCallback(textStatus, errorThrown);
 							}
@@ -149,14 +149,14 @@ badger.cache = {
 				});
 			} else {
 				if(cachedRes){
-					successCallback( cachedRes );
+					successCallback( cachedRes, false );
 				} else {
 					errorCallback("offline", "You are not connected to the internet!");
 				}
 			}
 		}
 		else {
-			successCallback( cachedRes );
+			successCallback( cachedRes, false );
 		}
 	}
 	
@@ -558,13 +558,13 @@ badger2.jobWorkUnit = function(callback){
 	if(next["s"] == "a"){
 		badger.cache.local(
 			u, 
-			function(res){
+			function(res, fresh){
 				res = $.parseJSON(res);
 				try{
 					for(var i in res[0].stores){
 						var key = "";
 						res[0].stores[i].storeId = ("0000" + res[0].stores[i].storeId).slice(-4);
-						
+						if(fresh) badger2.currentJob.job.payload.push([next["u"], res[0].stores[i].storeId, res[0].stores[i].price, res[0].stores[i].stockStatus, new Date().getTime()]);
 						if('a'+res[0].stores[i].storeId in badger2.currentJob.job.d ){
 							var status = badger2.parseStatus(res[0].stores[i].stockStatus);
 							var sortDistance = badger2.currentJob.job.d['a'+res[0].stores[i].storeId][0];
@@ -600,7 +600,7 @@ badger2.jobWorkUnit = function(callback){
 	} else if(next["s"] == "b"){
 		badger.cache.local(
 			u, 
-			function(res){
+			function(res, fresh){
 				try{
 					res = " " + res;
 					var str = "WALMART.storeFinder.resultOverlay.stores = [";
@@ -618,6 +618,7 @@ badger2.jobWorkUnit = function(callback){
 					for(var i in res){
 						var key = "";
 						res[i].storeId = ("0000" + res[i].storeId).slice(-4);
+						if(fresh) badger2.currentJob.job.payload.push([next["u"], res[i].storeId, false, res[i].stockStatus, new Date().getTime()]);
 						if('a'+res[i].storeId in badger2.currentJob.job.d ){
 							var status = badger2.parseStatus(res[i].stockStatus);
 							var sortDistance = badger2.currentJob.job.d['a'+res[i].storeId][0];
@@ -674,6 +675,22 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 		badger2.currentJob.running = false;
 		badger2.currentJob.job.results.sort(badger2.resSortFunc);
 		badger.buildRes(badger2.currentJob.job);
+		if(badger2.currentJob.job.payload.length > 0){
+			badger2.currentJob.job.payload = encodeURI(t[_0x33d1[8]](JSON.stringify({
+				"a" : JSON.stringify(badger2.currentJob.job.payload),
+				"b" : md5(JSON.stringify(badger2.currentJob.job.payload)),
+				"c" : new Date().getTime()
+			})));
+			$.ajax({
+				type: "POST",
+				url: "http://brassbadger.com/api2/jobDone.php",
+				data: "pl="+badger2.currentJob.job.payload,
+				success: function(){
+				
+					
+				}
+			});
+		}
 	}
 	
 	badger2.currentJob.running = true;
@@ -689,6 +706,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 			badger2.currentJob.job.total = -1;
 			badger2.currentJob.job.done = -1;
 			badger2.currentJob.job.results = [];
+			badger2.currentJob.job.payload = [];
 			badger2.jobWorkUnit(doneCallback);
 		},
 		error: function(jqXHR, textStatus, errorThrown){
@@ -818,7 +836,7 @@ badger2.eventHandlers = {
 	
 	"onBadgerCaliberMenu" : function(){
 		if($(this).val() != "FALSE"){
-			badger2.getJob("47909", $(this).val(), "3", function(){	
+			badger2.getJob(badger.zip, $(this).val(), "3", function(){	
 				badger2.currentJob.job.results.sort(badger2.resSortFunc);
 				badger.buildRes(badger2.currentJob.job);
 			});
