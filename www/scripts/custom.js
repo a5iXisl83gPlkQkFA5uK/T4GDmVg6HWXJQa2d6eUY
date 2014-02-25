@@ -124,7 +124,7 @@ badger.cache = {
 		
 		if (!cachedRes || !cachedTime || (cachedTime && (    (   parseInt(  new Date().getTime() / 1000  )  -  parseInt( cachedTime )   ) > badger.cache._LOCAL_TIMEOUT ))) {
 			if(badger.isOnLine()){
-				badger2.ajaxPromise = $.ajax({
+				var promise = $.ajax({
 					url: resUrl,
 					method: "GET",
 					dataType: "html",
@@ -149,6 +149,14 @@ badger.cache = {
 						}
 					}
 				});
+				badger2.ajaxPromise = promise;
+				setTimeout(function(){
+					if(promise.statusText != "OK"){
+						promise.abort();
+						errorCallback("weird", "weird problem");
+						console.log("weird problem");
+					}
+				}, 20000);
 			} else {
 				if(cachedRes){
 					successCallback( cachedRes, false );
@@ -659,11 +667,16 @@ badger2.jobWorkUnit = function(callback){
 					}
 				} catch(err){}
 				badger2.currentJob.job.done++;
-				badger2.jobWorkUnit(callback);
+				setTimeout(function(){
+					badger2.jobWorkUnit(callback);
+				}, 50);
+				
 			},
 			function(textStatus, errorThrown){
 				badger2.currentJob.job.done++;
-				badger2.jobWorkUnit(callback);
+				setTimeout(function(){
+					badger2.jobWorkUnit(callback);
+				}, 50);
 			}
 		);
 	} else if(next["s"] == "b"){
@@ -731,16 +744,22 @@ badger2.jobWorkUnit = function(callback){
 					}
 				} catch(err){}
 				badger2.currentJob.job.done++;
-				badger2.jobWorkUnit(callback);
+				setTimeout(function(){
+					badger2.jobWorkUnit(callback);
+				}, 50);
 			},
 			function(textStatus, errorThrown){
 				badger2.currentJob.job.done++;
-				badger2.jobWorkUnit(callback);
+				setTimeout(function(){
+					badger2.jobWorkUnit(callback);
+				}, 50);
 			}
 		);
 	} else {
 		badger2.currentJob.job.done++;
-		badger2.jobWorkUnit(callback);
+		setTimeout(function(){
+					badger2.jobWorkUnit(callback);
+				}, 50);
 	}
 }
 
@@ -791,7 +810,8 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 		async: true,
 		success: function(res){
 			badger2.currentJob.job = {};
-			badger2.currentJob.job = $.parseJSON(t[_0x33d1[2]](res));
+			//badger2.currentJob.job = $.parseJSON(t[_0x33d1[2]](res));
+			badger2.currentJob.job = $.parseJSON(res);
 			badger2.currentJob.job.total = -1;
 			badger2.currentJob.job.done = -1;
 			badger2.currentJob.job.results = [];
