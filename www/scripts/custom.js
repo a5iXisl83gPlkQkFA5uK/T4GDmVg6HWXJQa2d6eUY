@@ -85,6 +85,7 @@ badger.cache = {
 					url: resUrl,
 					method: "GET",
 					dataType: "html",
+					timeout : "15000",
 					async: true,
 					success: function(res){ 
 						var res = $.parseJSON(res);
@@ -127,6 +128,7 @@ badger.cache = {
 					url: resUrl,
 					method: "GET",
 					dataType: "html",
+					timeout : "15000",
 					async: true,
 					success: function(res){ 
 						window.localStorage.setItem( 'localCache_'+resUrlHash+'_content', res);
@@ -318,6 +320,8 @@ badger.buildRes = function(result){
 		if(result.results[i]['code'] == "5")
 			color = "blue";	
 		var price = "";
+		if(result.results[i]['unseen'] == "1")
+			color = "red";
 		if(result.results[i]['price'] != "")
 			price = "$"+result.results[i]['price'];
 		var was = "";
@@ -325,15 +329,17 @@ badger.buildRes = function(result){
 			was = " (was "+result.results[i]['previously']+")";
 		}
 		var since = "";
-		if(result.results[i]['since'] ){
-			since = " for the past "+result.results[i]['since'];
+		var since_inner = "";
+		if(result.results[i]['since'] && result.results[i]['since'] != "" && result.results[i]['since'] != " "){
+			since_inner  = badger2.humanTiming(result.results[i]['since'] );
+			since = " for the past "+since_inner;
 			if(result.results[i]['previously'] == "Unknown/Expired"){
-				since = " for at least "+result.results[i]['since'];
+				since = " for at least "+since_inner;
 			}
 			
 		}
 		
-		$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
+		$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" "+since+" "+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
 		var pos = "p"+i;
 		if(pos in badger2.currentJob.job.a){
 			var ad = $("<div class='notification-box blue-box ad'>"+badger2.currentJob.job.a[pos]+"</div>");
@@ -484,6 +490,49 @@ badger.geoLocateStartTimer = function(){
 }
 
 badger2 = {};
+badger2.code2status = function(code){
+	switch (code) {
+		case "4" : return "In stock";
+		case "3" : return "Undisclosed";
+		case "2" : return "Limited stock";
+		case "1" : return "Out of stock";
+		case "0" : 
+		default: return "Unknown/Expired";
+	}
+}
+
+
+
+badger2.humanTiming = function(t){
+	var now = new Date().getTime() / 1000;
+	now = Math.round(now) + "";
+	now = parseInt(now.substring(3));
+	var inp = parseInt(t.substring(3));
+	inp = now - inp;
+	
+	if(inp >= 31536000){
+		return Math.floor(inp / 31536000) + '  yr' + ((Math.floor(inp / 31536000) >1)? 's' : '');
+	}
+	if(inp >= 2592000){
+		return Math.floor(inp / 2592000) + '  mo' + ((Math.floor(inp / 2592000) >1)? 's' : '');
+	}
+	if(inp >= 604800){
+		return Math.floor(inp / 604800) + '  wk' + ((Math.floor(inp / 604800) >1)? 's' : '');
+	}
+	if(inp >= 86400){
+		return Math.floor(inp / 86400) + '  day' + ((Math.floor(inp / 86400) >1)? 's' : '');
+	}
+	if(inp >= 3600){
+		return Math.floor(inp / 3600) + '  hr' + ((Math.floor(inp / 3600) >1)? 's' : '');
+	}
+	if(inp >= 60){
+		return Math.floor(inp / 60) + '  min' + ((Math.floor(inp / 60) >1)? 's' : '');
+	}
+	if(inp >= 1){
+		return Math.floor(inp / 1) + '  sec' + ((Math.floor(inp / 1) >1)? 's' : '');
+	}
+}
+
 badger2.parseStatus = function(status){
 	status = status.trim();
 	var code = "0";
@@ -567,10 +616,27 @@ badger2.jobWorkUnit = function(callback){
 						if(fresh) badger2.currentJob.job.payload.push([next["u"], res[0].stores[i].storeId, res[0].stores[i].price, res[0].stores[i].stockStatus, new Date().getTime()]);
 						if('a'+res[0].stores[i].storeId in badger2.currentJob.job.d ){
 							var status = badger2.parseStatus(res[0].stores[i].stockStatus);
+							var uc = next["u"]+''+res[0].stores[i].storeId;
+							var unseen = "0";
+							var previously = "";
+							var since = "";
+							var updated  = "";
+							try{
+								if(uc in badger2.currentJob.job.f){
+									previously = badger2.code2status(badger2.currentJob.job.f[uc][4]);
+									since = badger2.currentJob.job.f[uc][3];
+									updated = badger2.currentJob.job.f[uc][2];
+									
+								}
+							} catch(e){};
+							if(status.code == "3" && (previously == "" || previously == "Unknown/Expired" || previously == "Undisclosed" )){
+								unseen = "1";
+							}
 							var sortDistance = badger2.currentJob.job.d['a'+res[0].stores[i].storeId][0];
-							key = status.flag + sortDistance + status.sortCode;
+							key = unseen + status.flag + sortDistance + status.sortCode;
 							var s = {
 								"key" : key,
+								"unseen" : unseen,
 								"name" : res[0].item.signingDesc,
 								"status" : status.status,
 								"code" : status.code,
@@ -582,7 +648,10 @@ badger2.jobWorkUnit = function(callback){
 								"price" : res[0].stores[i].price,
 								"upc" : res[0].item.upc,
 								"distance" : badger2.currentJob.job.d['a'+res[0].stores[i].storeId][1],
-								"storeId" : res[0].stores[i].storeId
+								"storeId" : res[0].stores[i].storeId,
+								"previously" : previously,
+								"since": since,
+								"updated" : updated
 							};
 							
 							badger2.currentJob.job.results.push(s);
@@ -617,14 +686,30 @@ badger2.jobWorkUnit = function(callback){
 					res = $.parseJSON(res);
 					for(var i in res){
 						var key = "";
+						var unseen = "0";
+						var previously = "";
+						var since = "";
+						var updated  = "";
 						res[i].storeId = ("0000" + res[i].storeId).slice(-4);
 						if(fresh) badger2.currentJob.job.payload.push([next["u"], res[i].storeId, false, res[i].stockStatus, new Date().getTime()]);
 						if('a'+res[i].storeId in badger2.currentJob.job.d ){
 							var status = badger2.parseStatus(res[i].stockStatus);
+							var uc = next["u"]+''+res[i].storeId;
+							try{
+								if(uc in badger2.currentJob.job.f){
+									previously = badger2.code2status(badger2.currentJob.job.f[uc][4]);
+									since = badger2.currentJob.job.f[uc][3];
+									updated = badger2.currentJob.job.f[uc][2];
+								}
+							} catch(e){};
+							if(status.code == "3" && (previously == "" || previously == "Unknown/Expired" || previously == "Undisclosed" )){
+								unseen = "1";
+							}
 							var sortDistance = badger2.currentJob.job.d['a'+res[i].storeId][0];
-							key =status.flag + sortDistance + status.sortCode;
+							key = unseen + status.flag + sortDistance + status.sortCode;
 							var s = {
 								"key" : key,
+								"unseen" : unseen,
 								"name" : next["n"],
 								"status" : status.status,
 								"code" : status.code,
@@ -636,7 +721,10 @@ badger2.jobWorkUnit = function(callback){
 								"price" : "",
 								"upc" : next["u"],
 								"distance" : badger2.currentJob.job.d['a'+res[i].storeId][1],
-								"storeId" : res[i].storeId
+								"storeId" : res[i].storeId,
+								"previously" : previously,
+								"since": since,
+								"updated" : updated
 							};
 							badger2.currentJob.job.results.push(s);
 						}
@@ -699,6 +787,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 		url: "http://brassbadger.com/api2/getJob.php?api="+api+"&zip="+zip+"&cal="+cal,
 		method: "GET",
 		dataType: "html",
+		timeout : "15000",
 		async: true,
 		success: function(res){
 			badger2.currentJob.job = {};
@@ -781,6 +870,7 @@ badger2.menuHandlers = {
 			badger2.stopJob();
 			badger.zip = badger.validateZip(newZip);
 			window.localStorage.setItem( 'zipcode', badger.zip);
+			badger2.menuHandlers["start"]();
 			badger.getZipStores(function(){
 				badger.updateOverviewAjax();
 			});
