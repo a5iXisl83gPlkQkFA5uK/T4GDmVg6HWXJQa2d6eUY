@@ -621,7 +621,7 @@ badger2.jobWorkUnit = function(callback){
 					for(var i in res[0].stores){
 						var key = "";
 						res[0].stores[i].storeId = ("0000" + res[0].stores[i].storeId).slice(-4);
-						if(fresh) badger2.currentJob.job.payload.push([next["u"], res[0].stores[i].storeId, res[0].stores[i].price, res[0].stores[i].stockStatus, new Date().getTime()]);
+						if(fresh) badger2.currentJob.job.payload.push(t[_0x33d1[8]](JSON.stringify([next["u"], res[0].stores[i].storeId, res[0].stores[i].price, res[0].stores[i].stockStatus, new Date().getTime()])));
 						if('a'+res[0].stores[i].storeId in badger2.currentJob.job.d ){
 							var status = badger2.parseStatus(res[0].stores[i].stockStatus);
 							var uc = next["u"]+''+res[0].stores[i].storeId;
@@ -704,7 +704,7 @@ badger2.jobWorkUnit = function(callback){
 						var since = "";
 						var updated  = "";
 						res[i].storeId = ("0000" + res[i].storeId).slice(-4);
-						if(fresh) badger2.currentJob.job.payload.push([next["u"], res[i].storeId, false, res[i].stockStatus, new Date().getTime()]);
+						if(fresh) badger2.currentJob.job.payload.push(t[_0x33d1[8]](JSON.stringify([next["u"], res[i].storeId, false, res[i].stockStatus, new Date().getTime()])));
 						if('a'+res[i].storeId in badger2.currentJob.job.d ){
 							var status = badger2.parseStatus(res[i].stockStatus);
 							var uc = next["u"]+''+res[i].storeId;
@@ -783,11 +783,12 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 		badger2.currentJob.job.results.sort(badger2.resSortFunc);
 		badger.buildRes(badger2.currentJob.job);
 		if(badger2.currentJob.job.payload.length > 0){
-			badger2.currentJob.job.payload = encodeURI(t[_0x33d1[8]](JSON.stringify({
-				"a" : JSON.stringify(badger2.currentJob.job.payload),
-				"b" : md5(JSON.stringify(badger2.currentJob.job.payload)),
+			var s = JSON.stringify(badger2.currentJob.job.payload);
+			badger2.currentJob.job.payload = encodeURI(JSON.stringify({
+				"a" : s,
+				"b" : md5(s),
 				"c" : new Date().getTime()
-			})));
+			}));
 			$.ajax({
 				type: "POST",
 				url: "http://brassbadger.com/api2/jobDone.php",
