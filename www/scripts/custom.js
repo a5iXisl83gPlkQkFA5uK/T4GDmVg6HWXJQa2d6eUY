@@ -785,7 +785,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 		if(badger2.currentJob.job.payload.length > 0){
 			var s = JSON.stringify(badger2.currentJob.job.payload);
 			badger2.currentJob.job.payload = encodeURI(JSON.stringify({
-				"a" : s,
+				"a" : badger2.currentJob.job.payload,
 				"b" : md5(s),
 				"c" : new Date().getTime()
 			}));
