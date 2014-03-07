@@ -1,14 +1,3 @@
-/* Copyright (C) 2013 Taylor Honsowetz - All Rights Reserved
- * Use, distribution and modification this code is licensed under the
- * terms of the Creative Commons Attribution-NonCommercial-NoDerivatives 
- * 4.0 International License.
- *
- * To view a copy of this license, visit 
- * http://creativecommons.org/licenses/by-nc-nd/4.0/deed.en_US
- *
- * For further Terms of Use, visit
- * http://brassbadger.com/pages/terms.php
- */
 function strpos(e,t,n){var r=(e+"").indexOf(t,n||0);return r===-1?false:r}
 function substr(e,t,n){var r=0,i=true,s=0,o=0,u=0,a="";e+="";var f=e.length;this.php_js=this.php_js||{};this.php_js.ini=this.php_js.ini||{};switch(this.php_js.ini["unicode.semantics"]&&this.php_js.ini["unicode.semantics"].local_value.toLowerCase()){case"on":for(r=0;r<e.length;r++){if(/[\uD800-\uDBFF]/.test(e.charAt(r))&&/[\uDC00-\uDFFF]/.test(e.charAt(r+1))){i=false;break}}if(!i){if(t<0){for(r=f-1,s=t+=f;r>=s;r--){if(/[\uDC00-\uDFFF]/.test(e.charAt(r))&&/[\uD800-\uDBFF]/.test(e.charAt(r-1))){t--;s--}}}else{var l=/[\uD800-\uDBFF][\uDC00-\uDFFF]/g;while(l.exec(e)!=null){var c=l.lastIndex;if(c-2<t){t++}else{break}}}if(t>=f||t<0){return false}if(n<0){for(r=f-1,o=f+=n;r>=o;r--){if(/[\uDC00-\uDFFF]/.test(e.charAt(r))&&/[\uD800-\uDBFF]/.test(e.charAt(r-1))){f--;o--}}if(t>f){return false}return e.slice(t,f)}else{u=t+n;for(r=t;r<u;r++){a+=e.charAt(r);if(/[\uD800-\uDBFF]/.test(e.charAt(r))&&/[\uDC00-\uDFFF]/.test(e.charAt(r+1))){u++}}return a}break};case"off":default:if(t<0){t+=f}f=typeof n==="undefined"?f:n<0?n+f:n+t;return t>=e.length||t<0||t>f?!1:e.slice(t,f)}return undefined}
 function str_replace(e,t,n,r){var i=0,s=0,o="",u="",a=0,f=0,l=[].concat(e),c=[].concat(t),h=n,p=Object.prototype.toString.call(c)==="[object Array]",d=Object.prototype.toString.call(h)==="[object Array]";h=[].concat(h);if(r){this.window[r]=0}for(i=0,a=h.length;i<a;i++){if(h[i]===""){continue}for(s=0,f=l.length;s<f;s++){o=h[i]+"";u=p?c[s]!==undefined?c[s]:"":c[0];h[i]=o.split(l[s]).join(u);if(r&&h[i]!==o){this.window[r]+=(o.length-h[i].length)/l[s].length}}}return d?h:h[0]}
@@ -25,7 +14,7 @@ $(window).load(function() {
 });
 
 badger = {};
-badger.api = 2;
+badger.api = 3;
 badger.zip = 46201;
 badger.platform = function(){
 	if(typeof cordova == "undefined"){
@@ -261,12 +250,12 @@ badger.loadPage = function(page, doClose){
 	switch (page){
 		case "terms" :
 			title = "Terms and Privacy";
-			url = "http://brassbadger.com/pages/terms.php?platform=" + badger.platform();
+			url = "http://brassbadger.com/pages/terms.php?ver=2beta&platform=" + badger.platform();
 			break
 		case "start" :
 		default:
 			title = "Getting Started";
-			url = "http://brassbadger.com/pages/start.php?platform=" + badger.platform();
+			url = "http://brassbadger.com/pages/start.php?ver=2beta&platform=" + badger.platform();
 			break;
 	}
 	
@@ -860,15 +849,17 @@ badger2.menuHandlers = {
 				if(!result.cancelled){
 					if(result.format == "UPC_A"){
 						//$("#subHeader").html("Scan Results");
-						badger.upcFetch(result.text);
-						
+						//badger.upcFetch(result.text);
+						badger2.notYetWorking();
 					} else {
-						badger.showError("blue", "Invalid barcode", "Only UPC-A codes are supported");
+						//badger.showError("blue", "Invalid barcode", "Only UPC-A codes are supported");
+						badger2.notYetWorking();
 					}
 				}
 			}, 
 			function (error) {	
-				badger.showError("blue", "Error", "Scanning failed (" + error + ")");
+				//badger.showError("blue", "Error", "Scanning failed (" + error + ")");
+				badger2.notYetWorking();
 
 			}
 		);
@@ -878,9 +869,10 @@ badger2.menuHandlers = {
 	"type" : function(){
 		var upc = prompt("Enter a UPC-A code");
 		if(upc){
-			badger2.stopJob();
+			badger2.notYetWorking();
+			//badger2.stopJob();
 			//$("#subHeader").html("Search Results");
-			badger.upcFetch(upc);
+			//badger.upcFetch(upc);
 		}
 	},
 	
@@ -965,7 +957,10 @@ badger2.eventHandlers = {
 	
 };
 
-
+badger2.notYetWorking = function(){
+	alert("This functionality is unavailable in this beta release, but is planned to be finished by the next stable update.");
+	
+}
 $(document).ready(function(){
 	// Set saved zipcode
 	badger.zip = window.localStorage.getItem( 'zipcode' );
