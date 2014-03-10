@@ -120,7 +120,6 @@ badger.cache = {
 				var current = parseInt( cachedTime );
 				
 				if(    (   parseInt(  new Date().getTime() / 1000  )  -  parseInt( cachedTime )   ) > badger.cache._LOCAL_TIMEOUT ){
-					console.log((   parseInt(  new Date().getTime() / 1000  )  -  parseInt( cachedTime )   ));
 					window.localStorage.removeItem('localCache_'+hash+'_content');
 					window.localStorage.removeItem('localCache_'+hash+'_time');
 				}
@@ -128,10 +127,9 @@ badger.cache = {
 		}
 		
 		var currentSize = badger.cache.localSize();
-		console.log(currentSize);
 		
 		// As a safety, purge localCache if it gets too big
-		if(currentSize > 2.5){
+		if(currentSize > 2.2){
 			for(var key in window.localStorage) {
 				if(key.indexOf("localCache_") == 0){
 					delete window.localStorage[key];
@@ -139,39 +137,63 @@ badger.cache = {
 			}
 		}
 		
-		// Try to keep cache under 4MB
+		// Try to keep cache between 1.5MB and 2.0 MB
 		var while_ct = 0;
-		while(currentSize > 2 && while_ct < 200){
-			while_ct++;
-			var smallestTime = false;
-			var smallestHash = false;
+		if(currentSize > 2.0){
+			// Delete anything older than 5 min
 			for (var key in window.localStorage){
 				if(key.indexOf("localCache_") == 0 && key.indexOf("_time") > 0){
 					var hash = key.replace("localCache_",""); 
 					hash = hash.replace("_time", "");
 					var cachedTime = window.localStorage.getItem( key + "" );
 					var current = parseInt( cachedTime );
-					if(smallestTime === false || current < smallestTime){
-						smallestTime = current + 0;
-						smallestHash = hash + "";
-					}
-				}
-			}
-			if(smallestTime !== false && smallestHash !== false){
-				window.localStorage.removeItem('localCache_'+smallestHash+'_content');
-				window.localStorage.removeItem('localCache_'+smallestHash+'_time');
-			} else {
-				for(var key in window.localStorage) {
-					if(key.indexOf("localCache_") == 0){
-						delete window.localStorage[key];
+					
+					if(    (   parseInt(  new Date().getTime() / 1000  )  -  parseInt( cachedTime )   ) > (60*5) ){
+						window.localStorage.removeItem('localCache_'+hash+'_content');
+						window.localStorage.removeItem('localCache_'+hash+'_time');
 					}
 				}
 			}
 			currentSize = badger.cache.localSize();
+			
+			while(currentSize > 1.5 && while_ct < 25){
+				while_ct++;
+				var smallestTime = false;
+				var smallestHash = false;
+				for (var key in window.localStorage){
+					if(key.indexOf("localCache_") == 0 && key.indexOf("_time") > 0){
+						var hash = key.replace("localCache_",""); 
+						hash = hash.replace("_time", "");
+						var cachedTime = window.localStorage.getItem( key + "" );
+						var current = parseInt( cachedTime );
+						if(smallestTime === false || current < smallestTime){
+							smallestTime = current + 0;
+							smallestHash = hash + "";
+						}
+					}
+				}
+				if(smallestTime !== false && smallestHash !== false){
+					window.localStorage.removeItem('localCache_'+smallestHash+'_content');
+					window.localStorage.removeItem('localCache_'+smallestHash+'_time');
+				} else {
+					for(var key in window.localStorage) {
+						if(key.indexOf("localCache_") == 0){
+							delete window.localStorage[key];
+						}
+					}
+				}
+				currentSize = badger.cache.localSize();
+			}
 		}
 	},
 	"localSize" : function(){
-		return (unescape(encodeURIComponent(JSON.stringify(localStorage))).length)/1024/1024;
+		var total = 0;
+		for(var x in localStorage) {
+		  var amount = (localStorage[x].length * 2) / 1024 / 1024;
+		  total += amount;
+		}
+		return total;
+		//return (unescape(encodeURIComponent(JSON.stringify(localStorage))).length)/1024/1024;
 	},
 	"local": function( resUrl, successCallback, errorCallback ){
 		badger.cache.localClean();
@@ -573,65 +595,71 @@ badger.buildRes = function(result){
 		$("#nav-stores-text").html("NEAR " + badger.zip);
 		window.localStorage.setItem( 'zipcode', badger.zip);
 	}
+	var shown = 0;
 	for (var i = 0; i < result.results.length; i++) {
-		var color = "blue";
-		if(result.results[i]['code'] == "-1" || result.results[i]['code'] == "0" || result.results[i]['code'] == "1")
-			color = "red";
-		if(result.results[i]['code'] == "2")
-			color = "yellow";
-		if(result.results[i]['code'] == "3")
-			color = "yellowgreen";
-		if(result.results[i]['code'] == "4")
-			color = "green";
-		if(result.results[i]['code'] == "5")
-			color = "blue";	
-		var price = "";
-		if(result.results[i]['unseen'] == "1")
-			color = "red";
-		if(result.results[i]['price'] != "")
-			price = "$"+result.results[i]['price'];
-		var was = "";
-		if(result.results[i]['previously'] != "Unknown/Expired"){
-			was = " (was "+result.results[i]['previously']+")";
-		}
-		var since = "";
-		var since_inner = "";
-		if(result.results[i]['since'] && result.results[i]['since'] != "" && result.results[i]['since'] != " "){
-			since_inner  = badger2.humanTiming(result.results[i]['since'] );
-			since = " for the past "+since_inner;
-			if(result.results[i]['previously'] == "Unknown/Expired"){
-				since = " for at least "+since_inner;
+		shown++;
+		if(shown <= 75){
+			var color = "blue";
+			if(result.results[i]['code'] == "-1" || result.results[i]['code'] == "0" || result.results[i]['code'] == "1")
+				color = "red";
+			if(result.results[i]['code'] == "2")
+				color = "yellow";
+			if(result.results[i]['code'] == "3")
+				color = "yellowgreen";
+			if(result.results[i]['code'] == "4")
+				color = "green";
+			if(result.results[i]['code'] == "5")
+				color = "blue";	
+			var price = "";
+			if(result.results[i]['unseen'] == "1")
+				color = "red";
+			if(result.results[i]['price'] != "")
+				price = "$"+result.results[i]['price'];
+			var was = "";
+			if(result.results[i]['previously'] != "Unknown/Expired"){
+				was = " (was "+result.results[i]['previously']+")";
+			}
+			var since = "";
+			var since_inner = "";
+			if(result.results[i]['since'] && result.results[i]['since'] != "" && result.results[i]['since'] != " "){
+				since_inner  = badger2.humanTiming(result.results[i]['since'] );
+				since = " for the past "+since_inner;
+				if(result.results[i]['previously'] == "Unknown/Expired"){
+					since = " for at least "+since_inner;
+				}
+				
 			}
 			
-		}
-		
-		$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" "+since+" "+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
-		var pos = "p"+i;
-		if(pos in badger2.currentJob.job.a){
-			var ad = $("<div class='notification-box blue-box ad'>"+badger2.currentJob.job.a[pos]+"</div>");
-			ad.find("a").click(function(e){
-				window.open( $(this).attr('href'), '_system' );
-				e.preventDefault();
-			});
-			$("#apiResults").append(ad);
-			// /*
-			$(ad).find('img.avant_adb_image').each(function(){
-				$(this).error(function(){
-					if(!this.complete || (typeof this.naturalWidth != 'undefined' && this.naturalWidth == 0)){
-						$(this).closest('.ad').hide();
-						var newAd = $('<div class=\'notification-box blue-box ad blocked\'><p><a href=\'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VM3R9BG9SQ9NS\'>Consider making a donation to help offset the cost of server resources and development.</a></p></div>');
-						newAd.find("a").click(function(e){
-							window.open( $(this).attr('href'), '_system' );
-							e.preventDefault();
-						});
-						$(this).closest('.ad').after(newAd);
-						$(".notification-box.blue-box.ad.blocked").hide();
-						$(".notification-box.blue-box.ad.blocked").first().show();
-
-					}
+			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" "+since+" "+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
+			var pos = "p"+i;
+			if(pos in badger2.currentJob.job.a){
+				var ad = $("<div class='notification-box blue-box ad'>"+badger2.currentJob.job.a[pos]+"</div>");
+				ad.find("a").click(function(e){
+					window.open( $(this).attr('href'), '_system' );
+					e.preventDefault();
 				});
+				$("#apiResults").append(ad);
+				// /*
+				$(ad).find('img.avant_adb_image').each(function(){
+					$(this).error(function(){
+						if(!this.complete || (typeof this.naturalWidth != 'undefined' && this.naturalWidth == 0)){
+							$(this).closest('.ad').hide();
+							var newAd = $('<div class=\'notification-box blue-box ad blocked\'><p><a href=\'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VM3R9BG9SQ9NS\'>Consider making a donation to help offset the cost of server resources and development.</a></p></div>');
+							newAd.find("a").click(function(e){
+								window.open( $(this).attr('href'), '_system' );
+								e.preventDefault();
+							});
+							$(this).closest('.ad').after(newAd);
+							$(".notification-box.blue-box.ad.blocked").hide();
+							$(".notification-box.blue-box.ad.blocked").first().show();
 
-			});
+						}
+					});
+
+				});
+			}
+		} else {
+			break;
 		}
 	}
 	if(!badger2.currentJob.running && result.results.length == 0)
