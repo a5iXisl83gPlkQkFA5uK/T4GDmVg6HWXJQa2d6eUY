@@ -398,12 +398,12 @@ badger.loadPage = function(page, doClose){
 	switch (page){
 		case "terms" :
 			title = "Terms and Privacy";
-			url = "http://brassbadger.com/pages/terms.php?ver=2beta&platform=" + badger.platform();
+			url = "http://brassbadger.com/pages/terms.php?ver=2.1beta&platform=" + badger.platform();
 			break
 		case "start" :
 		default:
 			title = "Getting Started";
-			url = "http://brassbadger.com/pages/start.php?ver=2beta&platform=" + badger.platform();
+			url = "http://brassbadger.com/pages/start.php?ver=2.1beta&platform=" + badger.platform();
 			break;
 	}
 	
