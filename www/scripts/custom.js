@@ -537,6 +537,7 @@ badger.updateOverview = function(result){
 			color = "green";
 		if(result.overview[i]['code'] == "5")
 			color = "blue";
+		color = "grey"; //badger2.notFinished();
 		$("#cal-" + result.overview[i]['cal'])
 			.removeClass("type-blue")
 			.removeClass("type-grey")
@@ -750,6 +751,12 @@ badger2.parseStatus = function(status){
 	};
 }
 
+
+badger2.notFinished = function(){
+	alert("This feature is not quite finished, but will be included by the next stable release!");
+}
+
+
 badger2.resSortFunc = function(a,b){
 	var x = a.key;
 	var y = b.key;
@@ -760,6 +767,7 @@ badger2.currentJob = {
 	"running" : false,
 	"job" : {}
 };
+
 
 badger2.jobWorkUnit = function(callback){
 	if(badger2.currentJob.job.total == -1 && badger2.currentJob.job.done == -1){
@@ -1160,8 +1168,9 @@ $(document).ready(function(){
 	$('#nav-upc').click(function(){
 		var upc = prompt("Enter a UPC-A code");
 		if(upc){
-			$("#subHeader").html("Search Results");
-			badger.upcFetch(upc);
+			badger2.notFinished();
+			//$("#subHeader").html("Search Results");
+			//badger.upcFetch(upc);
 		}
 	});
 	
@@ -1176,8 +1185,9 @@ $(document).ready(function(){
 			function (result) {
 				if(!result.cancelled){
 					if(result.format == "UPC_A"){
-						$("#subHeader").html("Scan Results");
-						badger.upcFetch(result.text);
+						badger2.notFinished();
+						//$("#subHeader").html("Scan Results");
+						//badger.upcFetch(result.text);
 						
 					} else {
 						badger.snapper.close();
