@@ -429,8 +429,11 @@ badger.getZipStores = function(callback){
 			var savedStoreChecks = $.parseJSON(window.localStorage.getItem( 'zip_stores_'+badger.zip ));
 			var usedSavedValues = false;
 			if($.isArray(savedStoreChecks)){
-				if( savedStoreChecks.length > 0 )
+				if( savedStoreChecks.length > 0 ){
 					usedSavedValues = true;
+				} else {
+
+				}
 			}
 			for (var i = (result.stores.length - 1); i >= 0; i--) {
 				var checkedClass = "";
@@ -514,6 +517,7 @@ badger.getSelectedStores = function(){
 			stores += "|" + sid;
 		}
 	})
+	
 	var zStr = "" + badger.zip;
 	if(zStr.length == 5){
 		$("#nav-stores-text").html("NEAR " + badger.zip);
@@ -1094,34 +1098,51 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 	badger2.currentJob.running = true;
 	$("#apiResults").html('<div id="jobProgress" style="margin-top: 5px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />Getting product list</p></div>');
 	
-	if(badger.isOnLine()){
-		badger2.ajaxPromise = $.ajax({
-			url: "http://brassbadger.com/api2/getJob.php?api="+api+"&zip="+zip+"&cal="+cal,
-			method: "GET",
-			dataType: "html",
-			timeout : "15000",
-			async: true,
-			success: function(res){
-				badger2.currentJob.job = {};
-				//badger2.currentJob.job = $.parseJSON(t[_0x33d1[2]](res));
-				badger2.currentJob.job = $.parseJSON(res);
-				badger2.currentJob.job.total = -1;
-				badger2.currentJob.job.done = -1;
-				badger2.currentJob.job.results = [];
-				badger2.currentJob.job.payload = [];
-				badger2.jobWorkUnit(doneCallback);
-			},
-			error: function(jqXHR, textStatus, errorThrown){
-				badger2.currentJob.job = {};
-				doneCallback();
-			}
-		});
+	var temp = badger.getSelectedStores();
+	temp = temp.split("|");
+	var selectedStores = 0;
+	for(var i in temp){
+		selectedStores++
+	}
+	
+	if(selectedStores == 0){
+		if(badger.isOnLine()){
+			badger2.ajaxPromise = $.ajax({
+				url: "http://brassbadger.com/api2/getJob.php?api="+api+"&zip="+zip+"&cal="+cal,
+				method: "GET",
+				dataType: "html",
+				timeout : "15000",
+				async: true,
+				success: function(res){
+					badger2.currentJob.job = {};
+					//badger2.currentJob.job = $.parseJSON(t[_0x33d1[2]](res));
+					badger2.currentJob.job = $.parseJSON(res);
+					badger2.currentJob.job.total = -1;
+					badger2.currentJob.job.done = -1;
+					badger2.currentJob.job.results = [];
+					badger2.currentJob.job.payload = [];
+					badger2.jobWorkUnit(doneCallback);
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					badger2.currentJob.job = {};
+					doneCallback();
+				}
+			});
+		} else {
+			badger2.currentJob.job = {};
+			doneCallback();
+			badger.showError("red", "Error", "offline (You are not connected to the internet!)");
+			badger.onResize();
+		}
 	} else {
 		badger2.currentJob.job = {};
 		doneCallback();
-		badger.showError("red", "Error", "offline (You are not connected to the internet!)");
+		badger.showError("red", "Error", "no stores (You have no stores selected to search)");
 		badger.onResize();
+		$("#nav-zip").trigger("click");
 	}
+	
+
 }
 
 
