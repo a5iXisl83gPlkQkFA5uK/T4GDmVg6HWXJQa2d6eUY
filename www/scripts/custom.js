@@ -905,7 +905,7 @@ badger2.jobWorkUnit = function(callback){
 							var sortDistance = badger2.currentJob.job.d['a'+res[0].stores[i].storeId][0];
 							key = unseen + status.flag + sortDistance + status.sortCode;
 							var name = "";
-							if(typeof res[0].item.signingDesc == "undefined"){
+							if(typeof res[0].item.signingDesc == "undefined" || res[0].item.signingDesc == "undefined"){
 								name = res[0].item.name;
 							} else {
 								name = res[0].item.signingDesc
