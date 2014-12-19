@@ -1070,6 +1070,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 				"b" : md5(s),
 				"c" : new Date().getTime()
 			}));
+
 			$.ajax({
 				type: "POST",
 				url: "http://brassbadger.com/api2/jobDone.php",
@@ -1084,27 +1085,32 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 	
 	badger2.currentJob.running = true;
 	$("#apiResults").html('<div id="jobProgress" style="margin-top: 5px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />Getting product list</p></div>');
-	badger2.ajaxPromise = $.ajax({
-		url: "http://brassbadger.com/api2/getJob.php?api="+api+"&zip="+zip+"&cal="+cal,
-		method: "GET",
-		dataType: "html",
-		timeout : "15000",
-		async: true,
-		success: function(res){
-			badger2.currentJob.job = {};
-			//badger2.currentJob.job = $.parseJSON(t[_0x33d1[2]](res));
-			badger2.currentJob.job = $.parseJSON(res);
-			badger2.currentJob.job.total = -1;
-			badger2.currentJob.job.done = -1;
-			badger2.currentJob.job.results = [];
-			badger2.currentJob.job.payload = [];
-			badger2.jobWorkUnit(doneCallback);
-		},
-		error: function(jqXHR, textStatus, errorThrown){
-			badger2.currentJob.job = {};
-			doneCallback();
-		}
-	});
+	
+	if(badger.isOnLine()){
+		badger2.ajaxPromise = $.ajax({
+			url: "http://brassbadger.com/api2/getJob.php?api="+api+"&zip="+zip+"&cal="+cal,
+			method: "GET",
+			dataType: "html",
+			timeout : "15000",
+			async: true,
+			success: function(res){
+				badger2.currentJob.job = {};
+				//badger2.currentJob.job = $.parseJSON(t[_0x33d1[2]](res));
+				badger2.currentJob.job = $.parseJSON(res);
+				badger2.currentJob.job.total = -1;
+				badger2.currentJob.job.done = -1;
+				badger2.currentJob.job.results = [];
+				badger2.currentJob.job.payload = [];
+				badger2.jobWorkUnit(doneCallback);
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				badger2.currentJob.job = {};
+				doneCallback();
+			}
+		});
+	} else {
+	
+	}
 }
 
 
