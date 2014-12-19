@@ -74,17 +74,14 @@ badger.isOnLine = function(){
 		badger.ISONLINE_PROBLEM++;
 		
 		if(badger.ISONLINE_OVERRIDE){
-			alert("A," +ret + "," + test1 + "," + test2  + "," + window.navigator.onLine + "," + navigator.connection.type + "," + badger.ISONLINE_PROBLEM + "," + badger.ISONLINE_OVERRIDE);
 			return true;
 		} else {
-			alert("B," +ret + "," + test1 + "," + test2  + "," + window.navigator.onLine + "," + navigator.connection.type + "," + badger.ISONLINE_PROBLEM + "," + badger.ISONLINE_OVERRIDE);
 			return false;
 		}
 		
 	} else {
 		badger.ISONLINE_PROBLEM = 0;
 		badger.ISONLINE_OVERRIDE = false;
-		alert("C," +ret + "," + test1 + "," + test2  + "," + window.navigator.onLine + "," + navigator.connection.type + "," + badger.ISONLINE_PROBLEM + "," + badger.ISONLINE_OVERRIDE);
 		return ret;
 	}
 }
