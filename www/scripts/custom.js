@@ -45,12 +45,18 @@ badger.isOnLine = function(){
 	try {
 		var online = navigator.connection.type;
 		test1 = (online != Connection.NONE) ? 1 : 0;
+		if(test1 == 1){
+			badger.ISONLINE_PROBLEM == 0;
+		}
 	} catch(err){
 		test2 = 0;
 	}
 	try {
 		var online = window.navigator.onLine;
 		test2 = (online == true) ? 1 : 0;
+		if(test2 == 1){
+			badger.ISONLINE_PROBLEM == 0;
+		}
 	} catch(err){
 		test2 = 1;
 	}
@@ -68,14 +74,17 @@ badger.isOnLine = function(){
 		badger.ISONLINE_PROBLEM++;
 		
 		if(badger.ISONLINE_OVERRIDE){
+			alert("A," +ret + "," + test1 + "," + test2  + "," + window.navigator.onLine + "," + navigator.connection.type + "," + badger.ISONLINE_PROBLEM + "," + badger.ISONLINE_OVERRIDE);
 			return true;
 		} else {
+			alert("B," +ret + "," + test1 + "," + test2  + "," + window.navigator.onLine + "," + navigator.connection.type + "," + badger.ISONLINE_PROBLEM + "," + badger.ISONLINE_OVERRIDE);
 			return false;
 		}
 		
 	} else {
 		badger.ISONLINE_PROBLEM = 0;
 		badger.ISONLINE_OVERRIDE = false;
+		alert("C," +ret + "," + test1 + "," + test2  + "," + window.navigator.onLine + "," + navigator.connection.type + "," + badger.ISONLINE_PROBLEM + "," + badger.ISONLINE_OVERRIDE);
 		return ret;
 	}
 }
@@ -1324,3 +1333,4 @@ setTimeout(function(){
 		INIT_BB();
 	}
 }, 5000);
+
