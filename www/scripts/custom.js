@@ -23,7 +23,6 @@ badger.api = 3;
 badger.zip = 46201;
 
 badger.TEST_CONNECTION_RESULT = true;
-badger.ONLINE_FLAG = -1;
 badger.INIT_FIRED = false;
 badger.DEVICE_READY = false;
 badger.DOC_READY = false;
@@ -55,10 +54,8 @@ badger.isOnLine = function(){
 	} catch(err){
 		test2 = 1;
 	}
-
-	 && badger.TEST_CONNECTION_RESULT
 	
-	var ret = (  (badger.ONLINE_FLAG !== -1 && badger.ONLINE_FLAG === true) || test1 == 1  ||  test2 == 1  ||  ( test1 == -1 && test2 == -1 )  );
+	var ret = ( test1 == 1  ||  test2 == 1  ||  ( test1 == -1 && test2 == -1 )  );
 	if(!ret){
 		if(badger.ISONLINE_PROBLEM > 100){
 			badger.ISONLINE_PROBLEM = 0;
@@ -1295,23 +1292,6 @@ var INIT_BB = function(){
 	
 	
 	badger.testConnection();
-    document.addEventListener("offline", function(){
-		badger.ONLINE_FLAG = false;
-	}, false);
-	
-    document.addEventListener("online", function(){
-		badger.ONLINE_FLAG = true;
-	}, false);
-	
-	try{
-		if((navigator.network.connection.type).toUpperCase() == "NONE") {
-			badger.ONLINE_FLAG = false;
-		} else {
-			badger.ONLINE_FLAG = true;
-		}
-	} catch(e){
-		badger.ONLINE_FLAG = -1;
-	}
 }
 
 
@@ -1344,4 +1324,3 @@ setTimeout(function(){
 		INIT_BB();
 	}
 }, 5000);
-
