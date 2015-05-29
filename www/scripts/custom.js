@@ -554,7 +554,7 @@ badger.fetch = function(cal){
 			badger2.currentJob.running = false;
 		},
 		function(textStatus, errorThrown){
-			//badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
+			badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
 			badger2.currentJob.running = false;
 		}
 	);
