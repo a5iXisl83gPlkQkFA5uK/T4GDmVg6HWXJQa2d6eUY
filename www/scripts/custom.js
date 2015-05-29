@@ -117,7 +117,10 @@ badger.cache = {
 	"domCache": new Object(),
 	
 	"dom": function( resUrl, successCallback, errorCallback ){
-		alert(resUrl);
+		var override = false;
+		if(arguments.length == 4 && arguments[3] === true){
+			override = true;
+		}
 		var resUrlHash = md5(resUrl);
 		if(badger.isOnLine()){
 			for(var i in badger.cache.domCache) {
@@ -146,7 +149,7 @@ badger.cache = {
 					async: true,
 					success: function(res){ 
 						var res = $.parseJSON(res);
-						if(!badger.ISONLINE_OVERRIDE){
+						if(!badger.ISONLINE_OVERRIDE && !override){
 							badger.cache.domCache[resUrlHash] = {
 								"res": res, 
 								"time": parseInt(  new Date().getTime() / 1000  ), 
@@ -557,7 +560,8 @@ badger.fetch = function(cal){
 		function(textStatus, errorThrown){
 			badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
 			badger2.currentJob.running = false;
-		}
+		},
+		true
 	);
 	badger.onResize();
 }
