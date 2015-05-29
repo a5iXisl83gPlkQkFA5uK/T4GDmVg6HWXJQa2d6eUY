@@ -710,7 +710,7 @@ badger.buildRes = function(result){
 			var since = "";
 			var since_inner = "";
 			if(result.results[i]['since'] && result.results[i]['since'] != "" && result.results[i]['since'] != " "){
-				since_inner  = badger2.humanTiming(result.results[i]['since'] );
+				since_inner  = result.results[i]['since'] + ' | ' + badger2.humanTiming(result.results[i]['since'] );
 				since = " for the past "+since_inner;
 				if(result.results[i]['previously'] == "Unknown/Expired"){
 					since = " for at least "+since_inner;
@@ -1012,7 +1012,7 @@ badger2.jobWorkUnit = function(callback){
 							if(status.code == "3" && (previously == "" || previously == "Unknown/Expired" || previously == "Undisclosed" )){
 								unseen = "1";
 							}
-							// foo
+
 							var sortDistance = badger2.currentJob.job.d['a'+res[i].storeId][0];
 							key = unseen + status.flag + sortDistance + status.sortCode;
 							var s = {
