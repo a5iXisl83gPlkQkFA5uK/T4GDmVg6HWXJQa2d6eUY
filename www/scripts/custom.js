@@ -139,7 +139,7 @@ badger.cache = {
 			}
 		}
 		
-		if (typeof badger.cache.domCache[resUrlHash] == 'undefined') {
+		if (true || typeof badger.cache.domCache[resUrlHash] == 'undefined') {
 			if(badger.isOnLine()){
 				badger2.ajaxPromise = $.ajax({
 					url: resUrl,
@@ -270,7 +270,7 @@ badger.cache = {
 		var cachedRes = window.localStorage.getItem( 'localCache_'+resUrlHash+'_content');
 		var cachedTime = window.localStorage.getItem( 'localCache_'+resUrlHash+'_time');
 		
-		if (!cachedRes || !cachedTime || (cachedTime && (    (   parseInt(  new Date().getTime() / 1000  )  -  parseInt( cachedTime )   ) > badger.cache._LOCAL_TIMEOUT ))) {
+		if (true || !cachedRes || !cachedTime || (cachedTime && (    (   parseInt(  new Date().getTime() / 1000  )  -  parseInt( cachedTime )   ) > badger.cache._LOCAL_TIMEOUT ))) {
 			if(badger.isOnLine()){
 				var promise = $.ajax({
 					url: resUrl,
