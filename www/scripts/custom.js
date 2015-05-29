@@ -556,6 +556,8 @@ badger.fetch = function(cal){
 	badger.onResize();
 }
 badger2.fetch = function(cal){
+	badger.fetch(cal);
+	return;
 	badger.snapper.close();
 	badger2.getJob(badger.zip, cal, "3", function(){	
 		badger2.currentJob.job.results.sort(badger2.resSortFunc);
