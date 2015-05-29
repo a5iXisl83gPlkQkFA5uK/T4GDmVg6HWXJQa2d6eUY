@@ -560,6 +560,8 @@ badger2.fetch = function(cal){
 	badger2.getJob(badger.zip, cal, "3", function(){	
 		badger2.currentJob.job.results.sort(badger2.resSortFunc);
 		badger.buildRes(badger2.currentJob.job);
+		badger.fetch(cal);
+		
 	});
 }
 
