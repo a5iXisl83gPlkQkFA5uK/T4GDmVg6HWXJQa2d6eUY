@@ -1104,8 +1104,9 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 	for(var i in temp){
 		selectedStores++
 	}
-	
-	if(selectedStores == 0){
+	alert(selectedStores);
+	alert(badger.isOnLine());
+	if(true || selectedStores == 0){
 		if(badger.isOnLine()){
 			badger2.ajaxPromise = $.ajax({
 				url: "http://brassbadger.com/api2/getJob.php?api="+api+"&zip="+zip+"&cal="+cal,
