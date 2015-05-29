@@ -548,9 +548,11 @@ badger.fetch = function(cal){
 			badger.zip = result.request.zip;
 			badger.buildResWeb(result);
 			badger.updateOverview(result);
+			badger2.currentJob.running = false;
 		},
 		function(textStatus, errorThrown){
 			//badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
+			badger2.currentJob.running = false;
 		}
 	);
 	badger.onResize();
@@ -1148,7 +1150,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 	}
 	var doneCallback = function(){
 		//doneCallback_a();
-		badger2.currentJob.running = false;
+		//badger2.currentJob.running = false;
 		badger2.currentJob.job.results.sort(badger2.resSortFunc);
 		badger.buildRes(badger2.currentJob.job);
 		if(badger2.currentJob.job.payload.length > 0){
@@ -1158,13 +1160,18 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 				"b" : md5(s),
 				"c" : new Date().getTime()
 			}));
-
+			$("#jobProgress").html('<img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />Analyzing Results...</p>');
 			$.ajax({
 				type: "POST",
 				url: "http://brassbadger.com/api2/jobDone.php",
 				data: "pl="+badger2.currentJob.job.payload,
 				success: function(){
 					badger.fetch(cal);
+				},
+				error: function(){
+					$("#jobProgress").remove();
+					$(".notification-box:not(.ad)").show();
+					badger2.currentJob.running = false;
 				}
 			});
 		}
@@ -1179,9 +1186,8 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 	for(var i in temp){
 		selectedStores++
 	}
-	alert(selectedStores);
-	alert(badger.isOnLine());
-	if(true || selectedStores == 0){
+
+	if(selectedStores > 1){
 		if(badger.isOnLine()){
 			badger2.ajaxPromise = $.ajax({
 				url: "http://brassbadger.com/api2/getJob.php?api="+api+"&adsOnly=true&zip="+zip+"&cal="+cal,
