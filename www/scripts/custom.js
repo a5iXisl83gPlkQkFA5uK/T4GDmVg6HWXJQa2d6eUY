@@ -1096,7 +1096,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 	}
 	
 	badger2.currentJob.running = true;
-	$("#apiResults").html('<div id="jobProgress" style="margin-top: 5px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />Getting product list</p></div>');
+	$("#apiResults").html('<div id="jobProgress" style="margin-top: 5px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />DEV Getting product list</p></div>');
 	
 	var temp = badger.getSelectedStores();
 	temp = temp.split("|");
