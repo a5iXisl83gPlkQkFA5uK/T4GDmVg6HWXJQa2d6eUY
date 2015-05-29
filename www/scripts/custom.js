@@ -925,6 +925,11 @@ badger2.jobWorkUnit = function(callback){
 							} else {
 								name = res[0].item.signingDesc
 							}
+							
+							if(typeof name == "undefined" || name == "undefined" || name == ""){
+								name = next["n"];
+							}
+							
 							var s = {
 								"key" : key,
 								"unseen" : unseen,
