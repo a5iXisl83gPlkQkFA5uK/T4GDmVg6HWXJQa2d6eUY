@@ -776,9 +776,10 @@ badger2.code2status = function(code){
 
 badger2.humanTiming = function(t){
 	var now = new Date().getTime() / 1000;
+  
 	now = Math.round(now) + "";
-	now = parseInt(now.substring(3));
-	var inp = parseInt(t.substring(3));
+	now = parseInt(now.substring(2));
+	var inp = parseInt(t.substring(2));
 	inp = now - inp;
 	
 	if(inp >= 31536000){
@@ -802,6 +803,8 @@ badger2.humanTiming = function(t){
 	if(inp >= 1){
 		return Math.floor(inp / 1) + '  sec' + ((Math.floor(inp / 1) >1)? 's' : '');
 	}
+	
+	return "unknown time";
 }
 
 badger2.parseStatus = function(status){
@@ -1102,7 +1105,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 	}
 	
 	badger2.currentJob.running = true;
-	$("#apiResults").html('<div id="jobProgress" style="margin-top: 5px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />DEV Getting product list</p></div>');
+	$("#apiResults").html('<div id="jobProgress" style="margin-top: 5px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />Getting product list</p></div>');
 	
 	var temp = badger.getSelectedStores();
 	temp = temp.split("|");
