@@ -830,6 +830,9 @@ badger.buildResWeb = function(result){
 }
 
 
+
+
+
 badger2.code2status = function(code){
 	switch (code) {
 		case "4" : return "In stock";
