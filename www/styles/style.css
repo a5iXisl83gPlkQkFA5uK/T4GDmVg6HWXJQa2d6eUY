@@ -203,3 +203,6 @@ li,ul,em,.filtrable-caption{color:#7f8c8d;}
 table a:link,table a:visited{font-weight:700;text-decoration:none;}
 table th:first-child,table tr{text-align:center;padding-left:20px;}
 table tr.even td,table tr:hover td{background:0;}
+
+
+.notification-box.hide:not(.ad){display:none;}

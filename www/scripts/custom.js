@@ -725,7 +725,7 @@ badger.buildRes = function(result){
 			} catch(e){
 			
 			}
-			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+name+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" "+since+" "+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+badger2.formatUpc(result.results[i]['upc'])+"</p></div>");
+			$("#apiResults").append("<div class='notification-box "+color+"-box hide'><h4>"+name+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" "+since+" "+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+badger2.formatUpc(result.results[i]['upc'])+"</p></div>");
 			var pos = "p"+i;
 			if(pos in badger2.currentJob.job.a){
 				var ad = $("<div class='notification-box blue-box ad'>"+badger2.currentJob.job.a[pos]+"</div>");
@@ -1184,7 +1184,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 	if(true || selectedStores == 0){
 		if(badger.isOnLine()){
 			badger2.ajaxPromise = $.ajax({
-				url: "http://brassbadger.com/api2/getJob.php?api="+api+"&zip="+zip+"&cal="+cal,
+				url: "http://brassbadger.com/api2/getJob.php?api="+api+"&adsOnly=true&zip="+zip+"&cal="+cal,
 				method: "GET",
 				dataType: "html",
 				timeout : "15000",
