@@ -710,7 +710,7 @@ badger.buildRes = function(result){
 			var since = "";
 			var since_inner = "";
 			if(result.results[i]['since'] && result.results[i]['since'] != "" && result.results[i]['since'] != " "){
-				since_inner  = result.results[i]['since'] + ' | ' + badger2.humanTiming(result.results[i]['since'] );
+				since_inner  = badger2.humanTiming(result.results[i]['since'] );
 				since = " for the past "+since_inner;
 				if(result.results[i]['previously'] == "Unknown/Expired"){
 					since = " for at least "+since_inner;
@@ -723,7 +723,7 @@ badger.buildRes = function(result){
 			} catch(e){
 			
 			}
-			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+name+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" "+since+" "+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
+			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+name+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" "+since+" "+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+badger2.formatUpc(result.results[i]['upc'])+"</p></div>");
 			var pos = "p"+i;
 			if(pos in badger2.currentJob.job.a){
 				var ad = $("<div class='notification-box blue-box ad'>"+badger2.currentJob.job.a[pos]+"</div>");
@@ -778,8 +778,8 @@ badger2.humanTiming = function(t){
 	var now = new Date().getTime() / 1000;
   
 	now = Math.round(now) + "";
-	now = parseInt(now.substring(2));
-	var inp = parseInt(t.substring(2));
+	now = parseInt(now.substring(0));
+	var inp = parseInt(t.substring(0));
 	inp = now - inp;
 	
 	if(inp >= 31536000){
@@ -802,6 +802,9 @@ badger2.humanTiming = function(t){
 	}
 	if(inp >= 1){
 		return Math.floor(inp / 1) + '  sec' + ((Math.floor(inp / 1) >1)? 's' : '');
+	}
+	if(inp == 0){
+		return '0 sec';
 	}
 	
 	return "unknown time";
@@ -1155,7 +1158,32 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 
 }
 
-
+badger2.formatUpc = function(upc_code){
+	upc_code = upc_code.replace(/^0+/,"");
+	if(upc_code.length != 12){
+		upc_code = ("0000000000000" + upc_code).slice(-11);
+		var odd_total  = 0;
+		var even_total = 0;
+	 
+		for(var i=0; i<11; i++){
+			if(((i+1)%2) == 0) {
+				even_total += parseInt(upc_code.charAt(i));
+			} else {
+				odd_total += parseInt(upc_code.charAt(i));
+			}
+		}
+	 
+		var sum = (3 * odd_total) + even_total;
+		var check_digit = sum % 10;
+		var check_digit = (check_digit > 0) ? 10 - check_digit : check_digit;
+		upc_code = ''+upc_code+''+check_digit+'';
+	}
+	if(upc_code.length == 12){
+		return upc_code.substring(0,1) + '-' + upc_code.substring(1,6) + '-' + upc_code.substring(6,11) + '-' + upc_code.substring(11,12)
+	} else {
+		return "<i>unavailable</i>";
+	}
+}
 
 var INIT_BB = function(){
 	badger.INIT_FIRED = true;
