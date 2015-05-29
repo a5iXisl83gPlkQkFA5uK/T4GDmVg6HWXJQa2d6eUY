@@ -111,7 +111,7 @@ badger.testConnection = function(){
 
 badger.cache = {
 	"_DOM_LIMIT" : 5,
-	"_DOM_TIMEOUT": 60*60, // 1 hr
+	"_DOM_TIMEOUT": 0, //60*60, // 1 hr
 	"_LOCAL_TIMEOUT" : 60*60, // 1 hr
 	"_SCROLL_TIMER" : 0,
 	"domCache": new Object(),
@@ -179,6 +179,13 @@ badger.cache = {
 
 	},
 	"localClean" : function(){
+		for (var key in window.localStorage){
+			if(key.indexOf("localCache_") == 0){
+				window.localStorage.removeItem(key);
+			}
+		}
+		return;
+		
 		// Delete expired cache items
 		for (var key in window.localStorage){
 			if(key.indexOf("localCache_") == 0 && key.indexOf("_time") > 0){
@@ -544,8 +551,9 @@ badger.setHeight = function(){
 		winnerHeight = windowHeight;
 	$(".page-content").height(windowHeight);
 }
-
+badger2.webFetch = false;
 badger.fetch = function(cal){
+	badger2.webFetch = true;
 	var stores = badger.getSelectedStores();
 	//$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');	
 	badger.snapper.close();
@@ -560,6 +568,7 @@ badger.fetch = function(cal){
 		function(textStatus, errorThrown){
 			badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
 			badger2.currentJob.running = false;
+			badger2.webFetch = false;
 		},
 		true
 	);
@@ -771,6 +780,7 @@ badger.buildRes = function(result){
 		badger.showError("blue", "No Results Found", "The requested information could not be found for any of the stores you have selected.");
 }
 badger.buildResWeb = function(result){
+	badger2.webFetch = true;
 	$("#apiResults").html("");
 	var zStr = "" + badger.zip;
 	if(zStr.length == 5){
