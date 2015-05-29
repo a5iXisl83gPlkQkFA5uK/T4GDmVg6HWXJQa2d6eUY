@@ -148,7 +148,6 @@ badger.cache = {
 					timeout : "15000",
 					async: true,
 					success: function(res){ 
-						alert("hit");
 						var res = $.parseJSON(res);
 						if(!badger.ISONLINE_OVERRIDE && !override){
 							badger.cache.domCache[resUrlHash] = {
@@ -287,7 +286,6 @@ badger.cache = {
 					timeout : "15000",
 					async: true,
 					success: function(res){ 
-							alert("hit");
 							window.localStorage.setItem( 'localCache_'+resUrlHash+'_content', res);
 							window.localStorage.setItem( 'localCache_'+resUrlHash+'_time', parseInt(  new Date().getTime() / 1000  ) );
 							successCallback( res, true, resUrlHash );
