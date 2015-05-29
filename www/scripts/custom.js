@@ -540,7 +540,7 @@ badger.setHeight = function(){
 
 badger.fetch = function(cal){
 	var stores = badger.getSelectedStores();
-	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');	
+	//$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');	
 	badger.snapper.close();
 	badger.cache.dom(
 		"http://brassbadger.com/api/?api="+badger.api+"&function=cal&zip="+badger.zip+"&cal="+cal+"&store="+stores, 
@@ -550,19 +550,17 @@ badger.fetch = function(cal){
 			badger.updateOverview(result);
 		},
 		function(textStatus, errorThrown){
-			badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
+			//badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
 		}
 	);
 	badger.onResize();
 }
 badger2.fetch = function(cal){
-	badger.fetch(cal);
-	return;
 	badger.snapper.close();
 	badger2.getJob(badger.zip, cal, "3", function(){	
 		badger2.currentJob.job.results.sort(badger2.resSortFunc);
 		badger.buildRes(badger2.currentJob.job);
-		badger.fetch(cal);
+		
 		
 	});
 }
@@ -1166,8 +1164,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 				url: "http://brassbadger.com/api2/jobDone.php",
 				data: "pl="+badger2.currentJob.job.payload,
 				success: function(){
-				
-					
+					badger.fetch(cal);
 				}
 			});
 		}
