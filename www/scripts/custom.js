@@ -117,6 +117,7 @@ badger.cache = {
 	"domCache": new Object(),
 	
 	"dom": function( resUrl, successCallback, errorCallback ){
+		alert(resUrl);
 		var resUrlHash = md5(resUrl);
 		if(badger.isOnLine()){
 			for(var i in badger.cache.domCache) {
@@ -1173,7 +1174,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 				url: "http://brassbadger.com/api2/jobDone.php",
 				data: "pl="+badger2.currentJob.job.payload,
 				success: function(){
-					//$("#jobProgress").html('<img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />Analyzing Results...</p>');
+					$("#jobProgress").html('<img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />Analyzing Results...</p>');
 					badger.fetch(cal);
 				},
 				error: function(){
