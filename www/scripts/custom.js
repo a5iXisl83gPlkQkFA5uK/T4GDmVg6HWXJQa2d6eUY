@@ -1012,6 +1012,7 @@ badger2.jobWorkUnit = function(callback){
 							if(status.code == "3" && (previously == "" || previously == "Unknown/Expired" || previously == "Undisclosed" )){
 								unseen = "1";
 							}
+							// foo
 							var sortDistance = badger2.currentJob.job.d['a'+res[i].storeId][0];
 							key = unseen + status.flag + sortDistance + status.sortCode;
 							var s = {
