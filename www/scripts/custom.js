@@ -545,7 +545,7 @@ badger.fetch = function(cal){
 	var stores = badger.getSelectedStores();
 	//$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');	
 	badger.snapper.close();
-	badger.cache.local(
+	badger.cache.dom(
 		"http://brassbadger.com/api/?api="+badger.api+"&function=cal&zip="+badger.zip+"&cal="+cal+"&store="+stores, 
 		function(result){
 			badger.zip = result.request.zip;
@@ -1173,7 +1173,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 				url: "http://brassbadger.com/api2/jobDone.php",
 				data: "pl="+badger2.currentJob.job.payload,
 				success: function(){
-					$("#jobProgress").html('<img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />Analyzing Results...</p>');
+					//$("#jobProgress").html('<img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />Analyzing Results...</p>');
 					badger.fetch(cal);
 				},
 				error: function(){
