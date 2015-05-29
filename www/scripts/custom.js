@@ -546,7 +546,7 @@ badger.fetch = function(cal){
 		"http://brassbadger.com/api/?api="+badger.api+"&function=cal&zip="+badger.zip+"&cal="+cal+"&store="+stores, 
 		function(result){
 			badger.zip = result.request.zip;
-			badger.buildRes(result);
+			badger.buildResWeb(result);
 			badger.updateOverview(result);
 		},
 		function(textStatus, errorThrown){
@@ -762,7 +762,69 @@ badger.buildRes = function(result){
 	if(!badger2.currentJob.running && result.results.length == 0)
 		badger.showError("blue", "No Results Found", "The requested information could not be found for any of the stores you have selected.");
 }
+badger.buildResWeb = function(result){
+	$("#apiResults").html("");
+	var zStr = "" + badger.zip;
+	if(zStr.length == 5){
+		$("#nav-stores-text").html("NEAR " + badger.zip);
+		window.localStorage.setItem( 'zipcode', badger.zip);
+	}
+	for (var i = 0; i < result.results.length; i++) {
+		var color = "blue";
+		if(result.results[i]['code'] == "-1" || result.results[i]['code'] == "0" || result.results[i]['code'] == "1")
+			color = "red";
+		if(result.results[i]['code'] == "2")
+			color = "yellow";
+		if(result.results[i]['code'] == "3")
+			color = "yellowgreen";
+		if(result.results[i]['code'] == "4")
+			color = "green";
+		if(result.results[i]['code'] == "5")
+			color = "blue";	
+		var price = "";
+		if(result.results[i]['price'] != "")
+			price = "$"+result.results[i]['price'];
+		var was = "";
+		if(result.results[i]['previously'] != "Unknown/Expired"){
+			was = " (was "+result.results[i]['previously']+")";
+		}
+		var since = "";
+		if(result.results[i]['since'] ){
+			since = " for the past "+result.results[i]['since'];
+			if(result.results[i]['previously'] == "Unknown/Expired"){
+				since = " for at least "+result.results[i]['since'];
+			}
+			
+		}
+		if(result.results[i]['status'] != "Ad"){
+			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p>"+result.results[i]['status']+""+since+""+was+"<br /><b>"+price+"</b> Last checked "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
+		} else {
+			var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
+			ad.find("a").click(function(e){
+				window.open( $(this).attr('href'), '_system' );
+				e.preventDefault();
+			});
+			$("#apiResults").append(ad);
+			// /*
+			$(ad).find('img.avant_adb_image,img.avant_adb_image_tracking').each(function(){
+				$(this).error(function(){
+					if(!this.complete || (typeof this.naturalWidth != 'undefined' && this.naturalWidth == 0)){
+						$(this).closest('.ad').hide();
+						//$(this).closest('.ad').after('<div class=\'notification-box blue-box ad blocked\'><p><form target=\'_system\' method=\'post\' action=\'https://www.paypal.com/cgi-bin/webscr\'><input type=\'hidden\' value=\'_s-xclick\' name=\'cmd\'><input type=\'hidden\' value=\'525F5V88XVC2E\' name=\'hosted_button_id\'><input type=\'image\' border=\'0\' alt=\'PayPal - The safer, easier way to pay online!\' name=\'submit\' style=\'padding-left:50px;\' src=\'https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif\'><img width=\'1\' height=\'1\' border=\'0\' src=\'https://www.paypalobjects.com/en_US/i/scr/pixel.gif\'></form></p></div>');
+						$(this).closest('.ad').after('<div class=\'notification-box blue-box ad blocked\'><p><a href=\'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VM3R9BG9SQ9NS\' target=\'_system\'>Consider making a donation to help offset the cost of server resources and development.</a></p></div>');
+						$(".notification-box.blue-box.ad.blocked").hide();
+						$(".notification-box.blue-box.ad.blocked").first().show();
+					}
+				});
 
+			});
+			// */
+		}
+
+	}
+	if(result.results.length == 0)
+		badger.showError("blue", "No Results Found", "The requested information could not be found for any of the stores you have selected.");
+}
 
 
 badger2.code2status = function(code){
