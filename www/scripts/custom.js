@@ -721,6 +721,7 @@ badger.buildRes = function(result){
 			try{
 				name = result.results[i]['name'];
 			} catch(e){
+				name = "";
 			
 			}
 			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+name+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" "+since+" "+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
@@ -925,6 +926,11 @@ badger2.jobWorkUnit = function(callback){
 							} else {
 								name = res[0].item.signingDesc
 							}
+							if(typeof name == "undefined" || name == "undefined" || name = ""){
+								name = next["n"];
+							}
+							
+							
 							var s = {
 								"key" : key,
 								"unseen" : unseen,
