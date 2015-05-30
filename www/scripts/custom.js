@@ -1341,7 +1341,7 @@ var INIT_BB = function(){
 	
 	badger.testConnection();
 	
-	if(badger.zip = "" || badger.zip = "00000" || badger.zip = 0){
+	if(badger.zip == "" || badger.zip == "00000" || badger.zip == 0){
 		$("#nav-zip").trigger("click");
 	}
 }
