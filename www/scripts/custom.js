@@ -1148,6 +1148,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 
 
 var INIT_BB = function(){
+	alert("init");
 	badger.INIT_FIRED = true;
 	badger.zip = window.localStorage.getItem( 'zipcode' );
 	badger.zip = badger.validateZip(badger.zip);
