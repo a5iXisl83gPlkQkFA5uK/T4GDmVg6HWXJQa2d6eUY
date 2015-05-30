@@ -117,10 +117,6 @@ badger.cache = {
 	"domCache": new Object(),
 	
 	"dom": function( resUrl, successCallback, errorCallback ){
-		var override = false;
-		if(arguments.length == 4 && arguments[3] === true){
-			override = true;
-		}
 		var resUrlHash = md5(resUrl);
 		if(badger.isOnLine()){
 			for(var i in badger.cache.domCache) {
@@ -149,7 +145,7 @@ badger.cache = {
 					async: true,
 					success: function(res){ 
 						var res = $.parseJSON(res);
-						if(!badger.ISONLINE_OVERRIDE && !override){
+						if(!badger.ISONLINE_OVERRIDE){
 							badger.cache.domCache[resUrlHash] = {
 								"res": res, 
 								"time": parseInt(  new Date().getTime() / 1000  ), 
@@ -351,9 +347,6 @@ badger.cache = {
 	
 };
 
-
-
-
 badger.onResize = function(){
 	var windowHeight = innerHeight || 
 		window.innerHeight ||
@@ -547,21 +540,18 @@ badger.setHeight = function(){
 
 badger.fetch = function(cal){
 	var stores = badger.getSelectedStores();
-	//$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');	
+	$("#apiResults").html('<div style="margin-top: 70px;"><img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"></div>');	
 	badger.snapper.close();
 	badger.cache.dom(
 		"http://brassbadger.com/api/?api="+badger.api+"&function=cal&zip="+badger.zip+"&cal="+cal+"&store="+stores, 
 		function(result){
 			badger.zip = result.request.zip;
-			badger.buildResWeb(result);
+			badger.buildRes(result);
 			badger.updateOverview(result);
-			badger2.currentJob.running = false;
 		},
 		function(textStatus, errorThrown){
 			badger.showError("red", "Error", errorThrown + " (" + textStatus + ")");
-			badger2.currentJob.running = false;
-		},
-		true
+		}
 	);
 	badger.onResize();
 }
@@ -570,8 +560,6 @@ badger2.fetch = function(cal){
 	badger2.getJob(badger.zip, cal, "3", function(){	
 		badger2.currentJob.job.results.sort(badger2.resSortFunc);
 		badger.buildRes(badger2.currentJob.job);
-		
-		
 	});
 }
 
@@ -735,7 +723,7 @@ badger.buildRes = function(result){
 			} catch(e){
 			
 			}
-			$("#apiResults").append("<div class='notification-box "+color+"-box hide'><h4>"+name+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" "+since+" "+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+badger2.formatUpc(result.results[i]['upc'])+"</p></div>");
+			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+name+"</h4><div class='clear'></div><p><b>"+price+"</b> "+result.results[i]['status']+" "+since+" "+was+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
 			var pos = "p"+i;
 			if(pos in badger2.currentJob.job.a){
 				var ad = $("<div class='notification-box blue-box ad'>"+badger2.currentJob.job.a[pos]+"</div>");
@@ -770,71 +758,6 @@ badger.buildRes = function(result){
 	if(!badger2.currentJob.running && result.results.length == 0)
 		badger.showError("blue", "No Results Found", "The requested information could not be found for any of the stores you have selected.");
 }
-badger.buildResWeb = function(result){
-	$("#apiResults").html("");
-	var zStr = "" + badger.zip;
-	if(zStr.length == 5){
-		$("#nav-stores-text").html("NEAR " + badger.zip);
-		window.localStorage.setItem( 'zipcode', badger.zip);
-	}
-	for (var i = 0; i < result.results.length; i++) {
-		var color = "blue";
-		if(result.results[i]['code'] == "-1" || result.results[i]['code'] == "0" || result.results[i]['code'] == "1")
-			color = "red";
-		if(result.results[i]['code'] == "2")
-			color = "yellow";
-		if(result.results[i]['code'] == "3")
-			color = "yellowgreen";
-		if(result.results[i]['code'] == "4")
-			color = "green";
-		if(result.results[i]['code'] == "5")
-			color = "blue";	
-		var price = "";
-		if(result.results[i]['price'] != "")
-			price = "$"+result.results[i]['price'];
-		var was = "";
-		if(result.results[i]['previously'] != "Unknown/Expired"){
-			was = " (was "+result.results[i]['previously']+")";
-		}
-		var since = "";
-		if(result.results[i]['since'] ){
-			since = " for the past "+result.results[i]['since'];
-			if(result.results[i]['previously'] == "Unknown/Expired"){
-				since = " for at least "+result.results[i]['since'];
-			}
-			
-		}
-		if(result.results[i]['status'] != "Ad"){
-			$("#apiResults").append("<div class='notification-box "+color+"-box'><h4>"+result.results[i]['name']+"</h4><div class='clear'></div><p>"+result.results[i]['status']+""+since+""+was+"<br /><b>"+price+"</b> Last checked "+result.results[i]['updated']+"<br />"+result.results[i]['address']+", "+result.results[i]['city']+", "+result.results[i]['state']+" "+result.results[i]['zip']+"<br />"+result.results[i]['phone']+"&nbsp UPC: "+result.results[i]['upc']+"</p></div>");
-		} else {
-			var ad = $("<div class='notification-box "+color+"-box ad'>"+result.results[i]['html']+"</div>");
-			ad.find("a").click(function(e){
-				window.open( $(this).attr('href'), '_system' );
-				e.preventDefault();
-			});
-			$("#apiResults").append(ad);
-			// /*
-			$(ad).find('img.avant_adb_image,img.avant_adb_image_tracking').each(function(){
-				$(this).error(function(){
-					if(!this.complete || (typeof this.naturalWidth != 'undefined' && this.naturalWidth == 0)){
-						$(this).closest('.ad').hide();
-						//$(this).closest('.ad').after('<div class=\'notification-box blue-box ad blocked\'><p><form target=\'_system\' method=\'post\' action=\'https://www.paypal.com/cgi-bin/webscr\'><input type=\'hidden\' value=\'_s-xclick\' name=\'cmd\'><input type=\'hidden\' value=\'525F5V88XVC2E\' name=\'hosted_button_id\'><input type=\'image\' border=\'0\' alt=\'PayPal - The safer, easier way to pay online!\' name=\'submit\' style=\'padding-left:50px;\' src=\'https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif\'><img width=\'1\' height=\'1\' border=\'0\' src=\'https://www.paypalobjects.com/en_US/i/scr/pixel.gif\'></form></p></div>');
-						$(this).closest('.ad').after('<div class=\'notification-box blue-box ad blocked\'><p><a href=\'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VM3R9BG9SQ9NS\' target=\'_system\'>Consider making a donation to help offset the cost of server resources and development.</a></p></div>');
-						$(".notification-box.blue-box.ad.blocked").hide();
-						$(".notification-box.blue-box.ad.blocked").first().show();
-					}
-				});
-
-			});
-			// */
-		}
-
-	}
-	if(result.results.length == 0)
-		badger.showError("blue", "No Results Found", "The requested information could not be found for any of the stores you have selected.");
-}
-
-
 
 
 
@@ -853,10 +776,9 @@ badger2.code2status = function(code){
 
 badger2.humanTiming = function(t){
 	var now = new Date().getTime() / 1000;
-  
 	now = Math.round(now) + "";
-	now = parseInt(now.substring(0));
-	var inp = parseInt(t.substring(0));
+	now = parseInt(now.substring(3));
+	var inp = parseInt(t.substring(3));
 	inp = now - inp;
 	
 	if(inp >= 31536000){
@@ -880,11 +802,6 @@ badger2.humanTiming = function(t){
 	if(inp >= 1){
 		return Math.floor(inp / 1) + '  sec' + ((Math.floor(inp / 1) >1)? 's' : '');
 	}
-	if(inp == 0){
-		return '0 sec';
-	}
-	
-	return "unknown time";
 }
 
 badger2.parseStatus = function(status){
@@ -1008,11 +925,6 @@ badger2.jobWorkUnit = function(callback){
 							} else {
 								name = res[0].item.signingDesc
 							}
-							
-							if(typeof name == "undefined" || name == "undefined" || name == ""){
-								name = next["n"];
-							}
-							
 							var s = {
 								"key" : key,
 								"unseen" : unseen,
@@ -1095,7 +1007,6 @@ badger2.jobWorkUnit = function(callback){
 							if(status.code == "3" && (previously == "" || previously == "Unknown/Expired" || previously == "Undisclosed" )){
 								unseen = "1";
 							}
-
 							var sortDistance = badger2.currentJob.job.d['a'+res[i].storeId][0];
 							key = unseen + status.flag + sortDistance + status.sortCode;
 							var s = {
@@ -1161,7 +1072,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 	}
 	var doneCallback = function(){
 		//doneCallback_a();
-		//badger2.currentJob.running = false;
+		badger2.currentJob.running = false;
 		badger2.currentJob.job.results.sort(badger2.resSortFunc);
 		badger.buildRes(badger2.currentJob.job);
 		if(badger2.currentJob.job.payload.length > 0){
@@ -1171,20 +1082,14 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 				"b" : md5(s),
 				"c" : new Date().getTime()
 			}));
-			$("#jobProgress").html('<img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />Processing Data...</p>');
-			
-			badger2.ajaxPromise = $.ajax({
+
+			$.ajax({
 				type: "POST",
 				url: "http://brassbadger.com/api2/jobDone.php",
 				data: "pl="+badger2.currentJob.job.payload,
 				success: function(){
-					$("#jobProgress").html('<img width="32" height="32" alt="img" src="images/loading.gif" style="display: block; margin: auto;"><p align="center"><br />Analyzing Results...</p>');
-					badger.fetch(cal);
-				},
-				error: function(){
-					$("#jobProgress").remove();
-					$(".notification-box:not(.ad)").show();
-					badger2.currentJob.running = false;
+				
+					
 				}
 			});
 		}
@@ -1199,11 +1104,11 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 	for(var i in temp){
 		selectedStores++
 	}
-
-	if(selectedStores > 1){
+	
+	if(selectedStores == 0){
 		if(badger.isOnLine()){
 			badger2.ajaxPromise = $.ajax({
-				url: "http://brassbadger.com/api2/getJob.php?api="+api+"&adsOnly=true&zip="+zip+"&cal="+cal,
+				url: "http://brassbadger.com/api2/getJob.php?api="+api+"&zip="+zip+"&cal="+cal,
 				method: "GET",
 				dataType: "html",
 				timeout : "15000",
@@ -1240,32 +1145,7 @@ badger2.getJob = function(zip, cal, api, doneCallback_a){
 
 }
 
-badger2.formatUpc = function(upc_code){
-	upc_code = upc_code.replace(/^0+/,"");
-	if(upc_code.length != 12){
-		upc_code = ("0000000000000" + upc_code).slice(-11);
-		var odd_total  = 0;
-		var even_total = 0;
-	 
-		for(var i=0; i<11; i++){
-			if(((i+1)%2) == 0) {
-				even_total += parseInt(upc_code.charAt(i));
-			} else {
-				odd_total += parseInt(upc_code.charAt(i));
-			}
-		}
-	 
-		var sum = (3 * odd_total) + even_total;
-		var check_digit = sum % 10;
-		var check_digit = (check_digit > 0) ? 10 - check_digit : check_digit;
-		upc_code = ''+upc_code+''+check_digit+'';
-	}
-	if(upc_code.length == 12){
-		return upc_code.substring(0,1) + '-' + upc_code.substring(1,6) + '-' + upc_code.substring(6,11) + '-' + upc_code.substring(11,12)
-	} else {
-		return "<i>unavailable</i>";
-	}
-}
+
 
 var INIT_BB = function(){
 	badger.INIT_FIRED = true;
@@ -1495,4 +1375,3 @@ setTimeout(function(){
 		INIT_BB();
 	}
 }, 5000);
-
